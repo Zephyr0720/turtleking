@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎来到龟兹国 - Kingdom of Kucha</title>
+    <style>
+        /* 1. 基础舞台配置 */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', Arial, serif;
+            background-color: #ffffff; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        /* 2. 全屏加载动态页 */
+        #splash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #151515; 
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 2.5秒的超柔和雾化淡出 */
+            transition: opacity 2.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                        filter 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .loaded #splash-overlay {
+            opacity: 0;
+            filter: blur(25px);
+        }
+
+        /* 加载页文字 */
+        .splash-text-box {
+            margin-bottom: 70px;
+            text-align: center;
+        }
+
+        .splash-title {
+            color: #ffffff;
+            letter-spacing: 8px;
+            font-size: 1.6rem;
+            margin: 0 0 10px 0;
+            font-family: "Songti SC", "SimSun", serif;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            opacity: 0;
+            animation: fadeInText 1.5s ease forwards;
+        }
+
+        .splash-subtitle {
+            color: #7a7a7a;
+            letter-spacing: 4px;
+            font-size: 0.9rem;
+            margin: 0;
+            font-family: "Cinzel", "Times New Roman", serif;
+            text-transform: uppercase; 
+            opacity: 0;
+            animation: fadeInText 1.5s ease forwards;
+            animation-delay: 0.3s; 
+        }
+
+        @keyframes fadeInText {
+            0% { opacity: 0; letter-spacing: 14px; filter: blur(6px); }
+            100% { opacity: 1; letter-spacing: inherit; filter: blur(0); }
+        }
+
+        /* 3. 史诗级巡游舞台 */
+        .progress-stage {
+            width: 380px; 
+            position: relative;
+            height: 115px; 
+        }
+
+        /* 进度条金光轨道 */
+        .progress-bar-track {
+            width: 100%;
+            height: 6px; 
+            background-color: #262626;
+            border-radius: 3px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f3e5ab); 
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(212,175,55,0.5);
+            /* 进度条拉长到 3.5 秒 */
+            animation: fillProgress 3.5s cubic-bezier(0.3, 0.1, 0.3, 1) forwards;
+        }
+
+        /* 角色大队统一水平向右步行 */
+        .procession {
+            position: absolute;
+            bottom: 6px; 
+            left: 0%;
+            width: 120px; 
+            height: 95px;
+            transform: translateX(-100%); 
+            /* 巡游行进速度同步放慢到 3.5 秒 */
+            animation: moveProcession 3.5s cubic-bezier(0.3, 0.1, 0.3, 1) forwards;
+        }
+
+        /* ==================== 【精细行走骨骼：国王】 ==================== */
+        .king {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 45px;
+            height: 90px;
+            z-index: 10;
+            /* 核心：模仿人类步行时，重心随步伐产生上下波浪起伏与前倾 */
+            animation: kingWalkBody 0.6s ease-in-out infinite alternate;
+        }
+
+        /* 黄金红宝石皇冠 */
+        .king-crown {
+            width: 22px;
+            height: 14px;
+            position: absolute;
+            top: 0;
+            left: 11px;
+            z-index: 15;
+            background: linear-gradient(to right, #ffd700, #ffa500);
+            clip-path: polygon(0% 100%, 0% 15%, 25% 55%, 50% 0%, 75% 55%, 100% 15%, 100% 100%);
+        }
+        .king-crown::before {
+            content: '';
+            position: absolute;
+            width: 3px; height: 3px;
+            background-color: #ff0033;
+            border-radius: 50%;
+            top: 0; left: 10px;
+            box-shadow: -10px 2px 0 #ff0033, 10px 2px 0 #ff0033;
+        }
+
+        /* 头骨与面容 */
+        .king-head {
+            width: 18px;
+            height: 18px;
+            background-color: #fcd0a1;
+            border-radius: 50%;
+            position: absolute;
+            top: 13px;
+            left: 13px;
+            z-index: 13;
+        }
+        /* 西域大胡子 */
+        .king-beard {
+            width: 16px;
+            height: 12px;
+            background-color: #4a3728; 
+            position: absolute;
+            bottom: -4px;
+            left: 1px;
+            border-radius: 0 0 8px 8px;
+        }
+        .king-beard::after {
+            content: '';
+            position: absolute;
+            width: 3px; height: 3px;
+            background-color: #333; 
+            border-radius: 50%;
+            top: -5px; left: 2px;
+            box-shadow: 7px 0 0 #333;
+        }
+
+        /* 华丽大披风 */
+        .king-cape {
+            width: 16px;
+            height: 52px;
+            background: linear-gradient(135deg, #d9383a, #991b1b);
+            position: absolute;
+            bottom: 8px;
+            left: 4px;
+            border-radius: 8px 2px 2px 8px;
+            z-index: 9;
+            transform-origin: top right;
+            /* 披风摆动与走路频率呼应 */
+            animation: capeWind 0.3s ease-in-out infinite alternate;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* 袍子主体 */
+        .king-robe {
+            width: 24px;
+            height: 50px;
+            background: linear-gradient(to bottom, #721c24, #421115); 
+            position: absolute;
+            bottom: 8px;
+            left: 10px;
+            border-radius: 6px 6px 2px 2px;
+            z-index: 11;
+        }
+        .king-robe::after {
+            content: '';
+            position: absolute;
+            width: 100%; height: 4px;
+            background-color: #ffd700;
+            bottom: 16px; left: 0;
+        }
+
+        /* 国王正在大跨步向前走的两条腿 */
+        .king-foot {
+            width: 11px;
+            height: 10px;
+            background-color: #ffd700;
+            border-bottom: 2px solid #1e3a1e;
+            position: absolute;
+            bottom: 0;
+            border-radius: 5px 5px 1px 1px;
+            z-index: 12;
+            transform-origin: top center; /* 设定在大腿根部旋转迈步 */
+        }
+        /* 两条腿利用相同的跨步动画，但通过反向延时，形成一前一后的交替走路姿态 */
+        .k-f-1 { left: 11px; animation: kingLegWalk 0.6s ease-in-out infinite alternate; }
+        .k-f-2 { left: 22px; animation: kingLegWalk 0.6s ease-in-out infinite alternate-reverse; }
+
+
+        /* ==================== 【超精细重塑：乌龟】 ==================== */
+        .refined-turtle {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 48px;
+            height: 32px;
+            z-index: 12;
+            animation: turtleWalkBob 0.3s ease-in-out infinite alternate;
+        }
+
+        /* 3D立体龟甲 */
+        .t-shell {
+            width: 36px;
+            height: 22px;
+            background: linear-gradient(135deg, #ebd19b, #967b43);
+            border-radius: 20px 20px 5px 5px;
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            z-index: 8;
+            box-shadow: 
+                inset 0 4px 4px rgba(255,255,255,0.4),
+                inset -4px -4px 0px rgba(0,0,0,0.15),
+                inset 6px 0 0px rgba(212,175,55,0.3),
+                inset -6px 0 0px rgba(89,70,32,0.3);
+            border: 1.5px solid #594620; 
+        }
+
+        /* 流线型龟头 */
+        .t-head {
+            width: 11px;
+            height: 11px;
+            background-color: #a3ab7c;
+            border-radius: 50% 50% 40% 40%;
+            position: absolute;
+            top: 9px;
+            right: -2px;
+            z-index: 7;
+            transform: rotate(15deg);
+            border: 1px solid #4d5234;
+        }
+        .t-head::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 3px;
+            width: 2.5px; height: 2.5px;
+            background-color: #1a1a1a;
+            border-radius: 50%;
+            box-shadow: 0.5px -0.5px 0 #fff; 
+        }
+
+        /* 弧形前伸后扒的龟掌 */
+        .t-foot {
+            width: 9px;
+            height: 8px;
+            background-color: #7b8255;
+            position: absolute;
+            bottom: 0px;
+            border-radius: 0 0 6px 6px;
+            transform-origin: top center;
+            z-index: 6;
+            border: 1px solid #4d5234;
+        }
+        .f-front { right: 10px; animation: legSwing 0.3s ease-in-out infinite alternate; }
+        .f-back { left: 10px; animation: legSwing 0.3s ease-in-out infinite alternate-reverse; }
+
+
+        /* ==================== 真实物理行进动作时间轴 ==================== */
+        @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes moveProcession { 0% { left: 0%; } 100% { left: 100%; } }
+
+        /* 【核心改动】国王双跨步交替环线：控制腿的前后摆动幅度 */
+        @keyframes kingLegWalk {
+            0% { transform: rotate(-28deg) translateY(0); }
+            50% { transform: rotate(0deg) translateY(-1px); } /* 抬腿腾空期 */
+            100% { transform: rotate(28deg) translateY(0); }
+        }
+
+        /* 【核心改动】国王躯干随着跨步产生的波浪型律动 */
+        @keyframes kingWalkBody {
+            0% { transform: translateY(0) rotate(-1deg); }       /* 迈右腿，身体微向后压 */
+            50% { transform: translateY(-3px) rotate(1deg); }    /* 双腿交汇，身体被拔高 */
+            100% { transform: translateY(1px) rotate(3deg); }    /* 左腿落地，身体因惯性前倾 */
+        }
+
+        /* 披风迎风飞舞 */
+        @keyframes capeWind {
+            0% { transform: rotate(0deg) scaleY(1); }
+            100% { transform: rotate(7deg) scaleY(1.04) skewX(-2deg); }
+        }
+
+        /* 乌龟前后脚交替爬行 */
+        @keyframes legSwing {
+            0% { transform: rotate(-25deg) scaleY(1.1); }
+            100% { transform: rotate(25deg) scaleY(0.9); }
+        }
+
+        /* 乌龟伏地上下行进 */
+        @keyframes turtleWalkBob {
+            0% { transform: translateY(0) scaleY(1); }
+            100% { transform: translateY(-2px) scaleY(0.96); }
+        }
+
+
+        /* 4. 主内容容器 - 慢速优雅显现 */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            background-color: #ffffff; 
+            opacity: 0;
+            transform: scale(0.96); 
+            /* 配合3.5秒加载，内容展示动画也采用长缓动，更显历史沉淀 */
+            transition: opacity 2.5s cubic-bezier(0.215, 0.610, 0.355, 1) 0.5s, 
+                        transform 2.5s cubic-bezier(0.215, 0.610, 0.355, 1) 0.5s;
+        }
+
+        .loaded .container {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 5. 图片与文字样式 */
+        .container img {
+            width: 320px;
+            height: auto;
+            display: block;
+            margin: 0 auto 2.5rem;
+            transition: transform 0.4s ease;
+        }
+        
+        .container img:hover {
+            transform: scale(1.02); 
+        }
+
+        h1 {
+            font-family: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", "STSong", serif;
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: #111111;
+            font-weight: 600;
+            letter-spacing: 4px; 
+        }
+        
+        h2 {
+            font-family: "Cinzel", "Times New Roman", "Georgia", serif;
+            font-size: 1.2rem; 
+            font-weight: 400;
+            color: #666666;
+            margin-top: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase; 
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="splash-overlay">
+        <div class="splash-text-box">
+            <p class="splash-title">欲擒故纵</p>
+            <p class="splash-subtitle">Entering the Kingdom...</p>
+        </div>
+        
+        <div class="progress-stage">
+            <div class="procession">
+                
+                <div class="king">
+                    <div class="king-crown"></div>
+                    <div class="king-head">
+                        <div class="king-beard"></div>
+                    </div>
+                    <div class="king-cape"></div>
+                    <div class="king-robe"></div>
+                    <div class="king-foot k-f-1"></div>
+                    <div class="king-foot k-f-2"></div>
+                </div>
+
+                <div class="refined-turtle">
+                    <div class="t-head"></div>
+                    <div class="t-shell"></div>
+                    <div class="t-foot f-front"></div>
+                    <div class="t-foot f-back"></div>
+                </div>
+                
+            </div>
+
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <img src="a.png" alt="龟兹国遗址">
+        <h1>欢迎来到龟兹国</h1>
+        <h2>Welcome to the Kingdom of Kucha</h2>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            // 将第一层计时器拉长到 3.5 秒，让乌龟和迈步国王不慌不忙走完全程
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+                
+                // 2.5秒迷雾晕开动画结束后，彻底销毁加载遮罩层
+                setTimeout(() => {
+                    const overlay = document.getElementById('splash-overlay');
+                    if (overlay) overlay.style.display = 'none';
+                }, 2500);
+
+            }, 3500); 
+        });
+    </script>
+</body>
+</html>
