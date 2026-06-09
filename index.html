@@ -148,9 +148,45 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 /* ── RESPONSIVE ── */
 @media(max-width:900px){.gallery{columns:2}.history-grid{grid-template-columns:1fr}.hero h1{font-size:3.2rem}}
 @media(max-width:520px){.gallery{columns:1}.hero h1{font-size:2.4rem}.history-section{padding:70px 20px}.gallery-section{padding:70px 20px}}
+
+/* ── LOGIN ── */
+#login-overlay{position:fixed;inset:0;z-index:30000;background:radial-gradient(ellipse at 50% 40%,#1a0d06 0%,#0a0502 60%,#000 100%);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#login-overlay.hidden{display:none}
+#login-stars{position:absolute;inset:0;pointer-events:none}
+.login-box{position:relative;z-index:1;text-align:center;width:340px;padding:50px 40px;background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.14);border-radius:22px;backdrop-filter:blur(12px)}
+.login-logo{width:82px;height:82px;border-radius:50%;object-fit:cover;margin-bottom:18px;box-shadow:0 0 32px rgba(212,175,55,.3),0 0 70px rgba(180,40,40,.15);border:2px solid rgba(212,175,55,.3)}
+.login-title{font-family:"Songti SC","STSong",serif;font-size:2rem;color:#d4af37;text-shadow:0 0 18px rgba(212,175,55,.45);margin-bottom:6px}
+.login-sub{font-family:"Cinzel",serif;font-size:.7rem;color:rgba(212,175,55,.38);letter-spacing:5px;margin-bottom:32px}
+.login-orn{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:28px}
+.login-orn-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.4),transparent)}
+.login-orn-gem{width:5px;height:5px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 6px rgba(212,175,55,.6)}
+.login-field{margin-bottom:13px}
+.login-field input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:12px 16px;color:#e8dcc8;font-size:.9rem;font-family:inherit;outline:none;transition:border-color .25s;text-align:center;letter-spacing:1px}
+.login-field input::placeholder{color:rgba(212,175,55,.28);letter-spacing:3px}
+.login-field input:focus{border-color:rgba(212,175,55,.5);background:rgba(212,175,55,.04)}
+.login-btn{width:100%;margin-top:6px;padding:13px;background:linear-gradient(135deg,#8b1a1a 0%,#b8922a 60%,#d4af37 100%);border:none;border-radius:9px;color:#fff;font-size:1rem;font-family:"Songti SC",serif;letter-spacing:8px;cursor:pointer;transition:opacity .25s,transform .2s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.login-btn:hover{opacity:.86;transform:translateY(-1px)}
+.login-btn:active{transform:translateY(0)}
+.login-btn.loading{opacity:.45;pointer-events:none}
+.login-error{margin-top:14px;font-size:.78rem;color:rgba(220,80,80,.9);min-height:1.2em;letter-spacing:1px}
 </style>
 </head>
 <body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div id="login-stars"></div>
+  <div class="login-box">
+    <img class="login-logo" src="a.png" alt="龟兹国">
+    <h2 class="login-title">龟兹国</h2>
+    <p class="login-sub">PRIVATE · ENTER WITH KEY</p>
+    <div class="login-orn"><div class="login-orn-line"></div><div class="login-orn-gem"></div><div class="login-orn-line"></div></div>
+    <div class="login-field"><input type="text" id="loginUser" placeholder="账　号" autocomplete="username" spellcheck="false"></div>
+    <div class="login-field"><input type="password" id="loginPass" placeholder="密　码" autocomplete="current-password"></div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">入　境</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
 
 <!-- FLASH -->
 <div id="flash"></div>
@@ -245,6 +281,54 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 </div>
 
 <script>
+/* ══ LOGIN ══ */
+const WORKER_URL = 'https://password.haiyangkwong.workers.dev';
+
+(function initLogin(){
+  // Already authenticated this session → skip
+  if(sessionStorage.getItem('kzg_auth')==='ok'){
+    document.getElementById('login-overlay').classList.add('hidden');
+    return;
+  }
+  // Build stars inside login overlay
+  const lsf = document.getElementById('login-stars');
+  for(let i=0;i<130;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*1.8+.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--delay:${-Math.random()*6}s;--lo:${.05+Math.random()*.2}`;
+    lsf.appendChild(s);
+  }
+  // Keyboard nav
+  document.getElementById('loginUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
+  document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+})();
+
+async function doLogin(){
+  const user=document.getElementById('loginUser').value.trim();
+  const pass=document.getElementById('loginPass').value.trim();
+  const errEl=document.getElementById('loginError');
+  const btn=document.getElementById('loginBtn');
+  if(!user||!pass){errEl.textContent='请填写账号和密码';return;}
+  btn.classList.add('loading');btn.textContent='验证中…';errEl.textContent='';
+  try{
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,password:pass})});
+    const data=await res.json();
+    if(data.success){
+      sessionStorage.setItem('kzg_auth','ok');
+      const ov=document.getElementById('login-overlay');
+      ov.style.transition='opacity .6s ease';ov.style.opacity='0';
+      setTimeout(()=>ov.classList.add('hidden'),620);
+    } else {
+      errEl.textContent='账号或密码错误，请重试';
+      btn.classList.remove('loading');btn.textContent='入　境';
+    }
+  } catch(e){
+    errEl.textContent='连接失败，请检查网络';
+    btn.classList.remove('loading');btn.textContent='入　境';
+  }
+}
+
 /* ══ DATA ══ */
 const PHOTOS = [
   {file:'0163b65938f7f910287528fb277fad9f.jpg',
