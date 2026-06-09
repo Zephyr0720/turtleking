@@ -8,7 +8,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0603;color:#e8dcc8;overflow-x:hidden}
 
-/* ── LOADING ── */
+/* ── SPLASH ── */
 #splash{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 45%,#1c0e06 0%,#0d0703 55%,#000 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 1.4s ease,filter 1.4s ease}
 #splash.exit{opacity:0;filter:blur(28px) brightness(3);pointer-events:none}
 #flash{position:fixed;inset:0;z-index:10000;background:#fff;opacity:0;pointer-events:none;transition:opacity .18s ease}
@@ -18,12 +18,8 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 #particles{position:absolute;inset:0;pointer-events:none}
 .particle{position:absolute;border-radius:50%;background:radial-gradient(circle,#f3e5ab 0%,rgba(212,175,55,0) 70%);bottom:-10px;left:var(--x);width:var(--sz);height:var(--sz);opacity:0;animation:floatUp var(--dur) ease-in infinite var(--delay)}
 @keyframes floatUp{0%{opacity:0;transform:translateY(0) scale(0)}8%{opacity:.9;transform:translateY(-15px) scale(1)}85%{opacity:.25}100%{opacity:0;transform:translateY(-65vh) scale(.3)}}
-
-/* rays */
 .rays{position:absolute;width:520px;height:520px;border-radius:50%;background:repeating-conic-gradient(rgba(212,175,55,.18) 0deg,rgba(212,175,55,0) 15deg,rgba(212,175,55,0) 30deg);animation:spinCW 14s linear infinite;pointer-events:none}
 .rays-inner{position:absolute;width:340px;height:340px;border-radius:50%;background:repeating-conic-gradient(rgba(180,40,40,.14) 0deg,rgba(180,40,40,0) 10deg,rgba(180,40,40,0) 30deg);animation:spinCCW 9s linear infinite;pointer-events:none}
-
-/* emblem */
 .emblem-wrap{position:relative;width:200px;height:200px;margin-bottom:36px;z-index:10}
 .emblem-glow{position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.38) 0%,rgba(180,40,40,.14) 45%,transparent 70%);animation:glowPulse 2.2s ease-in-out infinite}
 @keyframes glowPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.14);opacity:1}}
@@ -35,46 +31,77 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 .ring-3{inset:-47px;border-color:rgba(212,175,55,.2);animation:pulsRing 2.5s ease-in-out infinite}
 .ring-dot{position:absolute;inset:-47px;border-radius:50%;pointer-events:none;animation:pulsRing 2.5s ease-in-out infinite}
 .ring-3::before,.ring-3::after,.ring-dot::before,.ring-dot::after{content:'';position:absolute;width:5px;height:5px;background:#d4af37;border-radius:1px;transform:rotate(45deg);box-shadow:0 0 6px rgba(212,175,55,.8)}
-.ring-3::before{top:-3px;left:50%;margin-left:-3px}
-.ring-3::after{bottom:-3px;left:50%;margin-left:-3px}
-.ring-dot::before{left:-3px;top:50%;margin-top:-3px}
-.ring-dot::after{right:-3px;top:50%;margin-top:-3px}
+.ring-3::before{top:-3px;left:50%;margin-left:-3px}.ring-3::after{bottom:-3px;left:50%;margin-left:-3px}
+.ring-dot::before{left:-3px;top:50%;margin-top:-3px}.ring-dot::after{right:-3px;top:50%;margin-top:-3px}
 @keyframes spinCW{to{transform:rotate(360deg)}}
 @keyframes spinCCW{to{transform:rotate(-360deg)}}
 @keyframes pulsRing{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.07);opacity:.9}}
 .emblem-img{width:200px;height:200px;border-radius:50%;object-fit:cover;position:relative;z-index:7;opacity:0;animation:emblemIn 1s cubic-bezier(.16,1,.3,1) forwards .6s;box-shadow:0 0 0 3px rgba(212,175,55,.6),0 0 30px rgba(212,175,55,.4),0 0 70px rgba(180,40,40,.25)}
 @keyframes emblemIn{from{opacity:0;transform:scale(.7) rotate(-18deg);filter:blur(14px)}to{opacity:1;transform:scale(1) rotate(0deg);filter:blur(0)}}
-
-/* splash text */
 .splash-title{display:flex;gap:16px;margin-bottom:14px}
 .s-char{font-family:"Songti SC","STSong","SimSun",serif;font-size:3.4rem;color:#d4af37;opacity:0;display:inline-block;text-shadow:0 0 14px rgba(212,175,55,.9),0 0 40px rgba(212,175,55,.4);animation:charIn .7s cubic-bezier(.16,1,.3,1) forwards}
-.s-char:nth-child(1){animation-delay:1.2s}
-.s-char:nth-child(2){animation-delay:1.55s}
-.s-char:nth-child(3){animation-delay:1.9s}
+.s-char:nth-child(1){animation-delay:1.2s}.s-char:nth-child(2){animation-delay:1.55s}.s-char:nth-child(3){animation-delay:1.9s}
 @keyframes charIn{from{opacity:0;transform:translateY(22px) scale(.8);filter:blur(10px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
 .ornament-splash{display:flex;align-items:center;gap:14px;margin-bottom:12px;opacity:0;animation:fadeUp .8s ease forwards 2.3s}
 .orn-line-s{width:100px;height:1px;background:linear-gradient(90deg,transparent,#d4af37 40%,#8b1a1a,transparent)}
 .orn-gem{width:7px;height:7px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 10px rgba(212,175,55,.8)}
-
-/* status message */
 .splash-status{font-family:"Courier New",monospace;font-size:.72rem;color:rgba(212,175,55,.5);letter-spacing:3px;min-height:1.2em;margin-bottom:22px;opacity:0;animation:fadeUp .6s ease forwards 2.2s}
-
-/* progress */
 .progress-wrap{width:290px;opacity:0;animation:fadeUp .6s ease forwards .3s}
 .progress-track{height:2px;background:rgba(255,255,255,.06);border-radius:2px;position:relative;overflow:visible}
-.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#8b1a1a 0%,#d4af37 55%,#f3e5ab 100%);border-radius:2px;position:relative;transition:width .05s linear}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#8b1a1a 0%,#d4af37 55%,#f3e5ab 100%);border-radius:2px;position:relative}
 .progress-fill::after{content:'';position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,#f3e5ab 0%,rgba(212,175,55,.3) 60%,transparent 100%);box-shadow:0 0 8px #f3e5ab}
 .pct-row{display:flex;justify-content:space-between;margin-top:10px}
-.pct-num{font-family:"Courier New",monospace;font-size:.9rem;color:#d4af37;letter-spacing:1px}
+.pct-num{font-family:"Courier New",monospace;font-size:.9rem;color:#d4af37}
 .pct-label-r{font-family:"Cinzel",monospace;font-size:.62rem;color:rgba(212,175,55,.35);letter-spacing:4px;text-transform:uppercase;align-self:flex-end}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── LANG BAR ── */
 #lang-bar{position:fixed;top:18px;right:18px;z-index:500;display:flex;gap:4px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.18);border-radius:100px;padding:5px 8px;opacity:0;transition:opacity .5s}
-[dir="rtl"] #lang-bar{right:auto;left:18px}
-.lang-btn{background:none;border:none;color:rgba(212,175,55,.55);cursor:pointer;font-size:.72rem;padding:4px 10px;border-radius:100px;transition:all .25s;font-family:inherit;letter-spacing:.5px}
-.lang-btn:hover{color:#d4af37}
-.lang-btn.active{background:rgba(212,175,55,.18);color:#d4af37}
+.lang-btn{background:none;border:none;color:rgba(212,175,55,.55);cursor:pointer;font-size:.72rem;padding:4px 10px;border-radius:100px;transition:all .25s;font-family:inherit}
+.lang-btn:hover{color:#d4af37}.lang-btn.active{background:rgba(212,175,55,.18);color:#d4af37}
+
+/* ── UNLOCK BUTTON ── */
+#unlock-btn{position:fixed;bottom:28px;right:22px;z-index:400;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.4);color:#d4af37;padding:12px 22px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;letter-spacing:3px;font-size:.85rem;backdrop-filter:blur(12px);transition:all .3s;display:none;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+#unlock-btn:hover{background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.7)}
+#unlock-btn.done{color:#6ecf8e;border-color:rgba(110,207,142,.4);cursor:default}
+
+/* ── LOGIN MODAL ── */
+#login-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center}
+#login-modal.open{display:flex}
+.modal-box{position:relative;width:340px;padding:44px 38px;background:linear-gradient(145deg,#120a04,#0a0602);border:1px solid rgba(212,175,55,.2);border-radius:22px;text-align:center;box-shadow:0 20px 80px rgba(0,0,0,.8)}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(212,175,55,.35);font-size:1.1rem;cursor:pointer;transition:color .2s}
+.modal-close:hover{color:#d4af37}
+.modal-logo{width:68px;height:68px;border-radius:50%;object-fit:cover;margin-bottom:14px;border:2px solid rgba(212,175,55,.3);box-shadow:0 0 24px rgba(212,175,55,.2)}
+.modal-title{font-family:"Songti SC","STSong",serif;font-size:1.6rem;color:#d4af37;margin-bottom:5px}
+.modal-sub{font-size:.7rem;color:rgba(212,175,55,.38);letter-spacing:4px;margin-bottom:22px}
+.modal-orn{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:22px}
+.modal-orn-line{width:50px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.4),transparent)}
+.modal-orn-gem{width:5px;height:5px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 5px rgba(212,175,55,.6)}
+.modal-field{margin-bottom:11px}
+.modal-field input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:11px 14px;color:#e8dcc8;font-size:.88rem;font-family:inherit;outline:none;transition:border-color .25s;text-align:center;letter-spacing:1px}
+.modal-field input::placeholder{color:rgba(212,175,55,.28);letter-spacing:3px}
+.modal-field input:focus{border-color:rgba(212,175,55,.48)}
+.modal-btn{width:100%;margin-top:6px;padding:12px;background:linear-gradient(135deg,#8b1a1a 0%,#b8922a 60%,#d4af37 100%);border:none;border-radius:9px;color:#fff;font-size:.95rem;font-family:"Songti SC",serif;letter-spacing:7px;cursor:pointer;transition:opacity .25s}
+.modal-btn:hover{opacity:.85}
+.modal-btn:disabled{opacity:.5;cursor:not-allowed}
+.modal-error{margin-top:12px;font-size:.76rem;color:rgba(220,80,80,.9);min-height:1.1em;letter-spacing:1px}
+.modal-alt{margin-top:14px}
+.modal-alt a{font-size:.72rem;color:rgba(212,175,55,.4);text-decoration:none;letter-spacing:1px;border-bottom:1px solid rgba(212,175,55,.2);padding-bottom:1px;transition:color .2s}
+.modal-alt a:hover{color:rgba(212,175,55,.75)}
+.modal-q{font-family:"Songti SC",serif;font-size:1rem;color:rgba(212,175,55,.8);margin-bottom:16px;line-height:1.7}
+
+/* ── PHOTO LOCK ── */
+.photo-img-wrap{position:relative;overflow:hidden;background:#0a0603;min-height:80px}
+.photo-img-wrap img{width:100%;display:block;transition:filter .8s ease,opacity .8s ease}
+img.locked{filter:blur(20px) brightness(.4);opacity:.6}
+.lock-veil{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none;transition:opacity .6s ease}
+.lock-veil .lv-icon{font-size:2rem;opacity:.7}
+.lock-veil .lv-txt{font-family:"Songti SC",serif;font-size:.75rem;color:rgba(212,175,55,.7);letter-spacing:2px}
+body.unlocked .lock-veil{opacity:0}
+.marq-card{position:relative}
+.marq-card img.locked{filter:blur(14px) brightness(.4)}
+.marq-lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;opacity:.6;pointer-events:none;transition:opacity .6s}
+body.unlocked .marq-lock{opacity:0}
 
 /* ── MAIN ── */
 #main{opacity:0;transition:opacity .8s ease}
@@ -83,9 +110,8 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:radial-gradient(ellipse at 50% 40%,#1c0e06 0%,#0d0703 55%,#000 100%);padding:40px 20px;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r=".6" fill="rgba(212,175,55,.12)"/></svg>') repeat;pointer-events:none}
 .hero-logo{width:110px;height:110px;border-radius:50%;object-fit:cover;margin-bottom:28px;box-shadow:0 0 40px rgba(212,175,55,.3),0 0 80px rgba(180,40,40,.15);border:2px solid rgba(212,175,55,.3)}
-.hero h1{font-family:"Songti SC","STSong",serif;font-size:4.8rem;color:#d4af37;text-shadow:0 0 20px rgba(212,175,55,.5),0 0 60px rgba(212,175,55,.2);line-height:1.1;margin-bottom:16px}
+.hero h1{font-family:"Songti SC","STSong",serif;font-size:4.8rem;color:#d4af37;text-shadow:0 0 20px rgba(212,175,55,.5);line-height:1.1;margin-bottom:16px}
 .hero-sub{font-size:1.1rem;color:rgba(212,175,55,.7);letter-spacing:4px;margin-bottom:10px}
-.hero-tag{font-family:"Cinzel","Times New Roman",serif;font-size:.82rem;color:rgba(212,175,55,.38);letter-spacing:6px;text-transform:uppercase}
 .hero-ornament{display:flex;align-items:center;gap:18px;margin:24px 0}
 .hero-line{width:130px;height:1px;background:linear-gradient(90deg,transparent,#d4af37 40%,#8b1a1a,transparent)}
 .hero-gem{width:8px;height:8px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 10px rgba(212,175,55,.8)}
@@ -95,13 +121,12 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 .marq-head{text-align:center;margin-bottom:36px}
 .marq-head h2{font-family:"Songti SC",serif;font-size:1.6rem;color:#d4af37;letter-spacing:8px}
 .marq-wrap{-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 7%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 7%,#000 93%,transparent 100%);overflow:hidden}
-.marq-track{display:flex;gap:14px;width:max-content;animation:marqScroll 55s linear infinite}
+.marq-track{display:flex;gap:14px;width:max-content;animation:marqScroll 60s linear infinite}
 .marq-wrap:hover .marq-track{animation-play-state:paused}
 @keyframes marqScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.marq-card{flex-shrink:0;width:210px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#111}
-.marq-card img{width:100%;height:295px;object-fit:cover;display:block;transition:transform .5s ease}
-.marq-card:hover img{transform:scale(1.06)}
-.marq-card-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%,rgba(0,0,0,.85) 100%);padding:24px 12px 12px;transform:translateY(0);transition:transform .3s}
+.marq-card{flex-shrink:0;width:210px;border-radius:12px;overflow:hidden;cursor:pointer;background:#111}
+.marq-card img{height:295px;object-fit:cover;display:block;width:100%}
+.marq-card-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%,rgba(0,0,0,.85) 100%);padding:24px 12px 12px}
 .marq-card-title{font-family:"Songti SC",serif;font-size:.88rem;color:#d4af37;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 
 /* ── HISTORY ── */
@@ -124,8 +149,8 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 .gallery{columns:3;column-gap:16px;max-width:1180px;margin:0 auto}
 .photo-card{break-inside:avoid;margin-bottom:16px;border-radius:14px;overflow:hidden;background:#0f0c09;border:1px solid rgba(212,175,55,.07);transition:border-color .3s}
 .photo-card:hover{border-color:rgba(212,175,55,.2)}
-.photo-card img{width:100%;display:block;transition:transform .5s ease}
-.photo-card:hover img{transform:scale(1.03)}
+.photo-img-wrap img{transition:transform .5s ease,filter .8s ease,opacity .8s ease}
+.photo-card:hover .photo-img-wrap img{transform:scale(1.03)}
 .photo-caption{padding:18px}
 .photo-title{font-family:"Songti SC","STSong",serif;font-size:1.05rem;color:#d4af37;margin-bottom:10px}
 .photo-quote{font-family:"Songti SC","STSong",serif;font-size:.82rem;color:rgba(212,175,55,.72);font-style:italic;line-height:1.7;border-left:2px solid rgba(212,175,55,.3);padding-left:10px;margin-bottom:5px}
@@ -139,59 +164,18 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px solid rgba(212,175,55,.08)}
 .footer-logo{width:56px;height:56px;border-radius:50%;object-fit:cover;margin-bottom:16px;opacity:.55}
 .footer-text{font-family:"Cinzel","Times New Roman",serif;font-size:.76rem;color:rgba(212,175,55,.3);letter-spacing:3px}
-.footer-copy{font-size:.7rem;color:rgba(212,175,55,.15);margin-top:8px;letter-spacing:1px}
+.footer-copy{font-size:.7rem;color:rgba(212,175,55,.15);margin-top:8px}
 
-/* ── RTL adjustments ── */
 [dir="rtl"] body{font-family:'Helvetica Neue','Noto Sans Arabic',Arial,sans-serif}
-[dir="rtl"] .sec-line:first-child{background:linear-gradient(90deg,transparent,#d4af37 50%,transparent)}
-
-/* ── RESPONSIVE ── */
 @media(max-width:900px){.gallery{columns:2}.history-grid{grid-template-columns:1fr}.hero h1{font-size:3.2rem}}
 @media(max-width:520px){.gallery{columns:1}.hero h1{font-size:2.4rem}.history-section{padding:70px 20px}.gallery-section{padding:70px 20px}}
-
-/* ── LOGIN ── */
-#login-overlay{position:fixed;inset:0;z-index:30000;background:radial-gradient(ellipse at 50% 40%,#1a0d06 0%,#0a0502 60%,#000 100%);display:flex;align-items:center;justify-content:center;overflow:hidden}
-#login-overlay.hidden{display:none}
-#login-stars{position:absolute;inset:0;pointer-events:none}
-.login-box{position:relative;z-index:1;text-align:center;width:340px;padding:50px 40px;background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.14);border-radius:22px;backdrop-filter:blur(12px)}
-.login-logo{width:82px;height:82px;border-radius:50%;object-fit:cover;margin-bottom:18px;box-shadow:0 0 32px rgba(212,175,55,.3),0 0 70px rgba(180,40,40,.15);border:2px solid rgba(212,175,55,.3)}
-.login-title{font-family:"Songti SC","STSong",serif;font-size:2rem;color:#d4af37;text-shadow:0 0 18px rgba(212,175,55,.45);margin-bottom:6px}
-.login-sub{font-family:"Cinzel",serif;font-size:.7rem;color:rgba(212,175,55,.38);letter-spacing:5px;margin-bottom:32px}
-.login-orn{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:28px}
-.login-orn-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.4),transparent)}
-.login-orn-gem{width:5px;height:5px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 6px rgba(212,175,55,.6)}
-.login-field{margin-bottom:13px}
-.login-field input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:12px 16px;color:#e8dcc8;font-size:.9rem;font-family:inherit;outline:none;transition:border-color .25s;text-align:center;letter-spacing:1px}
-.login-field input::placeholder{color:rgba(212,175,55,.28);letter-spacing:3px}
-.login-field input:focus{border-color:rgba(212,175,55,.5);background:rgba(212,175,55,.04)}
-.login-btn{width:100%;margin-top:6px;padding:13px;background:linear-gradient(135deg,#8b1a1a 0%,#b8922a 60%,#d4af37 100%);border:none;border-radius:9px;color:#fff;font-size:1rem;font-family:"Songti SC",serif;letter-spacing:8px;cursor:pointer;transition:opacity .25s,transform .2s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
-.login-btn:hover{opacity:.86;transform:translateY(-1px)}
-.login-btn:active{transform:translateY(0)}
-.login-btn.loading{opacity:.45;pointer-events:none}
-.login-error{margin-top:14px;font-size:.78rem;color:rgba(220,80,80,.9);min-height:1.2em;letter-spacing:1px}
 </style>
 </head>
 <body>
 
-<!-- LOGIN OVERLAY -->
-<div id="login-overlay">
-  <div id="login-stars"></div>
-  <div class="login-box">
-    <img class="login-logo" src="a.png" alt="龟兹国">
-    <h2 class="login-title">龟兹国</h2>
-    <p class="login-sub">PRIVATE · ENTER WITH KEY</p>
-    <div class="login-orn"><div class="login-orn-line"></div><div class="login-orn-gem"></div><div class="login-orn-line"></div></div>
-    <div class="login-field"><input type="text" id="loginUser" placeholder="账　号" autocomplete="username" spellcheck="false"></div>
-    <div class="login-field"><input type="password" id="loginPass" placeholder="密　码" autocomplete="current-password"></div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">入　境</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-</div>
-
-<!-- FLASH -->
 <div id="flash"></div>
 
-<!-- LOADING -->
+<!-- SPLASH -->
 <div id="splash">
   <div id="star-field"></div>
   <div id="particles"></div>
@@ -207,20 +191,14 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
     <img class="emblem-img" src="a.png" alt="龟兹国">
   </div>
   <div class="splash-title">
-    <span class="s-char">龟</span>
-    <span class="s-char">兹</span>
-    <span class="s-char">国</span>
+    <span class="s-char">龟</span><span class="s-char">兹</span><span class="s-char">国</span>
   </div>
   <div class="ornament-splash">
-    <div class="orn-line-s"></div>
-    <div class="orn-gem"></div>
-    <div class="orn-line-s"></div>
+    <div class="orn-line-s"></div><div class="orn-gem"></div><div class="orn-line-s"></div>
   </div>
   <div class="splash-status" id="loadStatus"></div>
   <div class="progress-wrap">
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     <div class="pct-row">
       <span class="pct-num"><span id="pctNum">0</span>%</span>
       <span class="pct-label-r">Loading</span>
@@ -234,6 +212,37 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
   <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
   <button class="lang-btn" data-lang="fr" onclick="setLang('fr')">Français</button>
   <button class="lang-btn" data-lang="ar" onclick="setLang('ar')">العربية</button>
+</div>
+
+<!-- UNLOCK BUTTON -->
+<button id="unlock-btn" onclick="openModal()">🔒 解锁照片</button>
+
+<!-- LOGIN MODAL -->
+<div id="login-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="panel-cred">
+      <img class="modal-logo" src="a.png" alt="">
+      <h2 class="modal-title">解锁照片</h2>
+      <p class="modal-sub">凭证入境 · 方见龟兹</p>
+      <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
+      <div class="modal-field"><input type="text" id="mUser" placeholder="账　号" autocomplete="username" spellcheck="false"></div>
+      <div class="modal-field"><input type="password" id="mPass" placeholder="密　码" autocomplete="current-password"></div>
+      <button class="modal-btn" id="loginBtn" onclick="tryLogin()">入　境</button>
+      <div class="modal-error" id="mErr"></div>
+      <div class="modal-alt"><a href="#" onclick="return switchPanel('question')">无法登录？其他验证方式 →</a></div>
+    </div>
+    <div id="panel-question" style="display:none">
+      <h2 class="modal-title">身份验证</h2>
+      <p class="modal-sub">回答正确即可解锁</p>
+      <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
+      <p class="modal-q">龟兹国的国王名字？</p>
+      <div class="modal-field"><input type="text" id="mAns" placeholder="请输入答案" autocomplete="off"></div>
+      <button class="modal-btn" id="qBtn" onclick="tryQuestion()">确　认</button>
+      <div class="modal-error" id="mQErr"></div>
+      <div class="modal-alt"><a href="#" onclick="return switchPanel('cred')">← 返回账号登录</a></div>
+    </div>
+  </div>
 </div>
 
 <!-- MAIN -->
@@ -251,11 +260,7 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
   </section>
 
   <section class="history-section">
-    <div class="section-header">
-      <div class="sec-line"></div>
-      <h2 data-i18n="historyTitle">龟兹史话</h2>
-      <div class="sec-line"></div>
-    </div>
+    <div class="section-header"><div class="sec-line"></div><h2 data-i18n="historyTitle">龟兹史话</h2><div class="sec-line"></div></div>
     <div class="history-grid">
       <div class="hist-card"><div class="hist-num">壹</div><h3 data-i18n="h1title">古国雄风</h3><p data-i18n="h1body"></p></div>
       <div class="hist-card"><div class="hist-num">贰</div><h3 data-i18n="h2title">丝路乐都</h3><p data-i18n="h2body"></p></div>
@@ -265,11 +270,7 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
   </section>
 
   <section class="gallery-section">
-    <div class="section-header">
-      <div class="sec-line"></div>
-      <h2 data-i18n="galleryTitle">龟兹日志</h2>
-      <div class="sec-line"></div>
-    </div>
+    <div class="section-header"><div class="sec-line"></div><h2 data-i18n="galleryTitle">龟兹日志</h2><div class="sec-line"></div></div>
     <div class="gallery" id="gallery"></div>
   </section>
 
@@ -281,322 +282,175 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 </div>
 
 <script>
-/* ══ LOGIN ══ */
-const WORKER_URL = 'https://password.haiyangkwong.workers.dev';
+const WORKER='https://password.haiyangkwong.workers.dev';
 
-(function initLogin(){
-  // Already authenticated this session → skip
-  if(sessionStorage.getItem('kzg_auth')==='ok'){
-    document.getElementById('login-overlay').classList.add('hidden');
-    return;
-  }
-  // Build stars inside login overlay
-  const lsf = document.getElementById('login-stars');
-  for(let i=0;i<130;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    const sz=Math.random()*1.8+.4;
-    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--delay:${-Math.random()*6}s;--lo:${.05+Math.random()*.2}`;
-    lsf.appendChild(s);
-  }
-  // Keyboard nav
-  document.getElementById('loginUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
-  document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-})();
-
-async function doLogin(){
-  const user=document.getElementById('loginUser').value.trim();
-  const pass=document.getElementById('loginPass').value.trim();
-  const errEl=document.getElementById('loginError');
-  const btn=document.getElementById('loginBtn');
-  if(!user||!pass){errEl.textContent='请填写账号和密码';return;}
-  btn.classList.add('loading');btn.textContent='验证中…';errEl.textContent='';
-  try{
-    const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,password:pass})});
-    const data=await res.json();
-    if(data.success){
-      sessionStorage.setItem('kzg_auth','ok');
-      const ov=document.getElementById('login-overlay');
-      ov.style.transition='opacity .6s ease';ov.style.opacity='0';
-      setTimeout(()=>ov.classList.add('hidden'),620);
-    } else {
-      errEl.textContent='账号或密码错误，请重试';
-      btn.classList.remove('loading');btn.textContent='入　境';
-    }
-  } catch(e){
-    errEl.textContent='连接失败，请检查网络';
-    btn.classList.remove('loading');btn.textContent='入　境';
-  }
-}
-
-/* ══ DATA ══ */
-const PHOTOS = [
-  {file:'0163b65938f7f910287528fb277fad9f.jpg',
-   zh:{title:'策马天涯',quote:'男儿何不带吴钩，收取关山五十州',author:'李贺《南园》',desc:'千里江山，尽在脚下。以一身布衣走遍山河，笑傲苍穹，问这茫茫世间谁主沉浮？一步一景，皆是传奇。',anime:'「本大人偶尔也需要欣赏一下自己的帅气背影，毕竟这种级别的帅不能浪费！」'},
-   en:{title:'Riding to Infinity',quote:'"Why not take a sword and conquer fifty states?" — Li He',desc:'A thousand miles of mountains lie at one\'s feet. Wandering in humble robes yet commanding the heavens — who shall reign over this vast wilderness?',anime:'"Hmph! The Great Me occasionally needs to admire his own dashing silhouette — talent of this caliber must not go to waste!"'},
-   fr:{title:'Chevauchée vers l\'Infini',quote:'"Pourquoi ne pas saisir une épée et conquérir cinquante États?" — Li He',desc:'Mille lieues de montagnes s\'étendent sous ses pieds. Errant vêtu simplement, commandant les cieux — qui régnera sur cette immensité?',anime:'"Pfft! Le Grand Moi a parfois besoin d\'admirer sa propre silhouette — un tel talent ne doit pas être gâché!"'},
-   ar:{title:'ركوب نحو اللانهاية',quote:'"لماذا لا تحمل سيفاً وتفتح خمسين إقليماً؟" — لي هه',desc:'آلاف الأميال من الجبال تمتد تحت القدمين. يجوب العالم بثياب بسيطة — من يسود هذه البراري الشاسعة؟',anime:'"هه! الشخص العظيم يحتاج أحياناً لتأمل مظهره المهيب — مثل هذه الموهبة لا يجب أن تُهدر!"'}},
-
-  {file:'1feb3fa7d864f102584b71fc8ab97886.jpg',
-   zh:{title:'蓝衫逸客',quote:'天生我材必有用，千金散尽还复来',author:'李白《将进酒》',desc:'一袭蓝衫，自带王者气场。眼神之中自有乾坤，举手投足皆是风度，这便是龟兹国王的日常最低配置。',anime:'「哼，这种程度的帅气对本大人而言，不过是今日最低配置罢了！」'},
-   en:{title:'The Sapphire Scholar',quote:'"Heaven endowed me with talents for a use — a thousand gold pieces gone, they come again." — Li Bai',desc:'A sapphire robe carrying a king\'s aura. Eyes that contain universes, every gesture a display of grace — this is merely the minimum setting for the King of Kucha.',anime:'"Hmph! This level of handsomeness is merely my lowest setting for the day!"'},
-   fr:{title:'Le Savant en Bleu',quote:'"Le ciel m\'a doué de talents — mille pièces d\'or perdues, elles reviennent." — Li Bai',desc:'Une robe de saphir portant l\'aura d\'un roi. Des yeux qui contiennent des univers — c\'est simplement le minimum pour le Roi de Kucha.',anime:'"Pfft! Ce niveau de beauté n\'est que mon réglage minimal du jour!"'},
-   ar:{title:'العالم بالرداء الأزرق',quote:'"منحني السماء مواهب لها غرض — ألف قطعة ذهب ضاعت تعود." — لي باي',desc:'رداء أزرق يحمل هيبة ملك. عيون تحتوي على أكوان — هذا هو الحد الأدنى لملك كوتشا.',anime:'"هه! هذا المستوى من الوسامة ليس سوى إعدادي الأدنى لهذا اليوم!"'}},
-
-  {file:'25dac98c309b5002e04d398a856aa6a4.jpg',
-   zh:{title:'古道西风',quote:'行到水穷处，坐看云起时',author:'王维《终南别业》',desc:'踏遍古道，见过无数风景，方知人生至境不在于目的地，而在于途中那一刻的云卷云舒，心随天际。',anime:'「在本大人的字典里，迷路叫做"深度探索"，请务必记住这个区别！」'},
-   en:{title:'Ancient Roads, Western Wind',quote:'"Walking to where the waters end, I sit and watch the clouds rise." — Wang Wei',desc:'Having traversed ancient roads and witnessed countless landscapes, one realizes the pinnacle of life lies not in the destination, but in the clouds that rise along the way.',anime:'"In the Great Me\'s dictionary, getting lost is called \'deep exploration\' — please remember the distinction!"'},
-   fr:{title:'Routes Anciennes, Vent d\'Ouest',quote:'"Marchant jusqu\'où les eaux s\'arrêtent, je m\'assieds et regarde les nuages s\'élever." — Wang Wei',desc:'Ayant parcouru des routes anciennes et contemplé d\'innombrables paysages, on réalise que le sommet de la vie réside dans les nuages qui s\'élèvent en chemin.',anime:'"Dans le dictionnaire du Grand Moi, se perdre s\'appelle \'exploration profonde\'!"'},
-   ar:{title:'الطرق القديمة والريح الغربية',quote:'"أمشي حتى تنتهي المياه، أجلس وأراقب الغيوم تصعد." — وانغ وي',desc:'بعد اجتياز الطرق القديمة، يدرك المرء أن ذروة الحياة ليست في الوجهة، بل في الغيوم التي ترتفع في الطريق.',anime:'"في قاموس الشخص العظيم، الضياع يُسمى \'الاستكشاف العميق\'!"'}},
-
-  {file:'3d41ca59dbf18608cc139cef2182ae62.jpg',
-   zh:{title:'指点江山',quote:'数风流人物，还看今朝',author:'毛泽东《沁园春·雪》',desc:'江山如画，一时多少豪杰。唯有真正的王者，方能在历史的长河中留下不朽的印记，名垂青史。',anime:'「本大人指点江山之际，请不要被本大人的气势所压倒，那只是日常状态罢了。」'},
-   en:{title:'Commanding Mountains & Rivers',quote:'"To find the truly great, look to the present age." — Mao Zedong',desc:'Mountains and rivers like a painting — how many heroes in one era? Only the true king can leave an immortal mark in the long river of history.',anime:'"When the Great Me surveys the realm, don\'t be overwhelmed by my aura — that\'s just my resting state."'},
-   fr:{title:'Commandant les Montagnes',quote:'"Pour trouver les véritablement grands, regardez l\'âge présent." — Mao Zedong',desc:'Montagnes et rivières comme une peinture — combien de héros en une ère? Seul le vrai roi peut laisser une marque immortelle dans l\'histoire.',anime:'"Quand le Grand Moi inspecte le royaume, ne soyez pas submergés par mon aura — c\'est mon état de repos."'},
-   ar:{title:'تسيير الجبال والأنهار',quote:'"للعثور على العظماء حقاً، انظر إلى العصر الحاضر." — ماو تسي تونغ',desc:'جبال وأنهار كلوحة — كم من الأبطال في عصر واحد؟ فقط الملك الحقيقي يستطيع ترك أثر خالد في التاريخ.',anime:'"عندما يستعرض الشخص العظيم المملكة، لا تنبهر بهيبتي — هذه مجرد حالتي الطبيعية."'}},
-
-  {file:'6c8cca1dd070c7519c0d85ee3a5d833a.jpg',
-   zh:{title:'浮生若梦',quote:'浮生若梦，为欢几何',author:'李白《春夜宴从弟桃花园序》',desc:'人生如白驹过隙，岁月如流水不返。在有限的光阴里，让每一刻都燃烧得绚烂如烟火，无悔无憾。',anime:'「本大人偶尔也会感慨人生苦短……然后立刻继续帅气地活下去！」'},
-   en:{title:'Life Like a Dream',quote:'"Floating life is like a dream — how much time for joy?" — Li Bai',desc:'Life passes like a white horse glimpsed through a crack — time flows and does not return. In the finite light of days, let every moment burn as brilliant as fireworks.',anime:'"The Great Me occasionally reflects on life\'s brevity... then immediately continues living dashingly!"'},
-   fr:{title:'La Vie comme un Rêve',quote:'"La vie flottante est comme un rêve — combien de temps pour la joie?" — Li Bai',desc:'La vie passe comme un cheval blanc — le temps coule et ne revient pas. Dans la lumière finie des jours, que chaque instant brûle aussi brillant que les feux d\'artifice.',anime:'"Le Grand Moi réfléchit parfois à la brièveté de la vie... puis continue immédiatement à vivre avec élégance!"'},
-   ar:{title:'الحياة كحلم',quote:'"الحياة العائمة كحلم — كم من الوقت للفرح؟" — لي باي',desc:'الحياة تمر كالحصان الأبيض — الوقت يتدفق ولا يعود. في الضوء المحدود للأيام، دعوا كل لحظة تشتعل كالألعاب النارية.',anime:'"الشخص العظيم يتأمل أحياناً في قصر العمر... ثم يكمل فوراً حياته بأناقة!"'}},
-
-  {file:'79d7f866fb099d59e38801e641012680.jpg',
-   zh:{title:'云淡风轻',quote:'不识庐山真面目，只缘身在此山中',author:'苏轼《题西林壁》',desc:'置身山中，方知大自然之广博。人生亦然，唯跳脱局外，方能见得真相，笑看风云变幻，淡然处之。',anime:'「什么？你说看不清本大人的真容？那是因为本大人太帅了，需要保持距离才能欣赏！」'},
-   en:{title:'Clouds Light, Wind Gentle',quote:'"I cannot see the true face of Mount Lu — for I stand inside the mountain." — Su Shi',desc:'Standing within the mountains, one understands nature\'s vastness. So too with life — only by stepping outside can one see the truth and smile at the changing winds.',anime:'"You say you can\'t see the Great Me clearly? That\'s because I\'m too dazzling — you need distance to appreciate greatness!"'},
-   fr:{title:'Nuages Légers, Brise Douce',quote:'"Je ne peux pas voir le vrai visage du Mont Lu — car je me tiens à l\'intérieur." — Su Shi',desc:'Debout dans les montagnes, on comprend la vastitude de la nature. Pareil avec la vie — seulement en sortant peut-on voir la vérité.',anime:'"Vous dites que vous ne voyez pas clairement le Grand Moi? C\'est parce que je suis trop éblouissant — il faut de la distance!"'},
-   ar:{title:'غيوم خفيفة وريح لطيفة',quote:'"لا أستطيع رؤية الوجه الحقيقي للجبل — لأنني واقف في داخله." — سو شي',desc:'الوقوف داخل الجبال يجعل المرء يدرك اتساع الطبيعة. كذلك الحياة — فقط بالخروج يمكن رؤية الحقيقة.',anime:'"تقول أنك لا ترى الشخص العظيم بوضوح؟ لأنني مبهر جداً — تحتاج إلى مسافة لتقدير العظمة!"'}},
-
-  {file:'8d1dbc92368df07c88c1bac7ad59602f.jpg',
-   zh:{title:'月下清吟',quote:'举杯邀明月，对影成三人',author:'李白《月下独酌》',desc:'独处之时亦是自省之时。与月光为伴，与自我对话，于无声处听惊雷，于无形中见真我，此乃修行。',anime:'「本大人独处时也很有气质的，毕竟孤独是强者的标配，寂寞是王者的专属！」'},
-   en:{title:'Moonlit Reverie',quote:'"I raise my cup to invite the bright moon — we become three among the shadows." — Li Bai',desc:'Solitude is also a time for self-reflection. With moonlight as companion, in dialogue with the self — hearing thunder in silence, seeing one\'s true face in the formless.',anime:'"The Great Me is also very distinguished when alone — for solitude is the mark of the strong, loneliness the exclusive domain of kings!"'},
-   fr:{title:'Rêverie au Clair de Lune',quote:'"Je lève ma coupe pour inviter la lune — nous devenons trois parmi les ombres." — Li Bai',desc:'La solitude est aussi un moment d\'introspection. Avec la lumière de la lune comme compagne — entendant le tonnerre dans le silence.',anime:'"Le Grand Moi est aussi très distingué dans la solitude — la solitude est la marque des forts!"'},
-   ar:{title:'تأمل ضوء القمر',quote:'"أرفع كأسي لأدعو القمر — نصبح ثلاثة بين الظلال." — لي باي',desc:'العزلة هي أيضاً وقت للتأمل الذاتي. مع ضوء القمر رفيقاً — سماع الرعد في الصمت، رؤية الوجه الحقيقي.',anime:'"الشخص العظيم يتميز أيضاً في العزلة — فالوحدة علامة الأقوياء!"'}},
-
-  {file:'9094895eff31a58b95f7bf78a72459e9.jpg',
-   zh:{title:'长风万里',quote:'长风破浪会有时，直挂云帆济沧海',author:'李白《行路难》',desc:'前路漫漫，风浪无尽，然而真正的勇者从不因险阻而退缩，终将乘风破浪抵达属于自己的彼岸。',anime:'「本大人的人生字典里没有"放弃"二字，只有"暂时战略性撤退"，明白了吗？！」'},
-   en:{title:'Ten Thousand Miles of Wind',quote:'"The day will come when I shall break the heavy waves and set my sail straight toward the vast sea." — Li Bai',desc:'The road is long, the waves relentless — yet the truly brave never yield to obstacles and will eventually ride the wind to reach their own far shore.',anime:'"The words \'give up\' do not exist in the Great Me\'s dictionary — only \'strategic temporary retreat\', understood?!"'},
-   fr:{title:'Dix Mille Li de Vent',quote:'"Le jour viendra où je briserai les lourdes vagues et dresserai ma voile vers la vaste mer." — Li Bai',desc:'La route est longue, les vagues incessantes — pourtant le vrai courageux ne cède jamais aux obstacles et finira par voguer vers son rivage lointain.',anime:'"Les mots \'abandonner\' n\'existent pas dans le dictionnaire du Grand Moi — seulement \'retraite temporaire stratégique\'!"'},
-   ar:{title:'عشرة آلاف لي من الريح',quote:'"سيأتي اليوم حين أكسر الأمواج الثقيلة وأنصب شراعي نحو البحر الواسع." — لي باي',desc:'الطريق طويل والأمواج لا ترحم — لكن الشجاع الحقيقي لا يستسلم، وسيركب الريح ليصل إلى شاطئه.',anime:'"كلمة \'استسلام\' لا توجد في قاموس الشخص العظيم — فقط \'تراجع استراتيجي مؤقت\'!"'}},
-
-  {file:'a33fb755980268669ae7597673b457b3.jpg',
-   zh:{title:'笑傲山河',quote:'仰天大笑出门去，我辈岂是蓬蒿人',author:'李白《南陵别儿童入京》',desc:'笑声震天，意气风发，以超然之姿俯瞰众生。这便是王者气度的真实写照，无需低头，唯有向前。',anime:'「哈哈哈！本大人今天也是充满无限可能的一天！全宇宙都要注意了！」'},
-   en:{title:'Laughing at the World',quote:'"I raise my head and laugh heartily as I depart — are we not men of great destiny?" — Li Bai',desc:'Laughter shaking the heavens, spirit soaring — surveying all beings from a transcendent height. This is the true portrait of kingly bearing: no need to bow, only to forge ahead.',anime:'"Hahaha! Today is another day of infinite possibilities for the Great Me! The entire universe, take notice!"'},
-   fr:{title:'Riant du Monde',quote:'"Je lève la tête et ris de tout mon cœur en partant — ne sommes-nous pas des hommes de grande destinée?" — Li Bai',desc:'Rires secouant les cieux, esprit s\'envolant — contemplant tous les êtres de hauteur transcendante. C\'est le vrai portrait de la prestance royale.',anime:'"Hahaha! C\'est encore un jour plein de possibilités infinies pour le Grand Moi! Que tout l\'univers prenne note!"'},
-   ar:{title:'الضحك على العالم',quote:'"أرفع رأسي وأضحك بقلبي — ألسنا رجالاً بمصير عظيم؟" — لي باي',desc:'الضحك يهز السماء، الروح تحلق — تأمل الكائنات من ارتفاع متعالٍ. هذه الصورة الحقيقية للمهابة الملكية.',anime:'"هاهاها! هذا يوم آخر مليء بإمكانيات لا حدود لها! لينتبه الكون بأسره!"'}},
-
-  {file:'a9e4e0cc8b084930a7fcf9f75bc5fa9d.jpg',
-   zh:{title:'天涯归客',quote:'此夜曲中闻折柳，何人不起故园情',author:'李白《春夜洛城闻笛》',desc:'游历四方，见识广博，然而心中最温柔的一隅，永远留给那个叫做"家"的地方。走得再远，也是归人。',anime:'「本大人走了那么多地方，终于明白——最帅的风景，其实就在自己身旁！」'},
-   en:{title:'Wanderer\'s Return',quote:'"Tonight, hearing the willow song — who does not feel longing for home?" — Li Bai',desc:'Traveled far and wide, with broad horizons — yet the tenderest corner of the heart is forever reserved for that place called home. No matter how far one wanders, one always returns.',anime:'"After traveling so many places, the Great Me has finally realized — the finest scenery is right beside oneself!"'},
-   fr:{title:'Le Retour du Voyageur',quote:'"Ce soir, entendant la chanson du saule — qui ne ressent pas le désir du pays natal?" — Li Bai',desc:'Voyagé loin et large — pourtant le coin le plus tendre du cœur est à jamais réservé à cet endroit appelé maison. Peu importe combien on erre, on revient toujours.',anime:'"Après avoir visité tant d\'endroits, le Grand Moi a réalisé — le plus beau paysage est juste à côté de soi!"'},
-   ar:{title:'عودة المسافر',quote:'"الليلة، أسمع أغنية الصفصاف — من لا يشعر بالشوق للوطن؟" — لي باي',desc:'سافر بعيداً وواسعاً — لكن أرق زاوية في القلب محجوزة إلى الأبد للبيت. مهما تجول المرء، يعود دائماً.',anime:'"بعد السفر إلى أماكن كثيرة، أدرك الشخص العظيم — أجمل المناظر هو بجانبه!"'}},
-
-  {file:'b4139e38b495a8f0b2e3fda8663ab7bd.jpg',
-   zh:{title:'饕餮盛宴',quote:'人生得意须尽欢，莫使金樽空对月',author:'李白《将进酒》',desc:'大快朵颐，不亦乐乎！龟兹国王深谙饮食之道，一碗面条亦能吃出帝王之气，食色天下，唯我独尊。',anime:'「吃！使劲吃！本大人的战斗力和帅气指数都是靠这碗面支撑的，不服来辩！」'},
-   en:{title:'The Royal Banquet',quote:'"When life goes well, enjoy it fully — do not let the golden goblet face the moon empty." — Li Bai',desc:'Eating heartily, what joy! The King of Kucha is a true connoisseur — even a bowl of noodles is consumed with imperial grandeur. Among the pleasures of life, I reign supreme.',anime:'"Eat! Eat with all your might! The Great Me\'s battle power and charm index are both sustained by this bowl of noodles — fight me on this!"'},
-   fr:{title:'Le Festin Royal',quote:'"Quand la vie va bien, profitez-en pleinement — ne laissez pas la coupe d\'or face à la lune vide." — Li Bai',desc:'Manger de bon appétit, quel plaisir! Le Roi de Kucha est un vrai connaisseur — même un bol de nouilles est consommé avec grandeur impériale.',anime:'"Mangez! Mangez de toutes vos forces! Le pouvoir de combat du Grand Moi est soutenu par ce bol de nouilles!"'},
-   ar:{title:'الوليمة الملكية',quote:'"حين تسير الحياة بشكل جيد، استمتع بها كاملاً — لا تدع كأس الذهب يواجه القمر فارغاً." — لي باي',desc:'الأكل بشهية، يا له من بهجة! ملك كوتشا خبير حقيقي — حتى وعاء من المعكرونة يُتناول بعظمة إمبراطورية.',anime:'"كل! كل بكل قوتك! قوة الشخص العظيم مدعومة بهذا الوعاء من المعكرونة!"'}},
-
-  {file:'c1b8bc533bee973aca9b8ce634e2b184.jpg',
-   zh:{title:'龙眠千载',quote:'春眠不觉晓，处处闻啼鸟',author:'孟浩然《春晓》',desc:'好眠乃养生之道，龟兹国王深知劳逸结合之真谛。高强度的帅气修炼之后，需要充足的休憩以迎接下一场王者降临。',anime:'「请勿打扰！本大人正在进行高强度冥想训练！（总之就是在睡觉，不要问了！）」'},
-   en:{title:'The Dragon Slumbers',quote:'"In spring slumber, I don\'t notice dawn — everywhere I hear birds calling." — Meng Haoran',desc:'Good sleep is the way of wellness; the King of Kucha deeply understands balancing work and rest. After intense royal practice sessions, adequate repose prepares for the next royal descent.',anime:'"Do not disturb! The Great Me is engaged in high-intensity meditation training! (It\'s just sleep, stop asking!)"'},
-   fr:{title:'Le Dragon Sommeille',quote:'"Dans le sommeil printanier, je ne remarque pas l\'aube — partout j\'entends les oiseaux." — Meng Haoran',desc:'Le bon sommeil est la voie du bien-être; le Roi de Kucha comprend profondément l\'équilibre entre travail et repos. Un repos adéquat prépare la prochaine descente royale.',anime:'"Ne pas déranger! Le Grand Moi s\'engage dans un entraînement de méditation! (C\'est juste du sommeil, arrêtez de demander!)"'},
-   ar:{title:'تنين نائم',quote:'"في النوم الربيعي، لا أشعر بالفجر — في كل مكان أسمع الطيور." — منغ هاورآن',desc:'النوم الجيد هو طريق العافية؛ يفهم ملك كوتشا التوازن بين العمل والراحة. بعد التدريب المكثف، الراحة الكافية ضرورية.',anime:'"لا تقاطعوا! الشخص العظيم في تدريب تأمل! (إنه مجرد نوم، توقفوا عن السؤال!)"'}},
-
-  {file:'cd73a54c2d99d3cbeebd86060dbc5ba9.jpg',
-   zh:{title:'御风而行',quote:'乘天地之正，而御六气之辩',author:'庄子《逍遥游》',desc:'不为世俗所缚，随心所至，如庄周梦蝶般自由，此乃真正的逍遥境界，无拘无束，天地任我行。',anime:'「本大人不是在漫无目的地乱走，本大人叫做"随缘探索"，差别很大，你懂吗？！」'},
-   en:{title:'Riding the Wind',quote:'"Riding the proper forces of Heaven and Earth, commanding the six transformations of the sky." — Zhuangzi',desc:'Unbound by worldly convention, going where the heart leads — free as Zhuangzi dreaming he was a butterfly. This is the true realm of unfettered wandering.',anime:'"The Great Me is NOT wandering aimlessly — it\'s called \'destiny-guided exploration\'. Big difference. Do you understand?!"'},
-   fr:{title:'Chevauchant le Vent',quote:'"Chevauchant les forces du Ciel et de la Terre, commandant les six transformations du ciel." — Zhuangzi',desc:'Non lié par les conventions mondaines, allant où le cœur mène — libre comme Zhuangzi rêvant qu\'il était un papillon.',anime:'"Le Grand Moi ne se promène PAS sans but — ça s\'appelle \'exploration guidée par le destin\'. Grande différence!"'},
-   ar:{title:'ركوب الريح',quote:'"ركوب القوى السليمة للسماء والأرض، تسيير التحولات الست." — زوانغزي',desc:'غير مقيد بالأعراف الدنيوية، يذهب حيث يقود القلب — حر كزوانغزي يحلم أنه فراشة.',anime:'"الشخص العظيم لا يتجول بلا هدف — يُسمى هذا \'استكشافاً موجهاً بالقدر\'. فرق كبير!"'}},
-
-  {file:'d5cd1581e2a645692e89f758eca4b6fc.jpg',
-   zh:{title:'金色年华',quote:'少年侠气，交结五都雄',author:'贺铸《六州歌头》',desc:'年轻是最美好的资本，以昂扬之姿迎接每一个朝阳，书写属于自己的传奇篇章，让岁月为证，无憾青春。',anime:'「本大人的青春不是用来虚度的，是用来创造传说的！记住了，全部都给我记住了！」'},
-   en:{title:'Golden Years',quote:'"The chivalric spirit of youth, forging bonds with heroes across five great cities." — He Zhu',desc:'Youth is the finest capital. Greeting each sunrise with soaring spirit, writing one\'s own legendary chapter — let the years bear witness to what greatness means.',anime:'"The Great Me\'s youth is not meant to be wasted — it\'s meant for creating legends! Remember that, all of you!"'},
-   fr:{title:'Les Années Dorées',quote:'"L\'esprit chevaleresque de la jeunesse, forgeant des liens avec des héros." — He Zhu',desc:'La jeunesse est le plus beau capital. Accueillant chaque lever de soleil avec un esprit élevé, écrivant son propre chapitre légendaire.',anime:'"La jeunesse du Grand Moi n\'est pas faite pour être gaspillée — elle est faite pour créer des légendes!"'},
-   ar:{title:'سنوات الذهب',quote:'"الروح الفروسية للشباب، تشكيل روابط مع الأبطال." — هه جو',desc:'الشباب هو أجمل رأس مال. تلقي كل شروق شمس بروح متصاعدة، كتابة فصلها الأسطوري الخاص.',anime:'"شباب الشخص العظيم ليس للإضاعة — بل لخلق الأساطير! تذكروا ذلك جميعاً!"'}}
+const PHOTOS=[
+  {file:'0163b65938f7f910287528fb277fad9f.jpg',zh:{title:'策马天涯',quote:'男儿何不带吴钩，收取关山五十州',author:'李贺《南园》',desc:'千里江山，尽在脚下。以一身布衣走遍山河，笑傲苍穹，问这茫茫世间谁主沉浮？',anime:'「本大人偶尔也需要欣赏一下自己的帅气背影，毕竟这种级别的帅不能浪费！」'},en:{title:'Riding to Infinity',quote:'"Why not take a sword and conquer fifty states?" — Li He',desc:'A thousand miles of mountains lie at one\'s feet.',anime:'"The Great Me occasionally needs to admire his own dashing silhouette!"'},fr:{title:'Chevauchée vers l\'Infini',quote:'"Pourquoi ne pas saisir une épée?" — Li He',desc:'Mille lieues de montagnes s\'étendent sous ses pieds.',anime:'"Le Grand Moi a parfois besoin d\'admirer sa propre silhouette!"'},ar:{title:'ركوب نحو اللانهاية',quote:'"لماذا لا تحمل سيفاً؟" — لي هه',desc:'آلاف الأميال من الجبال تمتد تحت القدمين.',anime:'"الشخص العظيم يحتاج أحياناً لتأمل مظهره المهيب!"'}},
+  {file:'1feb3fa7d864f102584b71fc8ab97886.jpg',zh:{title:'蓝衫逸客',quote:'天生我材必有用，千金散尽还复来',author:'李白《将进酒》',desc:'一袭蓝衫，自带王者气场。眼神之中自有乾坤，举手投足皆是风度，这便是龟兹国王的日常最低配置。',anime:'「哼，这种程度的帅气对本大人而言，不过是今日最低配置罢了！」'},en:{title:'The Sapphire Scholar',quote:'"Heaven endowed me with talents for a use." — Li Bai',desc:'A sapphire robe carrying a king\'s aura.',anime:'"This level of handsomeness is merely my lowest setting for the day!"'},fr:{title:'Le Savant en Bleu',quote:'"Le ciel m\'a doué de talents." — Li Bai',desc:'Une robe de saphir portant l\'aura d\'un roi.',anime:'"Ce niveau de beauté n\'est que mon réglage minimal du jour!"'},ar:{title:'العالم بالرداء الأزرق',quote:'"منحني السماء مواهب." — لي باي',desc:'رداء أزرق يحمل هيبة ملك.',anime:'"هذا المستوى من الوسامة ليس سوى إعدادي الأدنى!"'}},
+  {file:'25dac98c309b5002e04d398a856aa6a4.jpg',zh:{title:'古道西风',quote:'行到水穷处，坐看云起时',author:'王维《终南别业》',desc:'踏遍古道，见过无数风景，方知人生至境不在于目的地，而在于途中那一刻的云卷云舒。',anime:'「在本大人的字典里，迷路叫做"深度探索"，请务必记住这个区别！」'},en:{title:'Ancient Roads, Western Wind',quote:'"Walking to where the waters end, I sit and watch the clouds rise." — Wang Wei',desc:'The pinnacle of life lies in the clouds that rise along the way.',anime:'"In the Great Me\'s dictionary, getting lost is called \'deep exploration\'!"'},fr:{title:'Routes Anciennes',quote:'"Marchant jusqu\'où les eaux s\'arrêtent." — Wang Wei',desc:'Le sommet de la vie réside dans les nuages qui s\'élèvent.',anime:'"Se perdre s\'appelle \'exploration profonde\'!"'},ar:{title:'الطرق القديمة',quote:'"أمشي حتى تنتهي المياه." — وانغ وي',desc:'ذروة الحياة في الغيوم التي ترتفع.',anime:'"الضياع يُسمى \'الاستكشاف العميق\'!"'}},
+  {file:'3190a20ecfb9c0fffa103812925b349d.jpg',zh:{title:'铁骨英姿',quote:'壮志饥餐胡虏肉，笑谈渴饮匈奴血',author:'岳飞《满江红》',desc:'铁栏为伴，绿荫为幕，一身校服亦难掩王者之气。横眉冷对，是龟兹国王对平庸世界最有力的回应。',anime:'「本大人就算穿校服，也是全场最靓的仔，这是天赋，不接受反驳！」'},en:{title:'Iron Spirit',quote:'"With great ambition I shall feast on enemy flesh." — Yue Fei',desc:'Even a school uniform cannot conceal the aura of a king.',anime:'"Even in a school uniform, the Great Me is the most dazzling — this is talent!"'},fr:{title:'Esprit de Fer',quote:'"Avec grande ambition." — Yue Fei',desc:'Même un uniforme scolaire ne peut dissimuler l\'aura d\'un roi.',anime:'"Le Grand Moi est le plus éblouissant — c\'est du talent!"'},ar:{title:'روح حديدية',quote:'"بطموح عظيم." — يوه فاي',desc:'حتى زي المدرسة لا يستطيع إخفاء هيبة ملك.',anime:'"الشخص العظيم هو الأكثر بريقاً — هذا موهبة!"'}},
+  {file:'3d41ca59dbf18608cc139cef2182ae62.jpg',zh:{title:'指点江山',quote:'数风流人物，还看今朝',author:'毛泽东《沁园春·雪》',desc:'江山如画，一时多少豪杰。唯有真正的王者，方能在历史的长河中留下不朽的印记。',anime:'「本大人指点江山之际，请不要被本大人的气势所压倒，那只是日常状态罢了。」'},en:{title:'Commanding Mountains & Rivers',quote:'"To find the truly great, look to the present age." — Mao Zedong',desc:'Only the true king can leave an immortal mark in history.',anime:'"Don\'t be overwhelmed by the Great Me\'s aura — that\'s just my resting state."'},fr:{title:'Commandant les Montagnes',quote:'"Pour trouver les vraiment grands." — Mao Zedong',desc:'Seul le vrai roi peut laisser une marque immortelle.',anime:'"C\'est mon état de repos."'},ar:{title:'تسيير الجبال',quote:'"للعثور على العظماء." — ماو تسي تونغ',desc:'فقط الملك الحقيقي يترك أثراً خالداً.',anime:'"هذه مجرد حالتي الطبيعية."'}},
+  {file:'45e7bd2712fbd336ce0414b877d95185.jpg',zh:{title:'红蝶风华',quote:'云想衣裳花想容，春风拂槛露华浓',author:'李白《清平调》',desc:'一枚红蝴蝶结，点睛全局。发型如利剑出鞘，眼神蕴藏千言，此刻龟兹国王的气场已超越时空。',anime:'「蝴蝶结是本大人今日战斗力的加成道具，颜值暴击率直接拉满！」'},en:{title:'Red Bow Radiance',quote:'"Clouds suggest her robes, flowers her face." — Li Bai',desc:'One red bow tie, the finishing touch. The King\'s aura transcends time.',anime:'"The bow tie is today\'s power-up accessory — charm crit rate maxed out!"'},fr:{title:'Éclat du Papillon Rouge',quote:'"Les nuages évoquent ses robes." — Li Bai',desc:'Un nœud papillon rouge, la touche finale.',anime:'"Le nœud papillon est l\'accessoire boost aujourd\'hui!"'},ar:{title:'بريق الفراشة الحمراء',quote:'"الغيوم تقترح ثوبها." — لي باي',desc:'ربطة عنق حمراء، اللمسة الأخيرة.',anime:'"ربطة العنق هي ملحق تعزيز القدرة اليوم!"'}},
+  {file:'55572f9238f37963d9a94f3171cd17d4.jpg',zh:{title:'叱咤南国',quote:'我自横刀向天笑，去留肝胆两昆仑',author:'谭嗣同《狱中题壁》',desc:'双臂交叉，绿意盎然，以岿然不动之姿立于天地之间。南国的蓬勃生机，衬托出少年郎一往无前的意气。',anime:'「双手抱胸是本大人标准的"我在思考如何拯救世界"的姿势，懂的都懂！」'},en:{title:'Commanding the South',quote:'"I laugh to heaven with my blade." — Tan Sitong',desc:'Arms crossed, surrounded by lush greenery — standing unmoved between heaven and earth.',anime:'"Arms crossed is the Great Me\'s standard \'thinking about how to save the world\' pose!"'},fr:{title:'Commandant le Sud',quote:'"Je ris au ciel avec ma lame." — Tan Sitong',desc:'Bras croisés, debout impassible.',anime:'"Bras croisés est la pose standard!"'},ar:{title:'يتحكم في الجنوب',quote:'"أضحك للسماء بسيفي." — تان سيتونغ',desc:'ذراعان متقاطعتان، واقف ثابتاً.',anime:'"الذراعان المتقاطعتان هي وضعيتي القياسية!"'}},
+  {file:'611b2b95bf3c863891fad857607550dd.jpg',zh:{title:'车上欢颜',quote:'与君歌一曲，请君为我倾耳听',author:'李白《将进酒》',desc:'旅途中的笑声是最动人的乐章。两位少年并肩而坐，一个纵情大笑，一个沉默以对，各有其风。',anime:'「人生中那些在大巴上哈哈大笑的瞬间，才是最真实的快乐，比什么都值钱！」'},en:{title:'Laughter on the Road',quote:'"Let me sing you a song." — Li Bai',desc:'Laughter on the journey is the most moving melody.',anime:'"Those moments of laughing out loud on the bus — that\'s the realest joy!"'},fr:{title:'Rires en Route',quote:'"Laissez-moi vous chanter une chanson." — Li Bai',desc:'Le rire en voyage est la mélodie la plus émouvante.',anime:'"Ces moments de rires dans le bus — c\'est la vraie joie!"'},ar:{title:'ضحكات في الطريق',quote:'"دعني أغني لك أغنية." — لي باي',desc:'الضحك في الرحلة هو أكثر الألحان تأثيراً.',anime:'"تلك اللحظات من الضحك — هذه هي البهجة الحقيقية!"'}},
+  {file:'6a60ea8f7109449814792e5dc6f60ec0.jpg',zh:{title:'闲庭信步',quote:'独行潭底影，数息树边身',author:'贾岛《送无可上人》',desc:'双手插兜，步履从容，任四周繁花绿叶随风而动，这份云淡风轻，正是少年最珍贵的姿态。',anime:'「双手插兜不知道代表什么，但本大人这样做就是帅，这叫做"无理由的帅"！」'},en:{title:'Leisurely Stroll',quote:'"Walking alone, my shadow at the pool\'s bottom." — Jia Dao',desc:'Hands in pockets, unhurried steps.',anime:'"Hands in pockets — the Great Me doing it is cool. It\'s called \'inexplicable coolness\'!"'},fr:{title:'Promenade Tranquille',quote:'"Marchant seul." — Jia Dao',desc:'Mains dans les poches, pas tranquilles.',anime:'"Mains dans les poches — le Grand Moi ainsi c\'est cool!"'},ar:{title:'تجوال هادئ',quote:'"أمشي وحدي." — جيا داو',desc:'يدان في الجيبين، خطوات هادئة.',anime:'"يدان في الجيبين — الشخص العظيم هكذا يبدو رائعاً!"'}},
+  {file:'6c8cca1dd070c7519c0d85ee3a5d833a.jpg',zh:{title:'浮生若梦',quote:'浮生若梦，为欢几何',author:'李白《春夜宴从弟桃花园序》',desc:'人生如白驹过隙，岁月如流水不返。在有限的光阴里，让每一刻都燃烧得绚烂如烟火。',anime:'「本大人偶尔也会感慨人生苦短……然后立刻继续帅气地活下去！」'},en:{title:'Life Like a Dream',quote:'"Floating life is like a dream." — Li Bai',desc:'Let every moment burn as brilliant as fireworks.',anime:'"The Great Me reflects on life\'s brevity... then immediately continues living dashingly!"'},fr:{title:'La Vie comme un Rêve',quote:'"La vie flottante est comme un rêve." — Li Bai',desc:'Que chaque instant brûle aussi brillant que les feux d\'artifice.',anime:'"Le Grand Moi réfléchit à la brièveté de la vie... puis continue!"'},ar:{title:'الحياة كحلم',quote:'"الحياة العائمة كحلم." — لي باي',desc:'دعوا كل لحظة تشتعل كالألعاب النارية.',anime:'"الشخص العظيم يتأمل قصر العمر... ثم يكمل فوراً!"'}},
+  {file:'72ae6ae4b72f4fa3931a7b34982705b2.jpg',zh:{title:'持诏天下',quote:'笔落惊风雨，诗成泣鬼神',author:'杜甫《寄李十二白二十韵》',desc:'一纸金黄，承载无限意气。手持诏书，俯身细观，是龟兹国王颁布王命的庄严时刻，字字如金。',anime:'「此乃本大人亲笔御诏！内容嘛……就是命令全世界承认本大人的帅！」'},en:{title:'Royal Decree',quote:'"His brush falls like wind and rain." — Du Fu',desc:'The solemn moment the King issues his command.',anime:'"This is the Great Me\'s imperial decree! Ordering the world to acknowledge my greatness!"'},fr:{title:'Décret Royal',quote:'"Son pinceau tombe comme pluie et vent." — Du Fu',desc:'Le moment solennel où le Roi émet son commandement.',anime:'"C\'est le décret impérial du Grand Moi!"'},ar:{title:'المرسوم الملكي',quote:'"ريشته تسقط كالريح والمطر." — دو فو',desc:'اللحظة الرهيبة التي يصدر فيها الملك أمره.',anime:'"هذا مرسوم الشخص العظيم!"'}},
+  {file:'79d7f866fb099d59e38801e641012680.jpg',zh:{title:'云淡风轻',quote:'不识庐山真面目，只缘身在此山中',author:'苏轼《题西林壁》',desc:'置身山中，方知大自然之广博。人生亦然，唯跳脱局外，方能见得真相，笑看风云变幻。',anime:'「什么？你说看不清本大人的真容？那是因为本大人太帅了，需要保持距离才能欣赏！」'},en:{title:'Clouds Light, Wind Gentle',quote:'"I cannot see the true face of Mount Lu — for I stand inside the mountain." — Su Shi',desc:'Only by stepping outside can one see the truth.',anime:'"Can\'t see the Great Me clearly? That\'s because I\'m too dazzling — you need distance!"'},fr:{title:'Nuages Légers',quote:'"Je ne peux pas voir le vrai visage du Mont Lu." — Su Shi',desc:'Seulement en sortant peut-on voir la vérité.',anime:'"Vous ne voyez pas clairement le Grand Moi? C\'est parce que je suis trop éblouissant!"'},ar:{title:'غيوم خفيفة',quote:'"لا أستطيع رؤية وجه الجبل الحقيقي." — سو شي',desc:'فقط بالخروج يمكن رؤية الحقيقة.',anime:'"لا ترى الشخص العظيم بوضوح؟ لأنني مبهر جداً!"'}},
+  {file:'8660923a2818c2eec86538776e95ac7f.jpg',zh:{title:'倦游小憩',quote:'相看两不厌，只有敬亭山',author:'李白《独坐敬亭山》',desc:'旅途漫漫，一人沉入梦乡，一人含笑凝思，各得其趣。此刻车窗外的风景，不及车内的温情珍贵。',anime:'「他睡着了，本大人在思考人生。结论：睡觉比思考人生更快乐！」'},en:{title:'Wearied Traveler\'s Rest',quote:'"We never tire of gazing at each other." — Li Bai',desc:'The scenery outside the window is less precious than the warmth within.',anime:'"He fell asleep, the Great Me is pondering life. Conclusion: sleeping is happier!"'},fr:{title:'Repos du Voyageur',quote:'"Nous ne nous lassons jamais de nous regarder." — Li Bai',desc:'Le paysage extérieur est moins précieux que la chaleur intérieure.',anime:'"Il s\'est endormi. Conclusion: dormir c\'est plus heureux!"'},ar:{title:'استراحة المسافر',quote:'"لا نمل من النظر إلى بعضنا." — لي باي',desc:'المنظر الخارجي أقل ثمناً من الدفء الداخلي.',anime:'"نام. الخلاصة: النوم أسعد!"'}},
+  {file:'8d1dbc92368df07c88c1bac7ad59602f.jpg',zh:{title:'月下清吟',quote:'举杯邀明月，对影成三人',author:'李白《月下独酌》',desc:'独处之时亦是自省之时。与月光为伴，与自我对话，于无声处听惊雷，于无形中见真我。',anime:'「本大人独处时也很有气质的，毕竟孤独是强者的标配，寂寞是王者的专属！」'},en:{title:'Moonlit Reverie',quote:'"I raise my cup to invite the bright moon — we become three." — Li Bai',desc:'Hearing thunder in silence, seeing one\'s true face in the formless.',anime:'"The Great Me is also distinguished when alone — solitude is the mark of the strong!"'},fr:{title:'Rêverie au Clair de Lune',quote:'"Je lève ma coupe pour inviter la lune." — Li Bai',desc:'Entendant le tonnerre dans le silence.',anime:'"Le Grand Moi est très distingué dans la solitude!"'},ar:{title:'تأمل ضوء القمر',quote:'"أرفع كأسي لأدعو القمر." — لي باي',desc:'سماع الرعد في الصمت.',anime:'"الشخص العظيم يتميز في العزلة — الوحدة علامة الأقوياء!"'}},
+  {file:'9094895eff31a58b95f7bf78a72459e9.jpg',zh:{title:'长风万里',quote:'长风破浪会有时，直挂云帆济沧海',author:'李白《行路难》',desc:'前路漫漫，风浪无尽，然而真正的勇者从不因险阻而退缩，终将乘风破浪抵达属于自己的彼岸。',anime:'「本大人的人生字典里没有"放弃"二字，只有"暂时战略性撤退"，明白了吗？！」'},en:{title:'Ten Thousand Miles of Wind',quote:'"The day will come when I shall break the heavy waves." — Li Bai',desc:'The truly brave never yield.',anime:'"The words \'give up\' do not exist in the Great Me\'s dictionary!"'},fr:{title:'Dix Mille Li de Vent',quote:'"Le jour viendra où je briserai les lourdes vagues." — Li Bai',desc:'Le vrai courageux ne cède jamais.',anime:'"\'Abandonner\' n\'existe pas dans le dictionnaire du Grand Moi!"'},ar:{title:'عشرة آلاف لي من الريح',quote:'"سيأتي اليوم حين أكسر الأمواج الثقيلة." — لي باي',desc:'الشجاع الحقيقي لا يستسلم.',anime:'"\'استسلام\' لا توجد في قاموس الشخص العظيم!"'}},
+  {file:'a33fb755980268669ae7597673b457b3.jpg',zh:{title:'笑傲山河',quote:'仰天大笑出门去，我辈岂是蓬蒿人',author:'李白《南陵别儿童入京》',desc:'笑声震天，意气风发，以超然之姿俯瞰众生。这便是王者气度的真实写照，无需低头，唯有向前。',anime:'「哈哈哈！本大人今天也是充满无限可能的一天！全宇宙都要注意了！」'},en:{title:'Laughing at the World',quote:'"I raise my head and laugh heartily as I depart." — Li Bai',desc:'No need to bow, only to forge ahead.',anime:'"Hahaha! Today is another day of infinite possibilities! The entire universe, take notice!"'},fr:{title:'Riant du Monde',quote:'"Je lève la tête et ris de tout mon cœur." — Li Bai',desc:'Pas besoin de baisser la tête, seulement d\'avancer.',anime:'"Hahaha! C\'est encore un jour plein de possibilités infinies!"'},ar:{title:'الضحك على العالم',quote:'"أرفع رأسي وأضحك بقلبي." — لي باي',desc:'لا حاجة للانحناء، فقط للمضي قدماً.',anime:'"هاهاها! يوم آخر مليء بإمكانيات لا حدود لها!"'}},
+  {file:'a9e4e0cc8b084930a7fcf9f75bc5fa9d.jpg',zh:{title:'天涯归客',quote:'此夜曲中闻折柳，何人不起故园情',author:'李白《春夜洛城闻笛》',desc:'游历四方，见识广博，然而心中最温柔的一隅，永远留给那个叫做"家"的地方。走得再远，也是归人。',anime:'「本大人走了那么多地方，终于明白——最帅的风景，其实就在自己身旁！」'},en:{title:'Wanderer\'s Return',quote:'"Tonight, hearing the willow song — who does not feel longing for home?" — Li Bai',desc:'The tenderest corner of the heart is forever reserved for home.',anime:'"After traveling so many places — the finest scenery is right beside oneself!"'},fr:{title:'Le Retour du Voyageur',quote:'"Ce soir, entendant la chanson du saule." — Li Bai',desc:'Le coin le plus tendre du cœur est réservé à la maison.',anime:'"Après tant d\'endroits — le plus beau paysage est juste à côté!"'},ar:{title:'عودة المسافر',quote:'"الليلة، أسمع أغنية الصفصاف." — لي باي',desc:'أرق زاوية في القلب محجوزة للبيت.',anime:'"بعد السفر، أدرك أن أجمل المناظر هو بجانبه!"'}},
+  {file:'b4139e38b495a8f0b2e3fda8663ab7bd.jpg',zh:{title:'饕餮盛宴',quote:'人生得意须尽欢，莫使金樽空对月',author:'李白《将进酒》',desc:'大快朵颐，不亦乐乎！龟兹国王深谙饮食之道，一碗面条亦能吃出帝王之气，食色天下，唯我独尊。',anime:'「吃！使劲吃！本大人的战斗力和帅气指数都是靠这碗面支撑的，不服来辩！」'},en:{title:'The Royal Banquet',quote:'"When life goes well, enjoy it fully." — Li Bai',desc:'Even a bowl of noodles is consumed with imperial grandeur.',anime:'"Eat! The Great Me\'s battle power is sustained by this bowl of noodles!"'},fr:{title:'Le Festin Royal',quote:'"Quand la vie va bien, profitez-en." — Li Bai',desc:'Même un bol de nouilles est consommé avec grandeur.',anime:'"Mangez! Le pouvoir du Grand Moi est soutenu par ce bol de nouilles!"'},ar:{title:'الوليمة الملكية',quote:'"حين تسير الحياة بشكل جيد، استمتع." — لي باي',desc:'حتى وعاء من المعكرونة يُتناول بعظمة.',anime:'"كل! قوة الشخص العظيم مدعومة بهذا الوعاء!"'}},
+  {file:'bcf78eecc206c25126e7a9cf74e55e5d.jpg',zh:{title:'杖藜踏青',quote:'山重水复疑无路，柳暗花明又一村',author:'陆游《游山西村》',desc:'一杆竹杖，一背行囊，踏上绿意葱茏的山间小道。前路蜿蜒，却步履坚定，这便是探索者的风范。',anime:'「本大人出门探险必须要有登山杖，这不是装备，这叫做"仪式感"！」'},en:{title:'Hiking with Staff',quote:'"After mountains and rivers with no apparent way — another village!" — Lu You',desc:'A bamboo staff, a backpack — stepping onto a lush mountain path.',anime:'"The Great Me must have a hiking staff — this is not equipment, it\'s \'sense of ceremony\'!"'},fr:{title:'Randonnée avec Bâton',quote:'"Après montagnes et rivières — un autre village!" — Lu You',desc:'Un bâton de bambou, un sac à dos.',anime:'"Le Grand Moi doit avoir un bâton — c\'est le \'sens du rituel\'!"'},ar:{title:'المشي بالعصا',quote:'"بعد الجبال والأنهار — قرية أخرى!" — لو يو',desc:'عصا خيزران، حقيبة ظهر.',anime:'"يجب أن يكون مع الشخص العظيم عصا — هذا \'حس الطقوس\'!"'}},
+  {file:'c1b8bc533bee973aca9b8ce634e2b184.jpg',zh:{title:'龙眠千载',quote:'春眠不觉晓，处处闻啼鸟',author:'孟浩然《春晓》',desc:'好眠乃养生之道，龟兹国王深知劳逸结合之真谛。高强度的帅气修炼之后，需要充足的休憩以迎接下一场王者降临。',anime:'「请勿打扰！本大人正在进行高强度冥想训练！（总之就是在睡觉，不要问了！）」'},en:{title:'The Dragon Slumbers',quote:'"In spring slumber, I don\'t notice dawn." — Meng Haoran',desc:'Adequate repose prepares for the next royal descent.',anime:'"Do not disturb! The Great Me is in high-intensity meditation! (It\'s just sleep!)"'},fr:{title:'Le Dragon Sommeille',quote:'"Dans le sommeil printanier, je ne remarque pas l\'aube." — Meng Haoran',desc:'Un repos adéquat prépare la prochaine descente royale.',anime:'"Ne pas déranger! C\'est juste du sommeil!"'},ar:{title:'تنين نائم',quote:'"في النوم الربيعي، لا أشعر بالفجر." — منغ هاورآن',desc:'الراحة الكافية ضرورية للتجلي الملكي القادم.',anime:'"لا تقاطعوا! إنه مجرد نوم!"'}},
+  {file:'cd73a54c2d99d3cbeebd86060dbc5ba9.jpg',zh:{title:'御风而行',quote:'乘天地之正，而御六气之辩',author:'庄子《逍遥游》',desc:'不为世俗所缚，随心所至，如庄周梦蝶般自由，此乃真正的逍遥境界，无拘无束，天地任我行。',anime:'「本大人不是在漫无目的地乱走，本大人叫做"随缘探索"，差别很大，你懂吗？！」'},en:{title:'Riding the Wind',quote:'"Riding the proper forces of Heaven and Earth." — Zhuangzi',desc:'Unbound by worldly convention, going where the heart leads.',anime:'"The Great Me is NOT wandering aimlessly — it\'s called \'destiny-guided exploration\'!"'},fr:{title:'Chevauchant le Vent',quote:'"Chevauchant les forces du Ciel et de la Terre." — Zhuangzi',desc:'Non lié par les conventions mondaines.',anime:'"Le Grand Moi ne se promène PAS sans but — c\'est \'exploration guidée par le destin\'!"'},ar:{title:'ركوب الريح',quote:'"ركوب القوى السليمة للسماء والأرض." — زوانغزي',desc:'غير مقيد بالأعراف الدنيوية.',anime:'"الشخص العظيم لا يتجول بلا هدف — يُسمى \'استكشافاً موجهاً\'!"'}},
+  {file:'d5cd1581e2a645692e89f758eca4b6fc.jpg',zh:{title:'金色年华',quote:'少年侠气，交结五都雄',author:'贺铸《六州歌头》',desc:'年轻是最美好的资本，以昂扬之姿迎接每一个朝阳，书写属于自己的传奇篇章，让岁月为证。',anime:'「本大人的青春不是用来虚度的，是用来创造传说的！记住了，全部都给我记住了！」'},en:{title:'Golden Years',quote:'"The chivalric spirit of youth, forging bonds with heroes." — He Zhu',desc:'Youth is the finest capital. Writing one\'s own legendary chapter.',anime:'"The Great Me\'s youth is not meant to be wasted — it\'s meant for creating legends!"'},fr:{title:'Les Années Dorées',quote:'"L\'esprit chevaleresque de la jeunesse." — He Zhu',desc:'La jeunesse est le plus beau capital.',anime:'"La jeunesse du Grand Moi est faite pour créer des légendes!"'},ar:{title:'سنوات الذهب',quote:'"الروح الفروسية للشباب." — هه جو',desc:'الشباب هو أجمل رأس مال.',anime:'"شباب الشخص العظيم للأساطير!"'}},
+  {file:'f7f5463c5c922ed360e89ebb98f3ddea.jpg',zh:{title:'凌云正气',quote:'长风几万里，吹度玉门关',author:'李白《关山月》',desc:'直视前方，眼神坚毅，绿意为屏，宁静为底。这是少年郎收敛所有锋芒后，最沉静也最有力的一面。',anime:'「本大人正在用眼神说话，内容是：全世界请注意，本大人到场了！」'},en:{title:'Righteous Spirit',quote:'"The long wind blows ten thousand miles, sweeping past Jade Gate Pass." — Li Bai',desc:'Gazing straight ahead, eyes resolute.',anime:'"The Great Me is speaking with my eyes — world, please note, the Great Me has arrived!"'},fr:{title:'Esprit Juste',quote:'"Le long vent souffle dix mille lieues." — Li Bai',desc:'Regard droit devant, yeux résolus.',anime:'"Le Grand Moi parle avec mes yeux — monde, prenez note!"'},ar:{title:'روح نبيلة',quote:'"الريح الطويلة تهب عشرة آلاف لي." — لي باي',desc:'نظرة مباشرة للأمام، عيون حازمة.',anime:'"الشخص العظيم يتحدث بعيني — العالم، تنبه!"'}},
+  {file:'ff90f9dcca908c1db64cce7658c3b829.jpg',zh:{title:'踞地生威',quote:'气吞万里如虎',author:'辛弃疾《永遇乐·京口北固亭怀古》',desc:'双臂交叉，傲立南国芭蕉林间，气势如山岳般稳重。龟兹国王的威严，不需要言语，只需要这一个眼神。',anime:'「本大人站在这里什么都不用说，气场就已经覆盖了方圆三公里！」'},en:{title:'Commanding Presence',quote:'"His spirit swallows ten thousand miles like a tiger." — Xin Qiji',desc:'The King\'s authority needs no words, only this one gaze.',anime:'"The Great Me says nothing here — my aura already covers a three-kilometer radius!"'},fr:{title:'Présence Imposante',quote:'"Son esprit engloutit dix mille lieues comme un tigre." — Xin Qiji',desc:'L\'autorité du Roi ne nécessite pas de mots.',anime:'"Le Grand Moi ne dit rien — mon aura couvre déjà trois kilomètres!"'},ar:{title:'حضور آمر',quote:'"روحه تبتلع عشرة آلاف لي كالنمر." — شين تشيجي',desc:'سلطة الملك لا تحتاج إلى كلمات.',anime:'"الشخص العظيم لا يقول شيئاً — هيبتي تغطي ثلاثة كيلومترات!"'}}
 ];
 
-/* ══ I18N ══ */
-const I18N = {
-  zh:{
-    siteTitle:'龟兹国',heroSub:'西域古国 · 丝路明珠',heroTag:'汉唐之间 · 东西文明交汇之地',marqTitle:'流光拾影',
-    historyTitle:'龟兹史话',
-    h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',
-    h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。白居易赞曰："慢弦慢调，龟兹乐，别是风光，别是情。"',
-    h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处，每一笔线条都是跨越千年的史诗。',
-    h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典，文笔优美，信达雅三者兼备。"三千弟子，七百高僧"聆听其讲法，传为千古佳话。',
-    galleryTitle:'龟兹日志',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',
-    statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']
-  },
-  en:{
-    siteTitle:'Kingdom of Kucha',heroSub:'Ancient Realm of the Western Regions · Pearl of the Silk Road',heroTag:'Between Han and Tang — Where East Meets West',marqTitle:'Glimpses of Light',
-    historyTitle:'The History of Kucha',
-    h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met. At its zenith, Kucha governed over 80,000 households — the foremost power of the Western Regions.',
-    h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court with its exotic rhythms. The style swept Chang\'an, captivating emperors and nobles alike. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines. Bai Juyi praised: "Slow strings, slow melodies — Kuchean music — a world apart."',
-    h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves, called "China\'s Second Dunhuang," feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes of bodhisattvas and celestial beings. Greek, Persian, Indian, and Chinese artistic traditions converged here — each brushstroke an epic spanning a thousand years.',
-    h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations of the Diamond Sutra, Lotus Sutra, and Amitabha Sutra remain core texts of Chinese Buddhism — faithful, eloquent, and elegant. Legend says 3,000 disciples and 700 high monks gathered to hear him teach.',
-    galleryTitle:'Chronicles of Kucha',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',
-    statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']
-  },
-  fr:{
-    siteTitle:'Royaume de Kucha',heroSub:'Ancien Royaume des Régions Occidentales · Perle de la Route de la Soie',heroTag:'Entre Han et Tang — Là où l\'Est Rencontre l\'Ouest',marqTitle:'Éclats de Lumière',
-    historyTitle:'L\'Histoire de Kucha',
-    h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales sous la Dynastie Han, situé dans l\'actuel Kuqa, Xinjiang. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie. À son apogée, Kucha contrôlait les terres fertiles au sud des montagnes Tianshan, gouvernant plus de 80 000 foyers.',
-    h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour de la Dynastie Tang avec ses rythmes exotiques. Le style envahit Chang\'an, captivant empereurs et nobles. Des instruments comme le pipa, le konghou et le tambour jie voyagèrent de Kucha vers la Chine centrale. Bai Juyi loua: "Cordes lentes, mélodies lentes — musique de Kucha — un monde à part."',
-    h3title:'Les Fresques Sacrées',h3body:'Les Grottes des Mille Bouddhas de Kizil, surnommées "le Second Dunhuang de Chine", comportent plus de 200 salles creusées dans deux kilomètres de falaises, ornées de fresques représentant bodhisattvas et êtres célestes. Les traditions artistiques grecque, perse, indienne et chinoise y convergèrent — chaque trait une épopée de mille ans.',
-    h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413 ap. J.-C.), fils du roi de Kucha et d\'une princesse indienne, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise. Ses traductions du Sūtra du Diamant, du Sūtra du Lotus et du Sūtra d\'Amitābha demeurent des textes fondamentaux. La légende rapporte que 3 000 disciples et 700 moines se rassemblèrent pour l\'écouter.',
-    galleryTitle:'Chroniques de Kucha',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle de la Route de la Soie Illumine Éternellement les Cieux',
-    statuses:['Chargement du Royaume...','Récupération des Archives Historiques...','Rendu de la Carte...','Éveil de l\'Esprit de Kucha...','Connexion aux Fréquences Anciennes...','Initialisation des Systèmes Royaux...']
-  },
-  ar:{
-    siteTitle:'مملكة كوتشا',heroSub:'المملكة القديمة للمناطق الغربية · درة طريق الحرير',heroTag:'بين هان وتانغ — حيث يلتقي الشرق بالغرب',marqTitle:'لمحات من النور',
-    historyTitle:'تاريخ كوتشا',
-    h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية السِت والثلاثين خلال عهد أسرة هان، وتقع في كوتشا الحالية بشينجيانغ. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير. في ذروتها، حكمت كوتشا الأراضي الخصبة جنوب جبال تيانشان، مسيطرةً على أكثر من ثمانين ألف أسرة.',
-    h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط أسرة تانغ بإيقاعاتها الغريبة العجيبة. اجتاح الأسلوب تشانغآن، مفتوناً الأباطرة والنبلاء. آلات كالبيبا والكونغهو والطبل جي انتقلت إلى وسط الصين. أشاد باي جوي: "أوتار بطيئة، ألحان بطيئة — موسيقى كوتشا — عالم مختلف."',
-    h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف ألف بوذا في كيزيل من أعظم الكنوز الفنية، تضم أكثر من مئتي غرفة زاخرة بالجداريات التي تصور بوذيساتفات ومخلوقات سماوية. التقت التقاليد الفنية اليونانية والفارسية والهندية والصينية هنا — كل ضربة ريشة ملحمة تمتد ألف عام.',
-    h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤ – ٤١٣ م)، ابن ملك كوتشا وأميرة هندية، أحد أعظم مترجمي الكتب البوذية في التاريخ الصيني. لا تزال ترجماته لسوترا الماس وسوترا اللوتس وسوترا أميتابها نصوصاً جوهرية. تقول الأسطورة إن ثلاثة آلاف تلميذ وسبعمئة راهب تجمعوا للاستماع إليه.',
-    galleryTitle:'سجلات كوتشا',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء إلى الأبد',
-    statuses:['تحميل المملكة...','استرجاع السجلات التاريخية...','رسم خريطة طريق الحرير...','إيقاظ روح كوتشا...','الاتصال بالترددات القديمة...','تهيئة الأنظمة الملكية...']
-  }
+const I18N={
+  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
+  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
+  fr:{siteTitle:'Royaume de Kucha',marqTitle:'Éclats de Lumière',historyTitle:'L\'Histoire de Kucha',h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie.',h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour Tang. Des instruments voyagèrent de Kucha vers la Chine centrale.',h3title:'Les Fresques Sacrées',h3body:'Les Grottes de Kizil comportent plus de 200 salles ornées de fresques. Les traditions grecque, perse, indienne et chinoise y convergèrent.',h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413), fils du roi de Kucha, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise.',galleryTitle:'Chroniques de Kucha',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle Illumine les Cieux',statuses:['Chargement...','Récupération des Archives...','Rendu de la Carte...','Éveil de l\'Esprit...','Connexion Ancienne...','Initialisation...']},
+  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']}
 };
 
-/* ══ BUILD STARS ══ */
+/* ── Stars & Particles ── */
 (function(){
-  const sf = document.getElementById('star-field');
-  for(let i=0;i<180;i++){
-    const s = document.createElement('div');
-    s.className='star';
-    const sz = Math.random()*2+.5;
-    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--delay:${-Math.random()*6}s;--lo:${.05+Math.random()*.25}`;
-    sf.appendChild(s);
-  }
-  const pc = document.getElementById('particles');
-  for(let i=0;i<35;i++){
-    const p = document.createElement('div');
-    p.className='particle';
-    const sz = Math.random()*6+3;
-    p.style.cssText=`--x:${Math.random()*100}%;--sz:${sz}px;--dur:${3+Math.random()*4}s;--delay:${-Math.random()*7}s`;
-    pc.appendChild(p);
-  }
+  const sf=document.getElementById('star-field');
+  for(let i=0;i<180;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+.5;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--delay:${-Math.random()*6}s;--lo:${.05+Math.random()*.25}`;sf.appendChild(s);}
+  const pc=document.getElementById('particles');
+  for(let i=0;i<35;i++){const p=document.createElement('div');p.className='particle';const sz=Math.random()*6+3;p.style.cssText=`--x:${Math.random()*100}%;--sz:${sz}px;--dur:${3+Math.random()*4}s;--delay:${-Math.random()*7}s`;pc.appendChild(p);}
 })();
 
-/* ══ BUILD MARQUEE ══ */
+/* ── Build Marquee ── */
 (function(){
-  const track = document.getElementById('marqTrack');
-  const cards = [...PHOTOS,...PHOTOS].map((p,i)=>{
-    const idx = i % PHOTOS.length;
-    const div = document.createElement('div');
-    div.className='marq-card';
-    div.innerHTML=`<img src="${p.file}" alt="${p.zh.title}" loading="lazy"><div class="marq-card-overlay"><div class="marq-card-title" data-midx="${idx}">${p.zh.title}</div></div>`;
-    return div;
+  const track=document.getElementById('marqTrack');
+  [...PHOTOS,...PHOTOS].forEach((p,i)=>{
+    const idx=i%PHOTOS.length;
+    const div=document.createElement('div');div.className='marq-card';
+    div.innerHTML=`<img data-photo="${p.file}" alt="${p.zh.title}" class="locked"><div class="marq-lock">🔒</div><div class="marq-card-overlay"><div class="marq-card-title" data-midx="${idx}">${p.zh.title}</div></div>`;
+    track.appendChild(div);
   });
-  cards.forEach(c=>track.appendChild(c));
 })();
 
-/* ══ BUILD GALLERY ══ */
+/* ── Build Gallery ── */
 (function(){
-  const gallery = document.getElementById('gallery');
+  const g=document.getElementById('gallery');
   PHOTOS.forEach((p,i)=>{
-    const div = document.createElement('div');
-    div.className='photo-card';
-    div.innerHTML=`
-      <img src="${p.file}" alt="${p.zh.title}" loading="lazy">
-      <div class="photo-caption">
-        <div class="photo-title" data-gidx="${i}" data-gfield="title">${p.zh.title}</div>
-        <div class="photo-quote" data-gidx="${i}" data-gfield="quote">${p.zh.quote}</div>
-        <div class="photo-author" data-gidx="${i}" data-gfield="author">${p.zh.author}</div>
-        <div class="photo-desc" data-gidx="${i}" data-gfield="desc">${p.zh.desc}</div>
-        <div class="photo-anime" data-gidx="${i}" data-gfield="anime">${p.zh.anime}</div>
-      </div>`;
-    gallery.appendChild(div);
+    const div=document.createElement('div');div.className='photo-card';
+    div.innerHTML=`<div class="photo-img-wrap"><img data-photo="${p.file}" alt="${p.zh.title}" class="locked"><div class="lock-veil"><span class="lv-icon">🔒</span><p class="lv-txt">登录后查看</p></div></div><div class="photo-caption"><div class="photo-title" data-gidx="${i}" data-gfield="title">${p.zh.title}</div><div class="photo-quote" data-gidx="${i}" data-gfield="quote">${p.zh.quote}</div><div class="photo-author" data-gidx="${i}" data-gfield="author">${p.zh.author}</div><div class="photo-desc" data-gidx="${i}" data-gfield="desc">${p.zh.desc}</div><div class="photo-anime" data-gidx="${i}" data-gfield="anime">${p.zh.anime}</div></div>`;
+    g.appendChild(div);
   });
 })();
 
-/* ══ LOADING ANIMATION ══ */
-let currentLang = 'zh';
-let loadStatuses = I18N.zh.statuses;
-let statusIdx = 0;
-let typeTimer = null;
-
-function typeStatus(msg){
-  const el = document.getElementById('loadStatus');
-  el.textContent='';
-  let i=0;
-  clearInterval(typeTimer);
-  typeTimer = setInterval(()=>{
-    if(i<msg.length){ el.textContent+=msg[i++]; }
-    else clearInterval(typeTimer);
-  },38);
-}
-
-const startTime = Date.now();
-const LOAD_DUR = 4000;
-const fillEl = document.getElementById('progressFill');
-const pctEl = document.getElementById('pctNum');
-
-function animateLoad(){
-  const elapsed = Date.now()-startTime;
-  const t = Math.min(elapsed/LOAD_DUR,1);
-  const eased = 1-Math.pow(1-t,3);
-  const pct = Math.floor(eased*100);
-  fillEl.style.width = pct+'%';
-  pctEl.textContent = pct;
-  if(t<1) requestAnimationFrame(animateLoad);
-}
-requestAnimationFrame(animateLoad);
-
-setTimeout(()=>typeStatus(loadStatuses[0]),500);
-const msgInterval = setInterval(()=>{
-  statusIdx=(statusIdx+1)%loadStatuses.length;
-  typeStatus(loadStatuses[statusIdx]);
-},1500);
-
+/* ── Splash ── */
+let _statuses=I18N.zh.statuses,_si=0,_tt=null;
+function typeStatus(msg){const el=document.getElementById('loadStatus');el.textContent='';let i=0;clearInterval(_tt);_tt=setInterval(()=>{if(i<msg.length)el.textContent+=msg[i++];else clearInterval(_tt);},38);}
+const _start=Date.now(),_DUR=4000;
+const _fill=document.getElementById('progressFill'),_pct=document.getElementById('pctNum');
+function animLoad(){const t=Math.min((Date.now()-_start)/_DUR,1),e=1-Math.pow(1-t,3),p=Math.floor(e*100);_fill.style.width=p+'%';_pct.textContent=p;if(t<1)requestAnimationFrame(animLoad);}
+requestAnimationFrame(animLoad);
+setTimeout(()=>typeStatus(_statuses[0]),500);
+const _mi=setInterval(()=>{_si=(_si+1)%_statuses.length;typeStatus(_statuses[_si]);},1500);
 setTimeout(()=>{
-  clearInterval(msgInterval);
-  clearInterval(typeTimer);
-  const flash = document.getElementById('flash');
+  clearInterval(_mi);clearInterval(_tt);
+  const flash=document.getElementById('flash');
   flash.style.opacity='1';
   setTimeout(()=>{
     flash.style.opacity='0';
     document.getElementById('splash').classList.add('exit');
     document.getElementById('main').style.opacity='1';
     document.getElementById('lang-bar').style.opacity='1';
+    const ubtn=document.getElementById('unlock-btn');
+    ubtn.style.display='block';
+    const saved=sessionStorage.getItem('kzg_token');
+    if(saved&&isTokenAlive(saved)){doUnlock(saved);}
   },180);
-},LOAD_DUR+400);
+},_DUR+400);
 
-/* ══ LANGUAGE SWITCHER ══ */
-function setLang(lang){
-  currentLang = lang;
-  const html = document.documentElement;
-  html.lang = {zh:'zh-CN',en:'en',fr:'fr',ar:'ar'}[lang];
-  html.dir = lang==='ar'?'rtl':'ltr';
-
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
-
-  const t = I18N[lang];
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k = el.dataset.i18n;
-    if(t[k]!==undefined) el.textContent=t[k];
-  });
-
-  // Gallery fields
-  document.querySelectorAll('[data-gidx]').forEach(el=>{
-    const i = +el.dataset.gidx;
-    const f = el.dataset.gfield;
-    const p = PHOTOS[i];
-    const val = (p[lang]&&p[lang][f]!==undefined) ? p[lang][f] : p.zh[f];
-    el.textContent = val;
-  });
-
-  // Marquee titles
-  document.querySelectorAll('[data-midx]').forEach(el=>{
-    const i = +el.dataset.midx;
-    const p = PHOTOS[i];
-    el.textContent = (p[lang]&&p[lang].title) ? p[lang].title : p.zh.title;
-  });
+/* ── Token ── */
+function isTokenAlive(token){
+  try{const p=JSON.parse(atob(token.split('.')[0]));return p.exp>Date.now();}catch{return false;}
 }
 
-// Init i18n text on load
+/* ── Auth ── */
+function openModal(){document.getElementById('login-modal').classList.add('open');setTimeout(()=>document.getElementById('mUser').focus(),100);}
+function closeModal(){document.getElementById('login-modal').classList.remove('open');}
+function switchPanel(p){
+  document.getElementById('panel-cred').style.display=p==='cred'?'':'none';
+  document.getElementById('panel-question').style.display=p==='question'?'':'none';
+  if(p==='question')setTimeout(()=>document.getElementById('mAns').focus(),100);
+  else setTimeout(()=>document.getElementById('mUser').focus(),100);
+  return false;
+}
+
+function doUnlock(token){
+  sessionStorage.setItem('kzg_token',token);
+  document.body.classList.add('unlocked');
+  document.querySelectorAll('img[data-photo]').forEach(img=>{
+    img.classList.remove('locked');
+    img.src=`${WORKER}/photo/${img.dataset.photo}?t=${encodeURIComponent(token)}`;
+  });
+  const btn=document.getElementById('unlock-btn');
+  btn.textContent='已解锁 ✓';btn.className='done';btn.onclick=null;
+  closeModal();
+}
+
+async function tryLogin(){
+  const u=document.getElementById('mUser').value.trim();
+  const p=document.getElementById('mPass').value.trim();
+  const err=document.getElementById('mErr');
+  const btn=document.getElementById('loginBtn');
+  if(!u||!p){err.textContent='请填写账号和密码';return;}
+  btn.disabled=true;btn.textContent='验证中...';err.textContent='';
+  try{
+    const res=await fetch(`${WORKER}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    const data=await res.json();
+    if(data.success&&data.token){doUnlock(data.token);}
+    else{err.textContent=data.error||'账号或密码错误';document.getElementById('mPass').value='';document.getElementById('mPass').focus();}
+  }catch{err.textContent='连接失败，请使用其他验证方式';}
+  finally{btn.disabled=false;btn.textContent='入　境';}
+}
+
+async function tryQuestion(){
+  const ans=document.getElementById('mAns').value.trim();
+  const err=document.getElementById('mQErr');
+  const btn=document.getElementById('qBtn');
+  if(!ans){err.textContent='请输入答案';return;}
+  btn.disabled=true;btn.textContent='验证中...';err.textContent='';
+  try{
+    const res=await fetch(`${WORKER}/question`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:ans})});
+    const data=await res.json();
+    if(data.success&&data.token){doUnlock(data.token);}
+    else{err.textContent='答案不正确，请重试';document.getElementById('mAns').value='';document.getElementById('mAns').focus();}
+  }catch{err.textContent='连接失败，请稍后重试';}
+  finally{btn.disabled=false;btn.textContent='确　认';}
+}
+
+document.getElementById('mUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('mPass').focus();});
+document.getElementById('mPass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+document.getElementById('mAns').addEventListener('keydown',e=>{if(e.key==='Enter')tryQuestion();});
+document.getElementById('login-modal').addEventListener('click',e=>{if(e.target===document.getElementById('login-modal'))closeModal();});
+
+/* ── Lang ── */
+let currentLang='zh';
+function setLang(lang){
+  currentLang=lang;
+  const html=document.documentElement;
+  html.lang={zh:'zh-CN',en:'en',fr:'fr',ar:'ar'}[lang];
+  html.dir=lang==='ar'?'rtl':'ltr';
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  const t=I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(t[k]!==undefined)el.textContent=t[k];});
+  document.querySelectorAll('[data-gidx]').forEach(el=>{const i=+el.dataset.gidx,f=el.dataset.gfield,ph=PHOTOS[i];el.textContent=(ph[lang]&&ph[lang][f]!==undefined)?ph[lang][f]:ph.zh[f];});
+  document.querySelectorAll('[data-midx]').forEach(el=>{const i=+el.dataset.midx,ph=PHOTOS[i];el.textContent=(ph[lang]&&ph[lang].title)?ph[lang].title:ph.zh.title;});
+  _statuses=t.statuses||I18N.zh.statuses;
+  document.querySelectorAll('.lv-txt').forEach(e=>e.textContent={zh:'登录后查看',en:'Login to view',fr:'Connexion requise',ar:'سجّل دخولك للمشاهدة'}[lang]||'登录后查看');
+}
 setLang('zh');
 </script>
 </body>
