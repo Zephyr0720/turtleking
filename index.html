@@ -61,26 +61,26 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 .lang-btn:hover{color:#d4af37}.lang-btn.active{background:rgba(212,175,55,.18);color:#d4af37}
 
 /* ── MUSIC PLAYER ── */
-#music-player{position:fixed;bottom:28px;left:22px;z-index:400;display:flex;align-items:center;gap:10px;background:rgba(10,6,3,.88);border:1px solid rgba(212,175,55,.35);border-radius:100px;padding:10px 18px 10px 14px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,.55);transition:all .3s}
-#music-player:hover{border-color:rgba(212,175,55,.65)}
-#music-eq{display:flex;align-items:flex-end;gap:3px;height:18px;width:22px;cursor:pointer;flex-shrink:0}
-#music-eq span{display:block;width:3px;background:#d4af37;border-radius:2px;transition:height .15s}
-#music-eq span:nth-child(1){height:6px;animation:none}
-#music-eq span:nth-child(2){height:10px;animation:none}
-#music-eq span:nth-child(3){height:14px;animation:none}
-#music-eq span:nth-child(4){height:8px;animation:none}
+#music-player{position:fixed;bottom:18px;left:16px;z-index:400;display:flex;align-items:center;gap:7px;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.3);border-radius:100px;padding:7px 13px 7px 10px;backdrop-filter:blur(14px);box-shadow:0 3px 16px rgba(0,0,0,.5);transition:all .3s}
+#music-player:hover{border-color:rgba(212,175,55,.6)}
+#music-eq{display:flex;align-items:flex-end;gap:2px;height:14px;width:18px;cursor:pointer;flex-shrink:0}
+#music-eq span{display:block;width:2.5px;background:#d4af37;border-radius:2px;transition:height .15s}
+#music-eq span:nth-child(1){height:5px}
+#music-eq span:nth-child(2){height:9px}
+#music-eq span:nth-child(3){height:13px}
+#music-eq span:nth-child(4){height:7px}
 #music-player.playing #music-eq span:nth-child(1){animation:eq1 .8s ease-in-out infinite}
 #music-player.playing #music-eq span:nth-child(2){animation:eq2 .6s ease-in-out infinite .1s}
 #music-player.playing #music-eq span:nth-child(3){animation:eq3 .9s ease-in-out infinite .2s}
 #music-player.playing #music-eq span:nth-child(4){animation:eq2 .7s ease-in-out infinite .05s}
-@keyframes eq1{0%,100%{height:4px}50%{height:16px}}
-@keyframes eq2{0%,100%{height:8px}50%{height:18px}}
-@keyframes eq3{0%,100%{height:14px}50%{height:5px}}
-#music-playbtn{background:none;border:none;color:#d4af37;cursor:pointer;font-size:1rem;padding:0;width:20px;text-align:center;flex-shrink:0;line-height:1;transition:opacity .2s}
+@keyframes eq1{0%,100%{height:3px}50%{height:13px}}
+@keyframes eq2{0%,100%{height:6px}50%{height:14px}}
+@keyframes eq3{0%,100%{height:12px}50%{height:4px}}
+#music-playbtn{background:none;border:none;color:#d4af37;cursor:pointer;font-size:.85rem;padding:0;width:16px;text-align:center;flex-shrink:0;line-height:1;transition:opacity .2s}
 #music-playbtn:hover{opacity:.7}
-#music-vol{-webkit-appearance:none;appearance:none;width:70px;height:3px;border-radius:2px;background:rgba(212,175,55,.25);outline:none;cursor:pointer;flex-shrink:0}
-#music-vol::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#d4af37;cursor:pointer;box-shadow:0 0 4px rgba(212,175,55,.6)}
-#music-mute{background:none;border:none;color:rgba(212,175,55,.55);cursor:pointer;font-size:.78rem;padding:0;flex-shrink:0;transition:color .2s;line-height:1}
+#music-vol{-webkit-appearance:none;appearance:none;width:55px;height:2px;border-radius:2px;background:rgba(212,175,55,.25);outline:none;cursor:pointer;flex-shrink:0}
+#music-vol::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;border-radius:50%;background:#d4af37;cursor:pointer;box-shadow:0 0 4px rgba(212,175,55,.6)}
+#music-mute{background:none;border:none;color:rgba(212,175,55,.5);cursor:pointer;font-size:.7rem;padding:0;flex-shrink:0;transition:color .2s;line-height:1}
 #music-mute:hover{color:#d4af37}
 
 /* ── UNLOCK BUTTON ── */
@@ -390,6 +390,8 @@ setTimeout(()=>{
     document.getElementById('lang-bar').style.opacity='1';
     const ubtn=document.getElementById('unlock-btn');
     ubtn.style.display='block';
+    const bgmEl=document.getElementById('bgm');
+    if(bgmEl){bgmEl.muted=false;bgmEl.play().catch(()=>{});}
     const saved=sessionStorage.getItem('kzg_token');
     if(saved&&isTokenAlive(saved)){doUnlock(saved);}
   },180);
@@ -488,12 +490,12 @@ setLang('zh');
 </script>
 
 <!-- MUSIC PLAYER -->
-<audio id="bgm" src="videoplayback.mp4" loop preload="none"></audio>
+<audio id="bgm" src="videoplayback.mp4" loop preload="auto" muted autoplay></audio>
 <div id="music-player">
   <div id="music-eq" title="点击播放/暂停" onclick="togglePlay()">
     <span></span><span></span><span></span><span></span>
   </div>
-  <button id="music-playbtn" onclick="togglePlay()" title="播放/暂停">▶</button>
+  <button id="music-playbtn" onclick="togglePlay()" title="播放/暂停">⏸</button>
   <input id="music-vol" type="range" min="0" max="1" step="0.01" value="0.6" oninput="setVol(this.value)" title="音量">
   <button id="music-mute" onclick="toggleMute()" title="静音">🔊</button>
 </div>
@@ -505,14 +507,18 @@ const muteBtn=document.getElementById('music-mute');
 const vol=document.getElementById('music-vol');
 bgm.volume=0.6;
 let muted=false,prevVol=0.6;
+player.classList.add('playing');
 
 function togglePlay(){
-  if(bgm.paused){bgm.play();player.classList.add('playing');playBtn.textContent='⏸';}
-  else{bgm.pause();player.classList.remove('playing');playBtn.textContent='▶';}
+  if(bgm.paused){
+    bgm.play().catch(()=>{});
+    player.classList.add('playing');playBtn.textContent='⏸';
+  } else {
+    bgm.pause();player.classList.remove('playing');playBtn.textContent='▶';
+  }
 }
 function setVol(v){
-  bgm.volume=v;
-  muted=v==0;
+  bgm.volume=parseFloat(v);muted=v==0;
   muteBtn.textContent=v==0?'🔇':'🔊';
 }
 function toggleMute(){
