@@ -393,7 +393,7 @@ function doUnlock(token){
   document.body.classList.add('unlocked');
   document.querySelectorAll('img[data-photo]').forEach(img=>{
     img.classList.remove('locked');
-    img.src=img.dataset.photo;
+    img.src=`${WORKER}/photo/${img.dataset.photo}?t=${encodeURIComponent(token)}`;
   });
   const btn=document.getElementById('unlock-btn');
   btn.textContent='已解锁 ✓';btn.className='done';btn.onclick=null;
