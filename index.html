@@ -226,7 +226,7 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
       <h2 class="modal-title">解锁照片</h2>
       <p class="modal-sub">凭证入境 · 方见龟兹</p>
       <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
-      <div class="modal-field"><input type="text" id="mUser" placeholder="账　号" autocomplete="username" spellcheck="false"></div>
+      <div class="modal-field"><input type="email" id="mUser" placeholder="邮　箱" autocomplete="email" spellcheck="false"></div>
       <div class="modal-field"><input type="password" id="mPass" placeholder="密　码" autocomplete="current-password"></div>
       <button class="modal-btn" id="loginBtn" onclick="tryLogin()">入　境</button>
       <div class="modal-error" id="mErr"></div>
@@ -415,13 +415,13 @@ async function tryLogin(){
   const p=document.getElementById('mPass').value.trim();
   const err=document.getElementById('mErr');
   const btn=document.getElementById('loginBtn');
-  if(!u||!p){err.textContent='请填写账号和密码';return;}
+  if(!u||!p){err.textContent='请填写邮箱和密码';return;}
   btn.disabled=true;btn.textContent='验证中...';err.textContent='';
   try{
     const res=await fetch(`${WORKER}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
     const data=await res.json();
     if(data.success&&data.token){doUnlock(data.token);}
-    else{err.textContent=data.error||'账号或密码错误';document.getElementById('mPass').value='';document.getElementById('mPass').focus();}
+    else{err.textContent=data.error||'邮箱或密码错误';document.getElementById('mPass').value='';document.getElementById('mPass').focus();}
   }catch{err.textContent='连接失败，请使用其他验证方式';}
   finally{btn.disabled=false;btn.textContent='入　境';}
 }
