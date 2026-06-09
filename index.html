@@ -424,6 +424,42 @@ function doUnlock(token){
   const btn=document.getElementById('unlock-btn');
   btn.textContent='已解锁 ✓';btn.className='done';btn.onclick=null;
   closeModal();
+  // 管理员才显示后台按钮
+  try{
+    const payload=JSON.parse(atob(token.split('.')[0]));
+    if(payload.u==='kuanghaiyang@kucha.org') showAdminBtn(token);
+  }catch{}
+}
+
+function showAdminBtn(token){
+  const ab=document.createElement('button');
+  ab.id='admin-btn';
+  ab.textContent='管理后台';
+  ab.style.cssText='position:fixed;top:18px;left:18px;z-index:500;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.4);color:#d4af37;padding:8px 18px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.75rem;letter-spacing:2px;backdrop-filter:blur(12px)';
+  ab.onclick=()=>openAdminPanel(token);
+  document.body.appendChild(ab);
+}
+
+async function openAdminPanel(token){
+  let panel=document.getElementById('admin-panel');
+  if(!panel){
+    panel=document.createElement('div');
+    panel.id='admin-panel';
+    panel.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:flex;flex-direction:column;padding:40px;overflow:auto';
+    document.body.appendChild(panel);
+  }
+  panel.innerHTML='<div style="max-width:900px;margin:0 auto;width:100%"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><h2 style="font-family:Songti SC,serif;color:#d4af37;font-size:1.4rem;letter-spacing:4px">登录日志</h2><button onclick="document.getElementById(\'admin-panel\').remove()" style="background:none;border:1px solid rgba(212,175,55,.3);color:#d4af37;padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div><div id="admin-log-content" style="color:#e8dcc8;font-family:Courier New,monospace;font-size:.8rem;line-height:2">加载中...</div></div>';
+  try{
+    const res=await fetch(`${WORKER}/admin/logs`,{headers:{'Authorization':'Bearer '+token}});
+    const data=await res.json();
+    const el=document.getElementById('admin-log-content');
+    if(!data.logs||!data.logs.length){el.textContent='暂无记录';return;}
+    el.innerHTML='<div style="margin-bottom:12px;color:rgba(212,175,55,.6)">共 '+data.total+' 条记录（最新在前）</div>'+
+      data.logs.map(l=>{
+        const ok=l.includes('✓');
+        return '<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);color:'+(ok?'#6ecf8e':'#e87070')+'">'+l+'</div>';
+      }).join('');
+  }catch(e){document.getElementById('admin-log-content').textContent='加载失败: '+e.message;}
 }
 
 async function tryLogin(){
