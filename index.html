@@ -372,6 +372,19 @@ setTimeout(()=>{
   },180);
 },_DUR+400);
 
+/* ── 图片加载（Authorization 头 + blob URL，token 不出现在地址栏）── */
+async function loadPhoto(img, token){
+  try{
+    const res = await fetch(`${WORKER}/photo/${img.dataset.photo}`,{
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!res.ok) return;
+    const blob = await res.blob();
+    img.src = URL.createObjectURL(blob);
+    img.classList.remove('locked');
+  }catch{}
+}
+
 /* ── Token ── */
 function isTokenAlive(token){
   try{const p=JSON.parse(atob(token.split('.')[0]));return p.exp>Date.now();}catch{return false;}
@@ -391,10 +404,7 @@ function switchPanel(p){
 function doUnlock(token){
   sessionStorage.setItem('kzg_token',token);
   document.body.classList.add('unlocked');
-  document.querySelectorAll('img[data-photo]').forEach(img=>{
-    img.classList.remove('locked');
-    img.src=`${WORKER}/photo/${img.dataset.photo}?t=${encodeURIComponent(token)}`;
-  });
+  document.querySelectorAll('img[data-photo]').forEach(img=>loadPhoto(img,token));
   const btn=document.getElementById('unlock-btn');
   btn.textContent='已解锁 ✓';btn.className='done';btn.onclick=null;
   closeModal();
