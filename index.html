@@ -481,7 +481,7 @@ setLang('zh');
 </script>
 
 <!-- MUSIC PLAYER -->
-<video id="bgm" src="videoplayback.mp4" loop preload="auto" muted autoplay playsinline style="display:none;position:absolute;width:0;height:0"></video>
+<audio id="bgm" src="videoplayback.mp4" loop preload="auto"></audio>
 <div id="music-player">
   <div id="music-eq" title="点击播放/暂停" onclick="togglePlay()">
     <span></span><span></span><span></span><span></span>
@@ -501,7 +501,7 @@ let muted=false,prevVol=0.6;
 
 function enterSite(){
   window._entered=true;
-  bgm.muted=false;
+  bgm.volume=0.6;
   bgm.play().catch(()=>{});
   player.classList.add('playing');
   playBtn.textContent='⏸';
