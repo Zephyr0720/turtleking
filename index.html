@@ -54,6 +54,8 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 .pct-num{font-family:"Courier New",monospace;font-size:.9rem;color:#d4af37}
 .pct-label-r{font-family:"Cinzel",monospace;font-size:.62rem;color:rgba(212,175,55,.35);letter-spacing:4px;text-transform:uppercase;align-self:flex-end}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+#enter-btn{margin-top:28px;background:none;border:1px solid rgba(212,175,55,.5);color:#d4af37;font-family:"Songti SC",serif;font-size:.82rem;letter-spacing:5px;padding:10px 28px;border-radius:100px;cursor:pointer;opacity:0;animation:fadeUp .8s ease forwards 3s;transition:all .3s}
+#enter-btn:hover{background:rgba(212,175,55,.12);border-color:#d4af37}
 
 /* ── LANG BAR ── */
 #lang-bar{position:fixed;top:18px;right:18px;z-index:500;display:flex;gap:4px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.18);border-radius:100px;padding:5px 8px;opacity:0;transition:opacity .5s}
@@ -227,6 +229,7 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
       <span class="pct-label-r">Loading</span>
     </div>
   </div>
+  <button id="enter-btn" onclick="enterSite()">点击进入</button>
 </div>
 
 <!-- LANG BAR -->
@@ -381,20 +384,8 @@ setTimeout(()=>typeStatus(_statuses[0]),500);
 const _mi=setInterval(()=>{_si=(_si+1)%_statuses.length;typeStatus(_statuses[_si]);},1500);
 setTimeout(()=>{
   clearInterval(_mi);clearInterval(_tt);
-  const flash=document.getElementById('flash');
-  flash.style.opacity='1';
-  setTimeout(()=>{
-    flash.style.opacity='0';
-    document.getElementById('splash').classList.add('exit');
-    document.getElementById('main').style.opacity='1';
-    document.getElementById('lang-bar').style.opacity='1';
-    const ubtn=document.getElementById('unlock-btn');
-    ubtn.style.display='block';
-    const bgmEl=document.getElementById('bgm');
-    if(bgmEl){bgmEl.muted=false;bgmEl.play().catch(()=>{});}
-    const saved=sessionStorage.getItem('kzg_token');
-    if(saved&&isTokenAlive(saved)){doUnlock(saved);}
-  },180);
+  document.getElementById('enter-btn').style.opacity='1';
+  document.getElementById('enter-btn').style.animation='none';
 },_DUR+400);
 
 /* ── 图片加载（Authorization 头 + blob URL，token 不出现在地址栏）── */
@@ -490,7 +481,7 @@ setLang('zh');
 </script>
 
 <!-- MUSIC PLAYER -->
-<audio id="bgm" src="videoplayback.mp4" loop preload="auto" muted autoplay></audio>
+<video id="bgm" src="videoplayback.mp4" loop preload="auto" muted autoplay playsinline style="display:none;position:absolute;width:0;height:0"></video>
 <div id="music-player">
   <div id="music-eq" title="点击播放/暂停" onclick="togglePlay()">
     <span></span><span></span><span></span><span></span>
@@ -507,8 +498,21 @@ const muteBtn=document.getElementById('music-mute');
 const vol=document.getElementById('music-vol');
 bgm.volume=0.6;
 let muted=false,prevVol=0.6;
-player.classList.add('playing');
 
+function enterSite(){
+  window._entered=true;
+  bgm.muted=false;
+  bgm.play().catch(()=>{});
+  player.classList.add('playing');
+  playBtn.textContent='⏸';
+  document.getElementById('splash').classList.add('exit');
+  document.getElementById('main').style.opacity='1';
+  document.getElementById('lang-bar').style.opacity='1';
+  const ubtn=document.getElementById('unlock-btn');
+  ubtn.style.display='block';
+  const saved=sessionStorage.getItem('kzg_token');
+  if(saved&&typeof isTokenAlive==='function'&&isTokenAlive(saved)){doUnlock(saved);}
+}
 function togglePlay(){
   if(bgm.paused){
     bgm.play().catch(()=>{});
