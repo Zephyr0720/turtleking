@@ -377,8 +377,6 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
       <button class="modal-btn" id="loginBtn" onclick="tryLogin()">入　境</button>
       <div class="modal-error" id="mErr"></div>
       <div class="modal-alt">
-        <a href="#" onclick="return switchPanel('question')">其他验证方式 →</a>
-        &nbsp;·&nbsp;
         <a href="#" onclick="return switchPanel('forgot')">忘记密码？</a>
       </div>
     </div>
@@ -407,16 +405,6 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
       <div class="modal-alt"><a href="#" onclick="return switchPanel('forgot')">← 重新发送</a></div>
     </div>
 
-    <div id="panel-question" style="display:none">
-      <h2 class="modal-title">身份验证</h2>
-      <p class="modal-sub">回答正确即可解锁</p>
-      <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
-      <p class="modal-q">龟兹国的国王名字？</p>
-      <div class="modal-field"><input type="text" id="mAns" placeholder="请输入答案" autocomplete="off"></div>
-      <button class="modal-btn" id="qBtn" onclick="tryQuestion()">确　认</button>
-      <div class="modal-error" id="mQErr"></div>
-      <div class="modal-alt"><a href="#" onclick="return switchPanel('cred')">← 返回账号登录</a></div>
-    </div>
   </div>
 </div>
 
@@ -559,13 +547,12 @@ function isTokenAlive(token){
 function openModal(){document.getElementById('login-modal').classList.add('open');setTimeout(()=>document.getElementById('mUser').focus(),100);}
 function closeModal(){document.getElementById('login-modal').classList.remove('open');}
 function switchPanel(p){
-  ['cred','question','forgot','reset'].forEach(id=>{
+  ['cred','forgot','reset'].forEach(id=>{
     const el=document.getElementById('panel-'+id);
     if(el) el.style.display=p===id?'':'none';
   });
-  // 清空错误提示颜色
   ['fErr','rErr'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.color='';});
-  const focusMap={cred:'mUser',question:'mAns',forgot:'fEmail',reset:'rCode'};
+  const focusMap={cred:'mUser',forgot:'fEmail',reset:'rCode'};
   if(focusMap[p])setTimeout(()=>document.getElementById(focusMap[p])?.focus(),100);
   return false;
 }
@@ -636,19 +623,10 @@ async function tryLogin(){
   finally{btn.disabled=false;btn.textContent='入　境';}
 }
 
-async function tryQuestion(){
-  const ans=document.getElementById('mAns').value.trim();
-  const err=document.getElementById('mQErr');
-  const btn=document.getElementById('qBtn');
-  if(!ans){err.textContent='请输入答案';return;}
-  btn.disabled=true;btn.textContent='验证中...';err.textContent='';
-  try{
-    const res=await fetch(`${WORKER}/question`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:ans})});
-    const data=await res.json();
-    if(data.success&&data.token){doUnlock(data.token);}
-    else{err.textContent='答案不正确，请重试';document.getElementById('mAns').value='';document.getElementById('mAns').focus();}
-  }catch{err.textContent='连接失败，请稍后重试';}
-  finally{btn.disabled=false;btn.textContent='确　认';}
+function logout(){
+  if(!confirm('确定退出登录？'))return;
+  sessionStorage.removeItem('kzg_token');
+  location.reload();
 }
 
 /* ── 全局状态 ── */
@@ -945,7 +923,6 @@ async function doReset(){
 
 document.getElementById('mUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('mPass').focus();});
 document.getElementById('mPass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
-document.getElementById('mAns').addEventListener('keydown',e=>{if(e.key==='Enter')tryQuestion();});
 document.getElementById('rCode').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('rPass').focus();});
 document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('rPass2').focus();});
 document.getElementById('rPass2').addEventListener('keydown',e=>{if(e.key==='Enter')doReset();});
@@ -1004,6 +981,7 @@ setLang('zh');
     <input id="profile-nick-input" type="text" placeholder="设置昵称（最多20字）" maxlength="20">
     <button id="profile-save-btn" onclick="saveProfile()">保　存</button>
     <div id="profile-msg"></div>
+    <button onclick="logout()" style="margin-top:14px;background:none;border:none;color:rgba(220,80,80,.45);cursor:pointer;font-size:.75rem;letter-spacing:1px;font-family:inherit;transition:color .2s" onmouseover="this.style.color='rgba(220,80,80,.85)'" onmouseout="this.style.color='rgba(220,80,80,.45)'">退出登录</button>
   </div>
 </div>
 
