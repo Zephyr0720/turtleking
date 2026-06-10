@@ -372,6 +372,31 @@ body.light .forum-detail-title{color:#8a6a14}
 #fc-input:focus{border-color:rgba(212,175,55,.45)}
 #fc-send{background:linear-gradient(135deg,#7a1515,#c9960a);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:#f5e6b0;flex-shrink:0}
 .forum-empty{text-align:center;color:rgba(212,175,55,.3);padding:50px;font-size:.85rem}
+#forum-media-row{margin-top:12px}
+.forum-media-pick{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.25);color:#d4af37;padding:8px 16px;border-radius:100px;cursor:pointer;font-size:.78rem;font-family:"Songti SC",serif;transition:background .2s}
+.forum-media-pick:hover{background:rgba(212,175,55,.12)}
+#forum-media-preview{margin-top:12px}
+#forum-media-preview img,#forum-media-preview video{max-width:100%;max-height:240px;border-radius:10px;display:block}
+.forum-media-img{max-width:100%;border-radius:12px;margin:4px 0 16px;display:block}
+.forum-media-vid{max-width:100%;border-radius:12px;margin:4px 0 16px;background:#000;display:block}
+.forum-media-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:.72rem;color:rgba(212,175,55,.55);background:rgba(212,175,55,.06);padding:3px 10px;border-radius:100px}
+/* 写信弹窗 */
+#contact-modal{position:fixed;inset:0;z-index:8600;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center}
+#contact-modal.open{display:flex}
+#contact-box{background:linear-gradient(160deg,#120a04,#0a0602);border:1px solid rgba(212,175,55,.2);border-radius:22px;width:min(420px,92vw);padding:34px 30px;box-shadow:0 20px 70px rgba(0,0,0,.9);position:relative}
+#contact-title{font-family:"Songti SC",serif;color:#d4af37;font-size:1.05rem;letter-spacing:2px;margin-bottom:20px;text-align:center}
+#contact-title span{color:#f3e5ab}
+#contact-subject,#contact-message{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:10px;padding:11px 14px;color:#e8dcc8;font-size:.85rem;font-family:inherit;outline:none;margin-bottom:12px}
+#contact-message{min-height:130px;resize:vertical;line-height:1.7}
+#contact-subject:focus,#contact-message:focus{border-color:rgba(212,175,55,.45)}
+#contact-send{width:100%;padding:11px;background:linear-gradient(135deg,#8b1a1a,#b8922a);border:none;border-radius:10px;color:#fff;font-family:"Songti SC",serif;font-size:.9rem;letter-spacing:4px;cursor:pointer;transition:opacity .2s}
+#contact-send:hover{opacity:.85}#contact-send:disabled{opacity:.5;cursor:not-allowed}
+#contact-msg{text-align:center;font-size:.78rem;min-height:1.2em;margin-top:10px;color:rgba(212,175,55,.7)}
+.member-mail{margin-top:10px;font-size:.72rem;color:rgba(212,175,55,.5);cursor:pointer;border:1px solid rgba(212,175,55,.22);border-radius:100px;padding:5px 16px;display:inline-block;transition:all .2s}
+.member-mail:hover{color:#d4af37;border-color:rgba(212,175,55,.55)}
+body.light #contact-box{background:linear-gradient(160deg,#fdf7e8,#f3ead6)!important}
+body.light #contact-subject,body.light #contact-message{background:rgba(255,255,255,.7);color:#4a3b22}
+body.light .forum-media-badge{background:rgba(156,122,24,.1);color:rgba(120,90,20,.7)}
 
 /* ── MARQUEE ── */
 .marq-section{background:linear-gradient(180deg,#000 0%,#080402 18%,#080402 100%);padding:110px 0 100px;overflow:hidden}
@@ -872,12 +897,43 @@ async function loadMembers(){
         ?`<div class="member-av"><img src="${WORKER}/avatar/${m.avatarHash}" alt="" onerror="this.parentNode.innerHTML='${initial}'"></div>`
         :`<div class="member-av">${initial}</div>`;
       const isMe=_userProfile.id&&m.id===_userProfile.id;
+      const nm=(m.name||'').replace(/</g,'&lt;').replace(/'/g,'&#39;');
       const editBtn=isMe?`<div class="member-edit" onclick="openProfileModal()">✏️ 编辑我的资料</div>`:'';
+      const mailBtn=(!isMe&&m.hasEmail)?`<div class="member-mail" onclick="openContact('${m.id}','${nm}')">✉️ 发邮件</div>`:'';
       const crown=m.isAdmin?'<div class="member-crown">👑</div>':'';
       const bio=(m.bio||'还没有简介').replace(/</g,'&lt;');
-      return`<div class="member-card${m.isAdmin?' is-admin':''}">${crown}${av}<div class="member-name">${(m.name||'').replace(/</g,'&lt;')}</div><div class="member-bio">${bio}</div>${editBtn}</div>`;
+      return`<div class="member-card${m.isAdmin?' is-admin':''}">${crown}${av}<div class="member-name">${(m.name||'').replace(/</g,'&lt;')}</div><div class="member-bio">${bio}</div>${editBtn}${mailBtn}</div>`;
     }).join('');
   }catch{grid.innerHTML='<div class="members-locked">加载失败</div>';}
+}
+
+/* ── 给成员写信 ── */
+let _contactToId=null;
+function openContact(id,name){
+  if(!_gbToken){openModal();return;}
+  _contactToId=id;
+  document.getElementById('contact-to-name').textContent=name;
+  document.getElementById('contact-subject').value='';
+  document.getElementById('contact-message').value='';
+  document.getElementById('contact-msg').textContent='';
+  document.getElementById('contact-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('contact-message').focus(),100);
+}
+function closeContact(){document.getElementById('contact-modal').classList.remove('open');}
+async function sendContact(){
+  const subject=document.getElementById('contact-subject').value.trim();
+  const message=document.getElementById('contact-message').value.trim();
+  const msg=document.getElementById('contact-msg');
+  const btn=document.getElementById('contact-send');
+  if(!message){msg.style.color='#e87070';msg.textContent='请输入内容';return;}
+  btn.disabled=true;btn.textContent='发送中...';msg.textContent='';
+  try{
+    const res=await fetch(`${WORKER}/contact`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({toId:_contactToId,subject,message})});
+    const data=await res.json();
+    if(data.success){msg.style.color='#6ecf8e';msg.textContent='信件已送达 ✓';setTimeout(closeContact,1300);}
+    else{msg.style.color='#e87070';msg.textContent=data.error||'发送失败';}
+  }catch{msg.style.color='#e87070';msg.textContent='连接失败';}
+  finally{btn.disabled=false;btn.textContent='发　送';}
 }
 
 function showAdminBtn(token){
@@ -1019,6 +1075,7 @@ function openProfileModal(){
   if(!_gbToken){openModal();return;}
   document.getElementById('profile-nick-input').value=_userProfile.nickname||'';
   document.getElementById('profile-bio-input').value=_userProfile.bio||'';
+  document.getElementById('profile-email-input').value=_userProfile.contactEmail||'';
   document.getElementById('profile-msg').textContent='';
   const circle=document.getElementById('pa-circle');
   if(_userProfile.avatarHash){
@@ -1033,19 +1090,20 @@ function closeProfileModal(){document.getElementById('profile-modal').classList.
 async function saveProfile(){
   const nick=document.getElementById('profile-nick-input').value.trim();
   const bio=document.getElementById('profile-bio-input').value.trim();
+  const contactEmail=document.getElementById('profile-email-input').value.trim();
   const msg=document.getElementById('profile-msg');
   const btn=document.getElementById('profile-save-btn');
   btn.disabled=true;btn.textContent='保存中...';msg.textContent='';
   try{
-    const res=await fetch(`${WORKER}/profile`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({nickname:nick,bio})});
+    const res=await fetch(`${WORKER}/profile`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({nickname:nick,bio,contactEmail})});
     const data=await res.json();
     if(data.success){
       msg.style.color='#6ecf8e';msg.textContent='保存成功';
-      _userProfile.nickname=nick;_userProfile.bio=bio;
+      _userProfile.nickname=nick;_userProfile.bio=bio;_userProfile.contactEmail=data.contactEmail||'';
       await loadProfile();
       loadMembers();
       setTimeout(closeProfileModal,1200);
-    }else{msg.style.color='#e87070';msg.textContent='保存失败';}
+    }else{msg.style.color='#e87070';msg.textContent=data.error||'保存失败';}
   }catch{msg.style.color='#e87070';msg.textContent='连接失败';}
   finally{btn.disabled=false;btn.textContent='保　存';}
 }
@@ -1214,12 +1272,26 @@ function forumBackToList(){
   showForumView('forum-list');
   loadPosts();
 }
+let _forumMedia=null;
 function forumCompose(){
   if(!_gbToken){closeGuestbook();openModal();return;}
   document.getElementById('forum-title-input').value='';
   document.getElementById('forum-content-input').value='';
+  document.getElementById('forum-media-file').value='';
+  document.getElementById('forum-media-name').textContent='';
+  document.getElementById('forum-media-preview').innerHTML='';
+  _forumMedia=null;
   showForumView('forum-compose');
   setTimeout(()=>document.getElementById('forum-content-input').focus(),100);
+}
+function handleForumMedia(input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>25*1024*1024){document.getElementById('forum-media-name').textContent='文件不能超过25MB';input.value='';return;}
+  _forumMedia=file;
+  document.getElementById('forum-media-name').textContent=file.name;
+  const prev=document.getElementById('forum-media-preview');
+  const url=URL.createObjectURL(file);
+  prev.innerHTML=file.type.startsWith('video')?`<video src="${url}" controls></video>`:`<img src="${url}" alt="">`;
 }
 async function loadPosts(){
   const box=document.getElementById('forum-list');
@@ -1235,6 +1307,7 @@ async function loadPosts(){
         <div class="forum-item-head">${av}<div><div class="forum-meta-name">${esc(p.authorName)}</div><div class="forum-meta-time">${fmtMsgTime(p.time)}</div></div></div>
         ${p.title&&p.title!=='无标题'?`<div class="forum-title-text">${esc(p.title)}</div>`:''}
         <div class="forum-body-preview">${esc(p.body)}</div>
+        ${p.mediaType==='image'?'<div class="forum-media-badge">🖼 含图片</div>':p.mediaType==='video'?'<div class="forum-media-badge">🎬 含视频</div>':''}
         <div class="forum-stats">
           <span class="forum-stat-btn ${p.liked?'on-like':''}">❤ ${p.likeCount}</span>
           <span class="forum-stat-btn">💬 ${p.commentCount}</span>
@@ -1248,13 +1321,18 @@ async function submitPost(){
   const title=document.getElementById('forum-title-input').value.trim();
   const content=document.getElementById('forum-content-input').value.trim();
   const btn=document.getElementById('forum-submit');
-  if(!title&&!content)return;
-  btn.disabled=true;btn.textContent='发布中...';
+  if(!title&&!content&&!_forumMedia)return;
+  btn.disabled=true;btn.textContent=_forumMedia?'上传中...':'发布中...';
   try{
-    const res=await fetch(`${WORKER}/posts`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({title,content})});
+    const form=new FormData();
+    form.append('title',title);form.append('content',content);
+    if(_forumMedia)form.append('media',_forumMedia);
+    const res=await fetch(`${WORKER}/posts`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken},body:form});
     const data=await res.json();
-    if(data.success){forumBackToList();}
-  }finally{btn.disabled=false;btn.textContent='发布';}
+    if(data.success){_forumMedia=null;forumBackToList();}
+    else{alert(data.error||'发布失败');}
+  }catch{alert('发布失败，请重试');}
+  finally{btn.disabled=false;btn.textContent='发布';}
 }
 async function openPost(id){
   _curPostId=id;
@@ -1271,11 +1349,14 @@ async function openPost(id){
       const cav=avatarHTML(c.avatarHash,c.name,'fc-av','fc-av-init');
       return`<div class="fc-item"><div class="fc-head">${cav}<span class="fc-name">${esc(c.name)}</span><span class="fc-time">${fmtMsgTime(c.time)}</span></div><div class="fc-text">${esc(c.text)}</div></div>`;
     }).join('');
+    const mediaHtml=p.mediaType==='image'?`<img id="pd-media" class="forum-media-img" alt="">`
+      :p.mediaType==='video'?`<video id="pd-media" class="forum-media-vid" controls playsinline></video>`:'';
     box.innerHTML=`
       <button class="forum-back" onclick="forumBackToList()">← 返回列表</button>
       <div class="forum-item-head">${av}<div><div class="forum-meta-name">${esc(p.authorName)}</div><div class="forum-meta-time">${fmtMsgTime(p.time)}</div></div></div>
       ${p.title&&p.title!=='无标题'?`<div class="forum-detail-title">${esc(p.title)}</div>`:''}
-      <div class="forum-detail-body">${esc(p.body)}</div>
+      ${p.body?`<div class="forum-detail-body">${esc(p.body)}</div>`:''}
+      ${mediaHtml}
       <div class="forum-detail-actions">
         <button class="forum-stat-btn ${p.liked?'on-like':''}" id="pd-like" onclick="togglePostLike('${p.id}')">❤ <span id="pd-like-n">${p.likeCount}</span></button>
         <button class="forum-stat-btn ${p.faved?'on-fav':''}" id="pd-fav" onclick="togglePostFav('${p.id}')">★ <span id="pd-fav-n">${p.favCount}</span></button>
@@ -1287,6 +1368,10 @@ async function openPost(id){
         <input id="fc-input" type="text" placeholder="写评论..." maxlength="500" onkeydown="if(event.key==='Enter')submitComment()">
         <button id="fc-send" onclick="submitComment()">➤</button>
       </div>`;
+    if(p.mediaType){
+      fetch(`${WORKER}/forum-media/${p.id}`,{headers:{Authorization:'Bearer '+_gbToken}})
+        .then(r=>r.ok?r.blob():null).then(b=>{const el=document.getElementById('pd-media');if(b&&el)el.src=URL.createObjectURL(b);}).catch(()=>{});
+    }
   }catch{box.innerHTML='<div class="forum-empty">加载失败</div>';}
 }
 async function togglePostLike(id){
@@ -1431,12 +1516,30 @@ setLang('zh');
     <div id="forum-compose" class="forum-view" style="display:none">
       <input id="forum-title-input" type="text" placeholder="标题（选填）" maxlength="60">
       <textarea id="forum-content-input" placeholder="在龟兹论坛说点什么..." maxlength="2000"></textarea>
+      <div id="forum-media-row">
+        <button type="button" class="forum-media-pick" onclick="document.getElementById('forum-media-file').click()">🖼 添加图片 / 视频</button>
+        <span id="forum-media-name" style="font-size:.74rem;color:rgba(212,175,55,.45);margin-left:10px"></span>
+        <input id="forum-media-file" type="file" accept="image/*,video/mp4,video/webm" style="display:none" onchange="handleForumMedia(this)">
+        <div id="forum-media-preview"></div>
+      </div>
       <div class="forum-compose-actions">
         <button onclick="forumBackToList()" class="forum-btn-ghost">取消</button>
         <button id="forum-submit" onclick="submitPost()" class="forum-btn-gold">发布</button>
       </div>
     </div>
     <div id="forum-detail" class="forum-view" style="display:none"></div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div id="contact-modal" onclick="if(event.target===this)closeContact()">
+  <div id="contact-box">
+    <button class="p-modal-close" onclick="closeContact()">✕</button>
+    <div id="contact-title">给 <span id="contact-to-name"></span> 写信</div>
+    <input id="contact-subject" type="text" placeholder="主题（选填）" maxlength="100">
+    <textarea id="contact-message" placeholder="写下你想对TA说的话..." maxlength="2000"></textarea>
+    <button id="contact-send" onclick="sendContact()">发　送</button>
+    <div id="contact-msg"></div>
   </div>
 </div>
 
@@ -1452,6 +1555,7 @@ setLang('zh');
     <input id="avatar-file" type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAvatarSelect(this)">
     <input id="profile-nick-input" type="text" placeholder="设置昵称（最多20字）" maxlength="20">
     <textarea id="profile-bio-input" placeholder="一句话简介（最多120字）" maxlength="120" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:10px 14px;color:#e8dcc8;font-size:.82rem;font-family:inherit;outline:none;text-align:center;resize:vertical;min-height:56px;margin-bottom:12px;line-height:1.6" onfocus="this.style.borderColor='rgba(212,175,55,.45)'" onblur="this.style.borderColor='rgba(212,175,55,.18)'"></textarea>
+    <input id="profile-email-input" type="email" placeholder="接收邮箱（成员给你来信会发到这里，选填）" maxlength="80" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:10px 14px;color:#e8dcc8;font-size:.8rem;font-family:inherit;outline:none;text-align:center;margin-bottom:12px" onfocus="this.style.borderColor='rgba(212,175,55,.45)'" onblur="this.style.borderColor='rgba(212,175,55,.18)'">
     <button id="profile-save-btn" onclick="saveProfile()">保　存</button>
     <div id="profile-msg"></div>
     <button onclick="logout()" style="margin-top:14px;background:none;border:none;color:rgba(220,80,80,.45);cursor:pointer;font-size:.75rem;letter-spacing:1px;font-family:inherit;transition:color .2s" onmouseover="this.style.color='rgba(220,80,80,.85)'" onmouseout="this.style.color='rgba(220,80,80,.45)'">退出登录</button>
