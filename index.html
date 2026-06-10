@@ -58,9 +58,19 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 #enter-btn:hover{background:rgba(212,175,55,.12);border-color:#d4af37}
 
 /* ── LANG BAR ── */
-#lang-bar{position:fixed;top:66px;right:18px;z-index:500;display:flex;gap:4px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.18);border-radius:100px;padding:5px 8px;opacity:0;transition:opacity .5s}
-.lang-btn{background:none;border:none;color:rgba(212,175,55,.55);cursor:pointer;font-size:.72rem;padding:4px 10px;border-radius:100px;transition:all .25s;font-family:inherit}
-.lang-btn:hover{color:#d4af37}.lang-btn.active{background:rgba(212,175,55,.18);color:#d4af37}
+#lang-bar{position:fixed;top:66px;right:18px;z-index:500;opacity:0;transition:opacity .5s}
+#lang-toggle{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.22);border-radius:100px;padding:7px 14px;color:rgba(212,175,55,.75);cursor:pointer;font-size:.74rem;font-family:inherit;letter-spacing:1px;transition:all .25s}
+#lang-toggle:hover{border-color:rgba(212,175,55,.5);color:#d4af37}
+#lang-menu{position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,6,3,.92);backdrop-filter:blur(16px);border:1px solid rgba(212,175,55,.2);border-radius:14px;padding:6px;display:none;flex-direction:column;gap:2px;min-width:140px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+#lang-menu.open{display:flex}
+.lang-opt{background:none;border:none;color:rgba(232,220,200,.7);cursor:pointer;font-size:.78rem;padding:9px 14px;border-radius:9px;transition:all .2s;font-family:inherit;text-align:left;white-space:nowrap}
+.lang-opt:hover{background:rgba(212,175,55,.1);color:#d4af37}.lang-opt.active{background:rgba(212,175,55,.16);color:#d4af37}
+/* 主题切换按钮 */
+#theme-toggle{position:fixed;top:66px;right:140px;z-index:500;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.22);color:#d4af37;cursor:pointer;font-size:.95rem;opacity:0;transition:all .3s;display:flex;align-items:center;justify-content:center}
+#theme-toggle:hover{border-color:rgba(212,175,55,.5);transform:rotate(20deg)}
+[dir="rtl"] #lang-bar{right:auto;left:18px}
+[dir="rtl"] #lang-menu{right:auto;left:0}
+[dir="rtl"] #theme-toggle{right:auto;left:140px}
 
 /* ── MUSIC PLAYER ── */
 #music-player{position:fixed;bottom:18px;left:16px;z-index:400;display:flex;align-items:center;gap:7px;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.3);border-radius:100px;padding:7px 13px 7px 10px;backdrop-filter:blur(14px);box-shadow:0 3px 16px rgba(0,0,0,.5);transition:all .3s}
@@ -207,7 +217,7 @@ body.unlocked .marq-lock{opacity:0}
 .hero-line{width:clamp(70px,18vw,150px);height:1px;background:linear-gradient(90deg,transparent,#d4af37 40%,#8b1a1a,transparent)}
 .hero-gem{width:8px;height:8px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 10px rgba(212,175,55,.8)}
 .scroll-cue{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;animation:heroFadeUp 1.2s ease 1.7s forwards;pointer-events:none}
-.scroll-cue span{font-size:.6rem;letter-spacing:4px;color:rgba(212,175,55,.4);font-family:"Cinzel","Times New Roman",serif}
+.scroll-cue span{font-size:.6rem;letter-spacing:4px;padding-left:4px;color:rgba(212,175,55,.4);font-family:"Cinzel","Times New Roman",serif;text-align:center}
 .scroll-mouse{width:22px;height:34px;border:1.5px solid rgba(212,175,55,.4);border-radius:12px;position:relative}
 .scroll-mouse::after{content:'';position:absolute;top:6px;left:50%;margin-left:-1.5px;width:3px;height:6px;background:#d4af37;border-radius:2px;animation:scrollDot 1.8s ease-in-out infinite}
 @keyframes scrollDot{0%{opacity:0;transform:translateY(0)}30%{opacity:1}70%{opacity:1;transform:translateY(10px)}100%{opacity:0;transform:translateY(12px)}}
@@ -257,6 +267,110 @@ body.unlocked .marq-lock{opacity:0}
 .member-edit{margin-top:14px;font-size:.72rem;color:rgba(212,175,55,.5);cursor:pointer;border:1px solid rgba(212,175,55,.22);border-radius:100px;padding:5px 16px;display:inline-block;transition:all .2s}
 .member-edit:hover{color:#d4af37;border-color:rgba(212,175,55,.55)}
 .member-crown{position:absolute;top:12px;right:15px;font-size:.95rem}
+
+/* ── 浅色主题 ── */
+body.light{background:#f1e7d2;color:#4a3b22}
+body.light .hero{background:radial-gradient(ellipse at 50% 38%,#fbf3e0 0%,#f0e6cf 55%,#e6d8b8 100%)}
+body.light .hero-aura{background:radial-gradient(circle at 50% 50%,rgba(156,122,24,.12) 0%,rgba(180,40,40,.05) 32%,transparent 62%)}
+body.light .hero h1{filter:drop-shadow(0 0 18px rgba(156,122,24,.22))}
+body.light .hero-sub{color:rgba(120,90,20,.8)}
+body.light .scroll-cue span{color:rgba(120,90,20,.5)}
+body.light .scroll-mouse{border-color:rgba(120,90,20,.4)}
+body.light .scroll-mouse::after{background:#9c7a18}
+body.light .statement{background:radial-gradient(ellipse at 50% 50%,#f6ecd6 0%,#ece0c4 72%)}
+body.light .statement-line{color:#4a3b22}
+body.light .statement-sub{color:rgba(120,90,20,.6)}
+body.light .marq-section{background:linear-gradient(180deg,#e6d8b8 0%,#f0e6cf 18%,#f0e6cf 100%)}
+body.light .marq-eyebrow{color:rgba(120,90,20,.5)}
+body.light .history-section{background:linear-gradient(180deg,#f0e6cf 0%,#ece0c2 100%)}
+body.light .gallery-section{background:#f4ecd9}
+body.light .members-section{background:linear-gradient(180deg,#f4ecd9 0%,#efe5cf 100%)}
+body.light .section-header h2,body.light .marq-head h2{text-shadow:none}
+body.light .hist-card{background:rgba(255,255,255,.5);border-color:rgba(156,122,24,.18)}
+body.light .hist-card:hover{background:rgba(255,255,255,.72);border-color:rgba(156,122,24,.35);box-shadow:0 20px 50px rgba(120,90,20,.12)}
+body.light .hist-card p{color:rgba(74,59,34,.78)}
+body.light .hist-num{color:rgba(156,122,24,.1)}
+body.light .photo-card{background:#fffdf7;border-color:rgba(156,122,24,.14)}
+body.light .photo-card:hover{border-color:rgba(156,122,24,.3)}
+body.light .photo-desc{color:rgba(74,59,34,.75)}
+body.light .photo-quote{color:rgba(140,105,25,.85)}
+body.light .photo-anime{color:rgba(150,45,45,.92);background:rgba(180,60,60,.07);border-color:rgba(180,60,60,.16)}
+body.light .member-card{background:rgba(255,255,255,.55);border-color:rgba(156,122,24,.16)}
+body.light .member-card:hover{background:rgba(255,255,255,.78);border-color:rgba(156,122,24,.32)}
+body.light .member-bio{color:rgba(74,59,34,.65)}
+body.light #topnav{background:rgba(244,236,217,.82);border-bottom-color:rgba(156,122,24,.18)}
+body.light .nav-links a{color:rgba(90,70,30,.82)}
+body.light .nav-links a:hover{background:rgba(156,122,24,.1)}
+body.light #nav-name{color:#9c7a18}
+body.light #nav-profile{border-color:rgba(156,122,24,.3)}
+body.light footer{background:#ece0c2;border-top-color:rgba(156,122,24,.15)}
+body.light .footer-text{color:rgba(120,90,20,.45)}
+body.light .footer-copy{color:rgba(120,90,20,.25)}
+body.light #lang-toggle,body.light #theme-toggle{background:rgba(255,255,255,.62);color:#9c7a18;border-color:rgba(156,122,24,.3)}
+body.light #lang-menu{background:rgba(250,244,230,.96);border-color:rgba(156,122,24,.2)}
+body.light .lang-opt{color:rgba(74,59,34,.75)}
+body.light .lang-opt:hover,body.light .lang-opt.active{background:rgba(156,122,24,.12);color:#9c7a18}
+body.light #music-player{background:rgba(255,255,255,.7);border-color:rgba(156,122,24,.25)}
+body.light .modal-box,body.light #chat-modal,body.light #gb-box,body.light #forum-box,body.light #upload-box,body.light #profile-box{background:linear-gradient(160deg,#fdf7e8,#f3ead6)!important;color:#4a3b22}
+body.light .modal-field input,body.light #chat-input,body.light #forum-input,body.light #profile-nick-input,body.light #profile-bio-input,body.light #fc-input{background:rgba(255,255,255,.7);color:#4a3b22;border-color:rgba(156,122,24,.25)}
+body.light .chat-msg.king{background:rgba(180,140,40,.14);color:#4a3b22}
+body.light .chat-msg.user{background:rgba(156,122,24,.16);color:#4a3b22}
+body.light .forum-item,body.light .fc-item{background:rgba(255,255,255,.6);border-color:rgba(156,122,24,.14)}
+body.light .forum-item:hover{border-color:rgba(156,122,24,.3)}
+body.light .forum-title{color:#8a6a14}
+body.light .forum-body-preview,body.light .fc-text{color:rgba(74,59,34,.75)}
+body.light .forum-detail-body{color:rgba(74,59,34,.85)}
+body.light .forum-detail-title{color:#8a6a14}
+
+/* ── 论坛 ── */
+#forum-box{background:linear-gradient(160deg,#120a04,#0a0602);border:1px solid rgba(212,175,55,.2);border-radius:22px;width:min(560px,94vw);height:84vh;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.9);overflow:hidden}
+#forum-head{padding:16px 20px;border-bottom:1px solid rgba(212,175,55,.1);display:flex;align-items:center;gap:12px;flex-shrink:0}
+#forum-title{font-family:"Songti SC",serif;color:#d4af37;font-size:1rem;letter-spacing:3px;flex:1}
+#forum-new-btn{background:linear-gradient(135deg,#7a1515,#c9960a);border:none;color:#f5e6b0;padding:6px 15px;border-radius:100px;cursor:pointer;font-size:.78rem;font-family:"Songti SC",serif;letter-spacing:1px;transition:opacity .2s}
+#forum-new-btn:hover{opacity:.85}
+#forum-close{background:none;border:none;color:rgba(212,175,55,.4);cursor:pointer;font-size:1rem;transition:color .2s}
+#forum-close:hover{color:#d4af37}
+.forum-view{overflow-y:auto;padding:16px 18px;flex:1}
+.forum-view::-webkit-scrollbar{width:3px}.forum-view::-webkit-scrollbar-thumb{background:rgba(212,175,55,.15);border-radius:2px}
+.forum-item{background:rgba(255,255,255,.03);border:1px solid rgba(212,175,55,.08);border-radius:14px;padding:16px;margin-bottom:12px;cursor:pointer;transition:border-color .25s,transform .25s}
+.forum-item:hover{border-color:rgba(212,175,55,.28);transform:translateY(-2px)}
+.forum-item-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.forum-av{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.3);flex-shrink:0}
+.forum-av-init{width:34px;height:34px;border-radius:50%;background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center;color:#d4af37;font-size:.78rem;flex-shrink:0}
+.forum-meta-name{color:#d4af37;font-size:.82rem;font-family:"Songti SC",serif}
+.forum-meta-time{color:rgba(212,175,55,.3);font-size:.66rem;margin-top:1px}
+.forum-title-text{font-family:"Songti SC",serif;color:#e8dcc8;font-size:.98rem;margin-bottom:6px;font-weight:600;word-break:break-word}
+.forum-body-preview{color:rgba(232,220,200,.62);font-size:.82rem;line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.forum-stats{display:flex;gap:18px;margin-top:12px;font-size:.74rem;color:rgba(212,175,55,.45)}
+.forum-stat-btn{cursor:pointer;background:none;border:none;color:rgba(212,175,55,.45);font:inherit;display:flex;align-items:center;gap:5px;padding:0;transition:color .2s}
+.forum-stat-btn:hover{color:#d4af37}
+.forum-stat-btn.on-like{color:#e0708a}.forum-stat-btn.on-fav{color:#d4af37}
+#forum-title-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:10px;padding:11px 14px;color:#e8dcc8;font-size:.9rem;font-family:inherit;outline:none;margin-bottom:10px}
+#forum-content-input{width:100%;min-height:200px;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:10px;padding:12px 14px;color:#e8dcc8;font-size:.86rem;font-family:inherit;outline:none;resize:vertical;line-height:1.7}
+#forum-title-input:focus,#forum-content-input:focus{border-color:rgba(212,175,55,.45)}
+.forum-compose-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+.forum-btn-ghost{background:none;border:1px solid rgba(212,175,55,.25);color:rgba(212,175,55,.7);padding:9px 20px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif}
+.forum-btn-gold{background:linear-gradient(135deg,#8b1a1a,#b8922a);border:none;color:#fff;padding:9px 24px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;letter-spacing:2px}
+.forum-btn-gold:disabled{opacity:.5;cursor:not-allowed}
+.forum-back{background:none;border:none;color:rgba(212,175,55,.6);cursor:pointer;font-size:.82rem;margin-bottom:14px;font-family:"Songti SC",serif}
+.forum-back:hover{color:#d4af37}
+.forum-detail-title{font-family:"Songti SC",serif;color:#d4af37;font-size:1.25rem;margin:6px 0 12px;line-height:1.4;word-break:break-word}
+.forum-detail-body{color:rgba(232,220,200,.82);font-size:.9rem;line-height:1.9;white-space:pre-wrap;word-break:break-word;margin-bottom:16px}
+.forum-detail-actions{display:flex;align-items:center;gap:18px;padding:13px 0;border-top:1px solid rgba(212,175,55,.1);border-bottom:1px solid rgba(212,175,55,.1);margin-bottom:16px}
+.forum-del-link{margin-left:auto;color:rgba(220,80,80,.5);cursor:pointer;font-size:.76rem;background:none;border:none}
+.forum-del-link:hover{color:rgba(220,80,80,.9)}
+.fc-title{color:rgba(212,175,55,.5);font-size:.74rem;letter-spacing:2px;margin-bottom:12px}
+.fc-item{background:rgba(255,255,255,.03);border:1px solid rgba(212,175,55,.06);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.fc-head{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.fc-av{width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.fc-av-init{width:24px;height:24px;border-radius:50%;background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center;color:#d4af37;font-size:.64rem;flex-shrink:0}
+.fc-name{color:#d4af37;font-size:.76rem}.fc-time{color:rgba(212,175,55,.3);font-size:.62rem}
+.fc-text{color:rgba(232,220,200,.78);font-size:.82rem;line-height:1.6;word-break:break-word}
+.fc-input-row{display:flex;gap:8px;margin-top:14px}
+#fc-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:100px;padding:9px 16px;color:#e8dcc8;font-size:.82rem;font-family:inherit;outline:none}
+#fc-input:focus{border-color:rgba(212,175,55,.45)}
+#fc-send{background:linear-gradient(135deg,#7a1515,#c9960a);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;color:#f5e6b0;flex-shrink:0}
+.forum-empty{text-align:center;color:rgba(212,175,55,.3);padding:50px;font-size:.85rem}
 
 /* ── MARQUEE ── */
 .marq-section{background:linear-gradient(180deg,#000 0%,#080402 18%,#080402 100%);padding:110px 0 100px;overflow:hidden}
@@ -390,7 +504,7 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
     <div class="nav-links">
       <a onclick="navGallery()" data-i18n="navGallery">龟兹日志</a>
       <a onclick="navMembers()" data-i18n="navMembers">成员</a>
-      <a onclick="navGuestbook()" data-i18n="navGuestbook">留言板</a>
+      <a onclick="navGuestbook()" data-i18n="navGuestbook">论坛</a>
       <a onclick="navChat()" data-i18n="navChat">国王</a>
       <a class="nav-admin" id="nav-admin-link" onclick="openAdminFromNav()" data-i18n="navAdmin">后台</a>
     </div>
@@ -436,12 +550,22 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
   <button id="enter-btn" onclick="enterSite()">点击进入</button>
 </div>
 
+<!-- THEME TOGGLE -->
+<button id="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+
 <!-- LANG BAR -->
 <div id="lang-bar">
-  <button class="lang-btn active" data-lang="zh" onclick="setLang('zh')">中文</button>
-  <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
-  <button class="lang-btn" data-lang="fr" onclick="setLang('fr')">Français</button>
-  <button class="lang-btn" data-lang="ar" onclick="setLang('ar')">العربية</button>
+  <button id="lang-toggle" onclick="toggleLangMenu()">🌐 <span id="lang-current">中文</span></button>
+  <div id="lang-menu">
+    <button class="lang-opt active" data-lang="zh" onclick="setLang('zh')">中文</button>
+    <button class="lang-opt" data-lang="zh-TW" onclick="setLang('zh-TW')">繁體中文</button>
+    <button class="lang-opt" data-lang="en" onclick="setLang('en')">English</button>
+    <button class="lang-opt" data-lang="ja" onclick="setLang('ja')">日本語</button>
+    <button class="lang-opt" data-lang="ru" onclick="setLang('ru')">Русский</button>
+    <button class="lang-opt" data-lang="es" onclick="setLang('es')">Español</button>
+    <button class="lang-opt" data-lang="fr" onclick="setLang('fr')">Français</button>
+    <button class="lang-opt" data-lang="ar" onclick="setLang('ar')">العربية</button>
+  </div>
 </div>
 
 <!-- LOGIN MODAL -->
@@ -582,10 +706,14 @@ const PHOTOS=[
 ];
 
 const I18N={
-  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',scrollCue:'向下探索',navGallery:'龟兹日志',navMembers:'成员',navGuestbook:'留言板',navChat:'国王',navAdmin:'后台',navLogin:'登录',membersTitle:'龟兹群臣',membersLocked:'登录后查看群臣名册',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
-  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',scrollCue:'SCROLL',navGallery:'Chronicles',navMembers:'Members',navGuestbook:'Guestbook',navChat:'The King',navAdmin:'Admin',navLogin:'Sign In',membersTitle:'The Court',membersLocked:'Sign in to view members',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
+  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',scrollCue:'向下探索',navGallery:'龟兹日志',navMembers:'成员',navGuestbook:'论坛',navChat:'国王',navAdmin:'后台',navLogin:'登录',membersTitle:'龟兹群臣',membersLocked:'登录后查看群臣名册',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
+  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',scrollCue:'SCROLL',navGallery:'Chronicles',navMembers:'Members',navGuestbook:'Forum',navChat:'The King',navAdmin:'Admin',navLogin:'Sign In',membersTitle:'The Court',membersLocked:'Sign in to view members',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
   fr:{siteTitle:'Royaume de Kucha',marqTitle:'Éclats de Lumière',historyTitle:'L\'Histoire de Kucha',h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie.',h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour Tang. Des instruments voyagèrent de Kucha vers la Chine centrale.',h3title:'Les Fresques Sacrées',h3body:'Les Grottes de Kizil comportent plus de 200 salles ornées de fresques. Les traditions grecque, perse, indienne et chinoise y convergèrent.',h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413), fils du roi de Kucha, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise.',galleryTitle:'Chroniques de Kucha',scrollCue:'DÉFILER',navGallery:'Chroniques',navMembers:'Membres',navGuestbook:'Livre d\'or',navChat:'Le Roi',navAdmin:'Admin',navLogin:'Connexion',membersTitle:'La Cour',membersLocked:'Connectez-vous pour voir les membres',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle Illumine les Cieux',statuses:['Chargement...','Récupération des Archives...','Rendu de la Carte...','Éveil de l\'Esprit...','Connexion Ancienne...','Initialisation...']},
-  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',scrollCue:'مرّر',navGallery:'السجلات',navMembers:'الأعضاء',navGuestbook:'دفتر الزوار',navChat:'الملك',navAdmin:'الإدارة',navLogin:'دخول',membersTitle:'البلاط',membersLocked:'سجّل الدخول لعرض الأعضاء',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']}
+  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',scrollCue:'مرّر',navGallery:'السجلات',navMembers:'الأعضاء',navGuestbook:'دفتر الزوار',navChat:'الملك',navAdmin:'الإدارة',navLogin:'دخول',membersTitle:'البلاط',membersLocked:'سجّل الدخول لعرض الأعضاء',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']},
+  'zh-TW':{siteTitle:'龜茲國',marqTitle:'流光拾影',historyTitle:'龜茲史話',h1title:'古國雄風',h1body:'龜茲國，漢代西域三十六國之一，地處今新疆庫車、拜城一帶。自西元前二世紀起，龜茲便是絲綢之路上最繁華的邦國之一，東西文明於此交匯融合。',h2title:'絲路樂都',h2body:'龜茲樂以其獨特的異域韻律風靡大唐，琵琶、豎箜篌、羯鼓隨龜茲樂人的足跡傳入中原，為中華音樂注入全新血脈。',h3title:'壁畫聖地',h3body:'克孜爾千佛洞，被譽為「中國的第二個敦煌」，綿延兩公里的山崖間鑿有二百餘座洞窟，窟內壁畫斑斕，是四大文明藝術匯聚之處。',h4title:'鳩摩羅什',h4body:'鳩摩羅什（約344—413年），龜茲國王之子，是中國歷史上最偉大的佛經翻譯家之一。',galleryTitle:'龜茲日誌',scrollCue:'向下探索',navGallery:'龜茲日誌',navMembers:'成員',navGuestbook:'論壇',navChat:'國王',navAdmin:'後台',navLogin:'登入',membersTitle:'龜茲群臣',membersLocked:'登入後查看群臣名冊',footerText:'龜茲國 · 王的領地 · 願絲路明珠永耀蒼穹',statuses:['正在載入王國...','調取歷史檔案...','渲染絲路地圖...','喚醒龜茲精魂...','連接古代頻率...','初始化王者系統...']},
+  ja:{siteTitle:'亀茲国',marqTitle:'流光の記憶',historyTitle:'亀茲の歴史',h1title:'古国の威風',h1body:'亀茲国は漢代の西域三十六国の一つで、現在の新疆クチャ一帯に位置した。紀元前2世紀よりシルクロード上で最も繁栄した国の一つであり、東西文明がここで交わった。',h2title:'音楽の都',h2body:'亀茲の音楽は唐の宮廷を魅了した。琵琶、箜篌、羯鼓などの楽器が亀茲から中原へ伝わり、中華音楽に新たな血脈を注いだ。',h3title:'壁画の聖地',h3body:'キジル千仏洞は「中国第二の敦煌」と称され、2キロに及ぶ崖に200以上の石窟が刻まれ、ギリシャ・ペルシャ・インド・中華の芸術が融合する。',h4title:'鳩摩羅什',h4body:'鳩摩羅什（約344〜413年）は亀茲国王の子で、中国史上最も偉大な仏典翻訳者の一人である。',galleryTitle:'亀茲日誌',scrollCue:'スクロール',navGallery:'日誌',navMembers:'メンバー',navGuestbook:'フォーラム',navChat:'国王',navAdmin:'管理',navLogin:'ログイン',membersTitle:'亀茲の群臣',membersLocked:'ログインしてメンバーを表示',footerText:'亀茲国 · 王の領域 · シルクロードの真珠よ永遠に輝け',statuses:['王国を読込中...','歴史記録を取得...','地図を描画中...','魂を呼び覚ます...','古代周波数に接続...','システム初期化...']},
+  ru:{siteTitle:'Царство Куча',marqTitle:'Проблески света',historyTitle:'История Кучи',h1title:'Древнее царство',h1body:'Царство Куча — одно из 36 царств Западного края эпохи Хань, располагавшееся на территории современного Синьцзяна. Со II века до н.э. Куча была одним из самых процветающих государств Шёлкового пути.',h2title:'Город музыки',h2body:'Музыка Кучи очаровала двор династии Тан. Пипа, кунхоу и барабаны попали из Кучи в Центральный Китай, обогатив китайскую музыку.',h3title:'Священные фрески',h3body:'Пещеры Кизил с более чем 200 гротами называют «вторым Дуньхуаном». Здесь сошлись греческая, персидская, индийская и китайская традиции.',h4title:'Кумараджива',h4body:'Кумараджива (ок. 344—413), сын царя Кучи, — один из величайших переводчиков буддийских текстов в истории Китая.',galleryTitle:'Хроники Кучи',scrollCue:'ВНИЗ',navGallery:'Хроники',navMembers:'Участники',navGuestbook:'Форум',navChat:'Король',navAdmin:'Админ',navLogin:'Войти',membersTitle:'Двор',membersLocked:'Войдите, чтобы увидеть участников',footerText:'Царство Куча · Владения короля · Да сияет жемчужина Шёлкового пути вечно',statuses:['Загрузка царства...','Извлечение архивов...','Отрисовка карты...','Пробуждение духа...','Связь с древностью...','Инициализация...']},
+  es:{siteTitle:'Reino de Kucha',marqTitle:'Destellos de luz',historyTitle:'Historia de Kucha',h1title:'El reino antiguo',h1body:'El Reino de Kucha fue uno de los 36 reinos de las Regiones Occidentales durante la dinastía Han, en el actual Xinjiang. Desde el siglo II a.C. fue uno de los estados más prósperos de la Ruta de la Seda.',h2title:'Ciudad de la música',h2body:'La música de Kucha encantó a la corte Tang. Instrumentos como la pipa y el konghou viajaron de Kucha a China central, enriqueciendo su música.',h3title:'Frescos sagrados',h3body:'Las Cuevas de Kizil, con más de 200 grutas, son llamadas «el segundo Dunhuang». Allí confluyeron las tradiciones griega, persa, india y china.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344—413), hijo del rey de Kucha, es uno de los más grandes traductores de textos budistas de la historia china.',galleryTitle:'Crónicas de Kucha',scrollCue:'BAJAR',navGallery:'Crónicas',navMembers:'Miembros',navGuestbook:'Foro',navChat:'El Rey',navAdmin:'Admin',navLogin:'Entrar',membersTitle:'La Corte',membersLocked:'Inicia sesión para ver los miembros',footerText:'Reino de Kucha · Dominio del Rey · Que la Perla de la Ruta de la Seda brille eternamente',statuses:['Cargando el reino...','Recuperando archivos...','Dibujando el mapa...','Despertando el espíritu...','Conectando...','Inicializando...']}
 };
 
 /* ── Stars & Particles ── */
@@ -997,64 +1125,152 @@ async function deleteUserPhoto(id,cardEl){
     if(data.success&&cardEl)cardEl.remove();
   }catch{}
 }
-async function deleteMessage(id,itemEl){
-  if(!confirm('确定删除这条留言？'))return;
-  try{
-    const res=await fetch(`${WORKER}/guestbook/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+_gbToken}});
-    const data=await res.json();
-    if(data.success&&itemEl)itemEl.remove();
-  }catch{}
-}
-
-/* ── 留言板 ── */
+/* ── 论坛 ── */
 let _gbToken = null;
+let _curPostId = null;
 function fmtMsgTime(ts){
   const d=new Date(ts);
   return d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0')
     +' '+(d.getHours()+'').padStart(2,'0')+':'+(d.getMinutes()+'').padStart(2,'0');
 }
+function avatarHTML(hash,name,cls,initCls){
+  return hash
+    ?`<img class="${cls}" src="${WORKER}/avatar/${hash}" alt="" onerror="this.style.visibility='hidden'">`
+    :`<div class="${initCls}">${(name||'?')[0]}</div>`;
+}
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function showForumView(view){
+  ['forum-list','forum-compose','forum-detail'].forEach(id=>{
+    document.getElementById(id).style.display = (id===view)?'block':'none';
+  });
+}
 async function openGuestbook(){
   document.getElementById('gb-modal').classList.add('open');
-  await loadMessages();
+  forumBackToList();
 }
 function closeGuestbook(){
   document.getElementById('gb-modal').classList.remove('open');
 }
-async function loadMessages(){
-  const box=document.getElementById('gb-messages');
-  if(!_gbToken){box.innerHTML='<div style="color:rgba(212,175,55,.3);text-align:center;padding:40px;font-size:.82rem">请先登录后查看留言</div>';return;}
-  box.innerHTML='<div style="color:rgba(212,175,55,.3);text-align:center;padding:40px;font-size:.82rem">加载中...</div>';
-  try{
-    const res=await fetch(`${WORKER}/guestbook`,{headers:{'Authorization':'Bearer '+_gbToken}});
-    const data=await res.json();
-    if(!data.messages||!data.messages.length){
-      box.innerHTML='<div style="color:rgba(212,175,55,.3);text-align:center;padding:40px;font-size:.82rem">还没有留言，来第一个吧 ✍️</div>';
-      return;
-    }
-    box.innerHTML=data.messages.map(m=>{
-      const av=m.avatarHash
-        ?`<img class="gb-avatar" src="${WORKER}/avatar/${m.avatarHash}" alt="" onerror="this.style.display='none'">`
-        :`<div class="gb-avatar-init">${(m.name||'?')[0]}</div>`;
-      const del=_isAdmin?`<button class="gb-del" onclick="deleteMessage('${m.time}',this.closest('.gb-item'))" title="删除">🗑</button>`:'';
-      return`<div class="gb-item"><div class="gb-item-inner">${av}<div class="gb-content"><div class="gb-meta"><span class="gb-name">${m.name.replace(/</g,'&lt;')}</span><span class="gb-time">${fmtMsgTime(m.time)}</span></div><div class="gb-text">${m.text.replace(/</g,'&lt;')}</div></div>${del}</div></div>`;
-    }).join('');
-  }catch{box.innerHTML='<div style="color:#e87070;text-align:center;padding:40px;font-size:.82rem">加载失败</div>';}
+function forumBackToList(){
+  showForumView('forum-list');
+  loadPosts();
 }
-async function submitMsg(){
-  const inp=document.getElementById('gb-input');
-  const btn=document.getElementById('gb-send');
-  const text=inp.value.trim();
-  if(!text||!_gbToken)return;
-  btn.disabled=true;
+function forumCompose(){
+  if(!_gbToken){closeGuestbook();openModal();return;}
+  document.getElementById('forum-title-input').value='';
+  document.getElementById('forum-content-input').value='';
+  showForumView('forum-compose');
+  setTimeout(()=>document.getElementById('forum-content-input').focus(),100);
+}
+async function loadPosts(){
+  const box=document.getElementById('forum-list');
+  if(!_gbToken){box.innerHTML='<div class="forum-empty">登录后即可浏览与发帖</div>';return;}
+  box.innerHTML='<div class="forum-empty">加载中...</div>';
   try{
-    const res=await fetch(`${WORKER}/guestbook`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_gbToken},
-      body:JSON.stringify({text})
-    });
+    const res=await fetch(`${WORKER}/posts`,{headers:{Authorization:'Bearer '+_gbToken}});
     const data=await res.json();
-    if(data.success){inp.value='';await loadMessages();}
+    if(!data.posts||!data.posts.length){box.innerHTML='<div class="forum-empty">还没有帖子，来发第一帖吧 ✍️</div>';return;}
+    box.innerHTML=data.posts.map(p=>{
+      const av=avatarHTML(p.avatarHash,p.authorName,'forum-av','forum-av-init');
+      return`<div class="forum-item" onclick="openPost('${p.id}')">
+        <div class="forum-item-head">${av}<div><div class="forum-meta-name">${esc(p.authorName)}</div><div class="forum-meta-time">${fmtMsgTime(p.time)}</div></div></div>
+        ${p.title&&p.title!=='无标题'?`<div class="forum-title-text">${esc(p.title)}</div>`:''}
+        <div class="forum-body-preview">${esc(p.body)}</div>
+        <div class="forum-stats">
+          <span class="forum-stat-btn ${p.liked?'on-like':''}">❤ ${p.likeCount}</span>
+          <span class="forum-stat-btn">💬 ${p.commentCount}</span>
+          <span class="forum-stat-btn ${p.faved?'on-fav':''}">★ ${p.favCount}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }catch{box.innerHTML='<div class="forum-empty">加载失败</div>';}
+}
+async function submitPost(){
+  const title=document.getElementById('forum-title-input').value.trim();
+  const content=document.getElementById('forum-content-input').value.trim();
+  const btn=document.getElementById('forum-submit');
+  if(!title&&!content)return;
+  btn.disabled=true;btn.textContent='发布中...';
+  try{
+    const res=await fetch(`${WORKER}/posts`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({title,content})});
+    const data=await res.json();
+    if(data.success){forumBackToList();}
+  }finally{btn.disabled=false;btn.textContent='发布';}
+}
+async function openPost(id){
+  _curPostId=id;
+  const box=document.getElementById('forum-detail');
+  showForumView('forum-detail');
+  box.innerHTML='<div class="forum-empty">加载中...</div>';
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}`,{headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    const p=data.post;
+    if(!p){box.innerHTML='<div class="forum-empty">帖子不存在</div>';return;}
+    const av=avatarHTML(p.avatarHash,p.authorName,'forum-av','forum-av-init');
+    const comments=(p.comments||[]).map(c=>{
+      const cav=avatarHTML(c.avatarHash,c.name,'fc-av','fc-av-init');
+      return`<div class="fc-item"><div class="fc-head">${cav}<span class="fc-name">${esc(c.name)}</span><span class="fc-time">${fmtMsgTime(c.time)}</span></div><div class="fc-text">${esc(c.text)}</div></div>`;
+    }).join('');
+    box.innerHTML=`
+      <button class="forum-back" onclick="forumBackToList()">← 返回列表</button>
+      <div class="forum-item-head">${av}<div><div class="forum-meta-name">${esc(p.authorName)}</div><div class="forum-meta-time">${fmtMsgTime(p.time)}</div></div></div>
+      ${p.title&&p.title!=='无标题'?`<div class="forum-detail-title">${esc(p.title)}</div>`:''}
+      <div class="forum-detail-body">${esc(p.body)}</div>
+      <div class="forum-detail-actions">
+        <button class="forum-stat-btn ${p.liked?'on-like':''}" id="pd-like" onclick="togglePostLike('${p.id}')">❤ <span id="pd-like-n">${p.likeCount}</span></button>
+        <button class="forum-stat-btn ${p.faved?'on-fav':''}" id="pd-fav" onclick="togglePostFav('${p.id}')">★ <span id="pd-fav-n">${p.favCount}</span></button>
+        ${p.canDelete?`<button class="forum-del-link" onclick="deletePost('${p.id}')">🗑 删除</button>`:''}
+      </div>
+      <div class="fc-title">评论 ${(p.comments||[]).length}</div>
+      <div id="fc-list">${comments||'<div style="color:rgba(212,175,55,.25);font-size:.78rem;padding:8px 0">暂无评论，来抢沙发</div>'}</div>
+      <div class="fc-input-row">
+        <input id="fc-input" type="text" placeholder="写评论..." maxlength="500" onkeydown="if(event.key==='Enter')submitComment()">
+        <button id="fc-send" onclick="submitComment()">➤</button>
+      </div>`;
+  }catch{box.innerHTML='<div class="forum-empty">加载失败</div>';}
+}
+async function togglePostLike(id){
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}/like`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(data.success){
+      const btn=document.getElementById('pd-like');
+      document.getElementById('pd-like-n').textContent=data.likeCount;
+      btn.classList.toggle('on-like',data.liked);
+    }
+  }catch{}
+}
+async function togglePostFav(id){
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}/favorite`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(data.success){
+      const btn=document.getElementById('pd-fav');
+      document.getElementById('pd-fav-n').textContent=data.favCount;
+      btn.classList.toggle('on-fav',data.faved);
+    }
+  }catch{}
+}
+async function submitComment(){
+  const inp=document.getElementById('fc-input');
+  const text=inp.value.trim();
+  if(!text||!_curPostId)return;
+  const btn=document.getElementById('fc-send');btn.disabled=true;
+  try{
+    const res=await fetch(`${WORKER}/posts/${_curPostId}/comment`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({text})});
+    const data=await res.json();
+    if(data.success){inp.value='';openPost(_curPostId);}
   }finally{btn.disabled=false;}
+}
+async function deletePost(id){
+  if(!confirm('确定删除这个帖子？'))return;
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(data.success)forumBackToList();
+  }catch{}
 }
 
 let forgotEmail = '';
@@ -1110,34 +1326,59 @@ document.getElementById('login-modal').addEventListener('click',e=>{if(e.target=
 
 /* ── Lang ── */
 let currentLang='zh';
+const LANG_NAMES={zh:'中文','zh-TW':'繁體中文',en:'English',ja:'日本語',ru:'Русский',es:'Español',fr:'Français',ar:'العربية'};
+const LANG_TAGS={zh:'zh-CN','zh-TW':'zh-TW',en:'en',ja:'ja',ru:'ru',es:'es',fr:'fr',ar:'ar'};
+function toggleLangMenu(){document.getElementById('lang-menu').classList.toggle('open');}
 function setLang(lang){
   currentLang=lang;
   const html=document.documentElement;
-  html.lang={zh:'zh-CN',en:'en',fr:'fr',ar:'ar'}[lang];
+  html.lang=LANG_TAGS[lang]||'zh-CN';
   html.dir=lang==='ar'?'rtl':'ltr';
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
-  const t=I18N[lang];
+  const t=I18N[lang]||I18N.zh;
+  document.querySelectorAll('.lang-opt').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  const cur=document.getElementById('lang-current');if(cur)cur.textContent=LANG_NAMES[lang]||'中文';
+  document.getElementById('lang-menu').classList.remove('open');
   document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(t[k]!==undefined)el.textContent=t[k];});
   document.querySelectorAll('[data-gidx]').forEach(el=>{const i=+el.dataset.gidx,f=el.dataset.gfield,ph=PHOTOS[i];el.textContent=(ph[lang]&&ph[lang][f]!==undefined)?ph[lang][f]:ph.zh[f];});
   document.querySelectorAll('[data-midx]').forEach(el=>{const i=+el.dataset.midx,ph=PHOTOS[i];el.textContent=(ph[lang]&&ph[lang].title)?ph[lang].title:ph.zh.title;});
   _statuses=t.statuses||I18N.zh.statuses;
-  document.querySelectorAll('.lv-txt').forEach(e=>e.textContent={zh:'登录后查看',en:'Login to view',fr:'Connexion requise',ar:'سجّل دخولك للمشاهدة'}[lang]||'登录后查看');
+  const lvMap={zh:'登录后查看','zh-TW':'登入後查看',en:'Login to view',ja:'ログインして表示',ru:'Войдите для просмотра',es:'Inicia sesión',fr:'Connexion requise',ar:'سجّل دخولك للمشاهدة'};
+  document.querySelectorAll('.lv-txt').forEach(e=>e.textContent=lvMap[lang]||'登录后查看');
 }
+// 点击空白处收起语言菜单
+document.addEventListener('click',e=>{
+  const bar=document.getElementById('lang-bar');
+  if(bar&&!bar.contains(e.target))document.getElementById('lang-menu').classList.remove('open');
+});
+/* 主题切换 */
+function toggleTheme(){
+  const light=document.body.classList.toggle('light');
+  document.getElementById('theme-toggle').textContent=light?'☀️':'🌙';
+  try{localStorage.setItem('kzg_theme',light?'light':'dark');}catch{}
+}
+(function(){try{if(localStorage.getItem('kzg_theme')==='light'){document.body.classList.add('light');const tb=document.getElementById('theme-toggle');if(tb)tb.textContent='☀️';}}catch{}})();
+
 setLang('zh');
 </script>
 
-<!-- GUESTBOOK -->
+<!-- FORUM -->
 <div id="gb-modal" onclick="if(event.target===this)closeGuestbook()">
-  <div id="gb-box">
-    <div id="gb-head">
-      <span id="gb-title">龟兹国留言板</span>
-      <button id="gb-close" onclick="closeGuestbook()">✕</button>
+  <div id="forum-box">
+    <div id="forum-head">
+      <span id="forum-title">龟兹论坛</span>
+      <button id="forum-new-btn" onclick="forumCompose()">＋ 发帖</button>
+      <button id="forum-close" onclick="closeGuestbook()">✕</button>
     </div>
-    <div id="gb-messages"><div style="color:rgba(212,175,55,.3);text-align:center;padding:40px;font-size:.82rem">加载中...</div></div>
-    <div id="gb-input-row">
-      <input id="gb-input" type="text" placeholder="留下你的话..." maxlength="300" onkeydown="if(event.key==='Enter')submitMsg()">
-      <button id="gb-send" onclick="submitMsg()">➤</button>
+    <div id="forum-list" class="forum-view"></div>
+    <div id="forum-compose" class="forum-view" style="display:none">
+      <input id="forum-title-input" type="text" placeholder="标题（选填）" maxlength="60">
+      <textarea id="forum-content-input" placeholder="在龟兹论坛说点什么..." maxlength="2000"></textarea>
+      <div class="forum-compose-actions">
+        <button onclick="forumBackToList()" class="forum-btn-ghost">取消</button>
+        <button id="forum-submit" onclick="submitPost()" class="forum-btn-gold">发布</button>
+      </div>
     </div>
+    <div id="forum-detail" class="forum-view" style="display:none"></div>
   </div>
 </div>
 
@@ -1273,6 +1514,7 @@ function enterSite(){
   document.getElementById('splash').classList.add('exit');
   document.getElementById('main').style.opacity='1';
   document.getElementById('lang-bar').style.opacity='1';
+  document.getElementById('theme-toggle').style.opacity='1';
   document.getElementById('topnav').classList.add('show');
   const saved=sessionStorage.getItem('kzg_token');
   if(saved&&typeof isTokenAlive==='function'&&isTokenAlive(saved)){doUnlock(saved);}
