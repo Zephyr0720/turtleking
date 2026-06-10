@@ -290,8 +290,37 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
       <div class="modal-field"><input type="password" id="mPass" placeholder="密　码" autocomplete="current-password"></div>
       <button class="modal-btn" id="loginBtn" onclick="tryLogin()">入　境</button>
       <div class="modal-error" id="mErr"></div>
-      <div class="modal-alt"><a href="#" onclick="return switchPanel('question')">无法登录？其他验证方式 →</a></div>
+      <div class="modal-alt">
+        <a href="#" onclick="return switchPanel('question')">其他验证方式 →</a>
+        &nbsp;·&nbsp;
+        <a href="#" onclick="return switchPanel('forgot')">忘记密码？</a>
+      </div>
     </div>
+
+    <!-- 忘记密码：输入邮箱 -->
+    <div id="panel-forgot" style="display:none">
+      <h2 class="modal-title">重置密码</h2>
+      <p class="modal-sub">验证码将发送到你的邮箱</p>
+      <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
+      <div class="modal-field"><input type="email" id="fEmail" placeholder="输入注册邮箱" autocomplete="email"></div>
+      <button class="modal-btn" id="forgotBtn" onclick="sendCode()">发送验证码</button>
+      <div class="modal-error" id="fErr"></div>
+      <div class="modal-alt"><a href="#" onclick="return switchPanel('cred')">← 返回登录</a></div>
+    </div>
+
+    <!-- 忘记密码：输入验证码+新密码 -->
+    <div id="panel-reset" style="display:none">
+      <h2 class="modal-title">设置新密码</h2>
+      <p class="modal-sub">请输入验证码和新密码</p>
+      <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
+      <div class="modal-field"><input type="text" id="rCode" placeholder="6位验证码" maxlength="6" autocomplete="one-time-code"></div>
+      <div class="modal-field"><input type="password" id="rPass" placeholder="新密码（至少6位）" autocomplete="new-password"></div>
+      <div class="modal-field"><input type="password" id="rPass2" placeholder="确认新密码" autocomplete="new-password"></div>
+      <button class="modal-btn" id="resetBtn" onclick="doReset()">确认重置</button>
+      <div class="modal-error" id="rErr"></div>
+      <div class="modal-alt"><a href="#" onclick="return switchPanel('forgot')">← 重新发送</a></div>
+    </div>
+
     <div id="panel-question" style="display:none">
       <h2 class="modal-title">身份验证</h2>
       <p class="modal-sub">回答正确即可解锁</p>
@@ -444,10 +473,14 @@ function isTokenAlive(token){
 function openModal(){document.getElementById('login-modal').classList.add('open');setTimeout(()=>document.getElementById('mUser').focus(),100);}
 function closeModal(){document.getElementById('login-modal').classList.remove('open');}
 function switchPanel(p){
-  document.getElementById('panel-cred').style.display=p==='cred'?'':'none';
-  document.getElementById('panel-question').style.display=p==='question'?'':'none';
-  if(p==='question')setTimeout(()=>document.getElementById('mAns').focus(),100);
-  else setTimeout(()=>document.getElementById('mUser').focus(),100);
+  ['cred','question','forgot','reset'].forEach(id=>{
+    const el=document.getElementById('panel-'+id);
+    if(el) el.style.display=p===id?'':'none';
+  });
+  // 清空错误提示颜色
+  ['fErr','rErr'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.color='';});
+  const focusMap={cred:'mUser',question:'mAns',forgot:'fEmail',reset:'rCode'};
+  if(focusMap[p])setTimeout(()=>document.getElementById(focusMap[p])?.focus(),100);
   return false;
 }
 
@@ -527,9 +560,56 @@ async function tryQuestion(){
   finally{btn.disabled=false;btn.textContent='确　认';}
 }
 
+let forgotEmail = '';
+
+async function sendCode(){
+  const email = document.getElementById('fEmail').value.trim().toLowerCase();
+  const err   = document.getElementById('fErr');
+  const btn   = document.getElementById('forgotBtn');
+  if(!email){err.textContent='请输入邮箱';return;}
+  btn.disabled=true; btn.textContent='发送中...'; err.textContent='';
+  try{
+    await fetch(`${WORKER}/forgot`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    forgotEmail = email;
+    err.style.color='#6ecf8e';
+    err.textContent='验证码已发送（请检查邮箱，10分钟内有效）';
+    setTimeout(()=>switchPanel('reset'), 1500);
+  }catch{err.textContent='发送失败，请稍后重试';}
+  finally{btn.disabled=false; btn.textContent='发送验证码';}
+}
+
+async function doReset(){
+  const code  = document.getElementById('rCode').value.trim();
+  const pass  = document.getElementById('rPass').value.trim();
+  const pass2 = document.getElementById('rPass2').value.trim();
+  const err   = document.getElementById('rErr');
+  const btn   = document.getElementById('resetBtn');
+  if(!code||!pass||!pass2){err.textContent='请填写所有字段';return;}
+  if(pass!==pass2){err.textContent='两次密码不一致';return;}
+  if(pass.length<6){err.textContent='密码至少6位';return;}
+  btn.disabled=true; btn.textContent='重置中...'; err.textContent='';
+  try{
+    const res=await fetch(`${WORKER}/reset`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:forgotEmail,code,password:pass})});
+    const data=await res.json();
+    if(data.success){
+      err.style.color='#6ecf8e';
+      err.textContent='密码重置成功！正在登录...';
+      document.getElementById('mUser').value=forgotEmail;
+      document.getElementById('mPass').value=pass;
+      setTimeout(()=>{switchPanel('cred');tryLogin();},1200);
+    }else{
+      err.textContent=data.error||'重置失败，请重试';
+    }
+  }catch{err.textContent='连接失败，请稍后重试';}
+  finally{btn.disabled=false; btn.textContent='确认重置';}
+}
+
 document.getElementById('mUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('mPass').focus();});
 document.getElementById('mPass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
 document.getElementById('mAns').addEventListener('keydown',e=>{if(e.key==='Enter')tryQuestion();});
+document.getElementById('rCode').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('rPass').focus();});
+document.getElementById('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('rPass2').focus();});
+document.getElementById('rPass2').addEventListener('keydown',e=>{if(e.key==='Enter')doReset();});
 document.getElementById('login-modal').addEventListener('click',e=>{if(e.target===document.getElementById('login-modal'))closeModal();});
 
 /* ── Lang ── */
