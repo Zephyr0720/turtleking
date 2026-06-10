@@ -58,7 +58,7 @@ body{font-family:'Helvetica Neue','PingFang SC',Arial,sans-serif;background:#0a0
 #enter-btn:hover{background:rgba(212,175,55,.12);border-color:#d4af37}
 
 /* ── LANG BAR ── */
-#lang-bar{position:fixed;top:18px;right:18px;z-index:500;display:flex;gap:4px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.18);border-radius:100px;padding:5px 8px;opacity:0;transition:opacity .5s}
+#lang-bar{position:fixed;top:66px;right:18px;z-index:500;display:flex;gap:4px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.18);border-radius:100px;padding:5px 8px;opacity:0;transition:opacity .5s}
 .lang-btn{background:none;border:none;color:rgba(212,175,55,.55);cursor:pointer;font-size:.72rem;padding:4px 10px;border-radius:100px;transition:all .25s;font-family:inherit}
 .lang-btn:hover{color:#d4af37}.lang-btn.active{background:rgba(212,175,55,.18);color:#d4af37}
 
@@ -223,6 +223,41 @@ body.unlocked .marq-lock{opacity:0}
 .reveal.in{opacity:1;transform:none}
 .reveal.dly1{transition-delay:.12s}.reveal.dly2{transition-delay:.24s}.reveal.dly3{transition-delay:.36s}.reveal.dly4{transition-delay:.48s}
 
+/* ── TOP NAV ── */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:600;background:rgba(8,4,2,.72);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(212,175,55,.12);opacity:0;transform:translateY(-100%);transition:opacity .6s ease,transform .6s ease}
+#topnav.show{opacity:1;transform:none}
+.nav-inner{max-width:1180px;margin:0 auto;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:14px}
+.nav-logo{display:flex;align-items:center;gap:8px;cursor:pointer;font-family:"Songti SC",serif;color:#d4af37;font-size:1rem;letter-spacing:3px;flex-shrink:0}
+.nav-logo img{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.4)}
+.nav-links{display:flex;align-items:center;gap:2px;flex:1;justify-content:center}
+.nav-links a{color:rgba(232,220,200,.72);cursor:pointer;font-size:.82rem;letter-spacing:1px;padding:7px 14px;border-radius:100px;transition:all .25s;font-family:"Songti SC",serif;white-space:nowrap}
+.nav-links a:hover{color:#d4af37;background:rgba(212,175,55,.08)}
+.nav-links a.nav-admin{color:rgba(220,160,160,.8);display:none}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+#nav-auth-btn{background:linear-gradient(135deg,#8b1a1a,#b8922a);border:none;color:#fff;padding:7px 18px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.8rem;letter-spacing:2px;transition:opacity .2s}
+#nav-auth-btn:hover{opacity:.85}
+#nav-profile{display:none;align-items:center;gap:7px;cursor:pointer;padding:4px 12px 4px 5px;border-radius:100px;border:1px solid rgba(212,175,55,.25);transition:border-color .25s}
+#nav-profile:hover{border-color:rgba(212,175,55,.6)}
+.nav-av{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.4);flex-shrink:0}
+.nav-av-init{width:26px;height:26px;border-radius:50%;background:rgba(212,175,55,.18);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:#d4af37;flex-shrink:0}
+#nav-name{color:#d4af37;font-size:.8rem;font-family:"Songti SC",serif;letter-spacing:1px;max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:680px){.nav-inner{padding:0 12px;gap:6px}.nav-links a{padding:6px 8px;font-size:.74rem;letter-spacing:0}.nav-logo span{display:none}#nav-name{display:none}#nav-auth-btn{padding:6px 12px;font-size:.74rem}}
+
+/* ── MEMBERS ── */
+.members-section{padding:130px 40px;background:linear-gradient(180deg,#060300 0%,#0a0603 100%)}
+.members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px;max-width:980px;margin:0 auto}
+.members-locked{grid-column:1/-1;text-align:center;color:rgba(212,175,55,.32);padding:54px;font-size:.9rem;letter-spacing:2px}
+.member-card{background:rgba(212,175,55,.03);border:1px solid rgba(212,175,55,.1);border-radius:18px;padding:30px 22px;text-align:center;transition:border-color .4s,transform .4s,background .4s;position:relative}
+.member-card:hover{border-color:rgba(212,175,55,.28);transform:translateY(-5px);background:rgba(212,175,55,.06)}
+.member-card.is-admin{border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.05)}
+.member-av{width:74px;height:74px;border-radius:50%;object-fit:cover;margin:0 auto 14px;border:2px solid rgba(212,175,55,.35);display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,.1);font-size:1.7rem;color:#d4af37;overflow:hidden}
+.member-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.member-name{font-family:"Songti SC",serif;color:#d4af37;font-size:1.05rem;letter-spacing:1px;margin-bottom:8px}
+.member-bio{color:rgba(232,220,200,.58);font-size:.8rem;line-height:1.7;min-height:1.4em;word-break:break-word}
+.member-edit{margin-top:14px;font-size:.72rem;color:rgba(212,175,55,.5);cursor:pointer;border:1px solid rgba(212,175,55,.22);border-radius:100px;padding:5px 16px;display:inline-block;transition:all .2s}
+.member-edit:hover{color:#d4af37;border-color:rgba(212,175,55,.55)}
+.member-crown{position:absolute;top:12px;right:15px;font-size:.95rem}
+
 /* ── MARQUEE ── */
 .marq-section{background:linear-gradient(180deg,#000 0%,#080402 18%,#080402 100%);padding:110px 0 100px;overflow:hidden}
 .marq-head{text-align:center;margin-bottom:48px}
@@ -348,6 +383,27 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 
 <div id="flash"></div>
 
+<!-- TOP NAV -->
+<nav id="topnav">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="scrollTop()"><img src="a.png" alt=""><span>龟兹国</span></div>
+    <div class="nav-links">
+      <a onclick="navGallery()" data-i18n="navGallery">龟兹日志</a>
+      <a onclick="navMembers()" data-i18n="navMembers">成员</a>
+      <a onclick="navGuestbook()" data-i18n="navGuestbook">留言板</a>
+      <a onclick="navChat()" data-i18n="navChat">国王</a>
+      <a class="nav-admin" id="nav-admin-link" onclick="openAdminFromNav()" data-i18n="navAdmin">后台</a>
+    </div>
+    <div class="nav-right">
+      <button id="nav-auth-btn" onclick="openModal()" data-i18n="navLogin">登录</button>
+      <div id="nav-profile" onclick="openProfileModal()">
+        <span id="nav-av-wrap" class="nav-av-init">U</span>
+        <span id="nav-name">我</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
 <!-- SPLASH -->
 <div id="splash">
   <div id="star-field"></div>
@@ -387,9 +443,6 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
   <button class="lang-btn" data-lang="fr" onclick="setLang('fr')">Français</button>
   <button class="lang-btn" data-lang="ar" onclick="setLang('ar')">العربية</button>
 </div>
-
-<!-- UNLOCK BUTTON -->
-<button id="unlock-btn" onclick="openModal()">🔒 解锁照片</button>
 
 <!-- LOGIN MODAL -->
 <div id="login-modal">
@@ -476,9 +529,19 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
     </div>
   </section>
 
-  <section class="gallery-section">
+  <section class="gallery-section" id="gallery-section">
     <div class="section-header reveal"><div class="sec-line"></div><h2 data-i18n="galleryTitle">龟兹日志</h2><div class="sec-line"></div></div>
+    <div class="reveal" id="gallery-upload-row" style="text-align:center;margin-bottom:44px;display:none">
+      <button onclick="openUploadModal()" style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.3);color:#d4af37;padding:11px 26px;border-radius:100px;cursor:pointer;font-family:'Songti SC',serif;font-size:.85rem;letter-spacing:2px;transition:all .3s" onmouseover="this.style.background='rgba(212,175,55,.14)'" onmouseout="this.style.background='rgba(212,175,55,.06)'">📷 上传我的龟兹日志</button>
+    </div>
     <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section class="members-section" id="members-section">
+    <div class="section-header reveal"><div class="sec-line"></div><h2 data-i18n="membersTitle">龟兹群臣</h2><div class="sec-line"></div></div>
+    <div class="members-grid" id="membersGrid">
+      <div class="members-locked" data-i18n="membersLocked">登录后查看群臣名册</div>
+    </div>
   </section>
 
   <footer>
@@ -519,10 +582,10 @@ const PHOTOS=[
 ];
 
 const I18N={
-  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',scrollCue:'向下探索',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
-  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',scrollCue:'SCROLL',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
-  fr:{siteTitle:'Royaume de Kucha',marqTitle:'Éclats de Lumière',historyTitle:'L\'Histoire de Kucha',h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie.',h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour Tang. Des instruments voyagèrent de Kucha vers la Chine centrale.',h3title:'Les Fresques Sacrées',h3body:'Les Grottes de Kizil comportent plus de 200 salles ornées de fresques. Les traditions grecque, perse, indienne et chinoise y convergèrent.',h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413), fils du roi de Kucha, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise.',galleryTitle:'Chroniques de Kucha',scrollCue:'DÉFILER',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle Illumine les Cieux',statuses:['Chargement...','Récupération des Archives...','Rendu de la Carte...','Éveil de l\'Esprit...','Connexion Ancienne...','Initialisation...']},
-  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',scrollCue:'مرّر',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']}
+  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',scrollCue:'向下探索',navGallery:'龟兹日志',navMembers:'成员',navGuestbook:'留言板',navChat:'国王',navAdmin:'后台',navLogin:'登录',membersTitle:'龟兹群臣',membersLocked:'登录后查看群臣名册',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
+  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',scrollCue:'SCROLL',navGallery:'Chronicles',navMembers:'Members',navGuestbook:'Guestbook',navChat:'The King',navAdmin:'Admin',navLogin:'Sign In',membersTitle:'The Court',membersLocked:'Sign in to view members',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
+  fr:{siteTitle:'Royaume de Kucha',marqTitle:'Éclats de Lumière',historyTitle:'L\'Histoire de Kucha',h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie.',h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour Tang. Des instruments voyagèrent de Kucha vers la Chine centrale.',h3title:'Les Fresques Sacrées',h3body:'Les Grottes de Kizil comportent plus de 200 salles ornées de fresques. Les traditions grecque, perse, indienne et chinoise y convergèrent.',h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413), fils du roi de Kucha, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise.',galleryTitle:'Chroniques de Kucha',scrollCue:'DÉFILER',navGallery:'Chroniques',navMembers:'Membres',navGuestbook:'Livre d\'or',navChat:'Le Roi',navAdmin:'Admin',navLogin:'Connexion',membersTitle:'La Cour',membersLocked:'Connectez-vous pour voir les membres',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle Illumine les Cieux',statuses:['Chargement...','Récupération des Archives...','Rendu de la Carte...','Éveil de l\'Esprit...','Connexion Ancienne...','Initialisation...']},
+  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',scrollCue:'مرّر',navGallery:'السجلات',navMembers:'الأعضاء',navGuestbook:'دفتر الزوار',navChat:'الملك',navAdmin:'الإدارة',navLogin:'دخول',membersTitle:'البلاط',membersLocked:'سجّل الدخول لعرض الأعضاء',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']}
 };
 
 /* ── Stars & Particles ── */
@@ -639,20 +702,53 @@ function switchPanel(p){
 function doUnlock(token){
   sessionStorage.setItem('kzg_token',token);
   _gbToken = token;
+  _adminToken = token;
   document.body.classList.add('unlocked');
   document.querySelectorAll('img[data-photo]').forEach(img=>loadPhoto(img,token));
-  const btn=document.getElementById('unlock-btn');
-  btn.textContent='已解锁 ✓';btn.className='done';btn.onclick=null;
-  document.getElementById('gb-btn').style.display='block';
-  document.getElementById('upload-btn').style.display='block';
-  document.getElementById('profile-btn').style.display='flex';
+  document.getElementById('nav-auth-btn').style.display='none';
+  document.getElementById('nav-profile').style.display='flex';
+  document.getElementById('gallery-upload-row').style.display='block';
   closeModal();
-  loadProfile();
+  loadProfile().then(loadMembers);
   loadUserPhotos();
   try{
     const payload=JSON.parse(atob(token.split('.')[0]));
-    if(payload.u==='kuanghaiyang@kucha.org'){_isAdmin=true;showAdminBtn(token);}
+    if(payload.u==='kuanghaiyang@kucha.org'){_isAdmin=true;document.getElementById('nav-admin-link').style.display='inline-block';}
   }catch{}
+}
+
+/* ── 顶栏导航 ── */
+let _adminToken=null;
+function scrollTop(){window.scrollTo({top:0,behavior:'smooth'});}
+function navTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+function navGallery(){navTo('gallery-section');}
+function navMembers(){navTo('members-section');}
+function navGuestbook(){if(_gbToken)openGuestbook();else openModal();}
+function navChat(){toggleChat();}
+function openAdminFromNav(){if(_adminToken)openAdminPanel(_adminToken);}
+
+/* ── 成员名册 ── */
+async function loadMembers(){
+  const grid=document.getElementById('membersGrid');
+  if(!grid)return;
+  if(!_gbToken){grid.innerHTML='<div class="members-locked">登录后查看群臣名册</div>';return;}
+  grid.innerHTML='<div class="members-locked">加载中...</div>';
+  try{
+    const res=await fetch(`${WORKER}/members`,{headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(!data.members||!data.members.length){grid.innerHTML='<div class="members-locked">暂无成员</div>';return;}
+    grid.innerHTML=data.members.map(m=>{
+      const initial=(m.name||'?')[0];
+      const av=m.avatarHash
+        ?`<div class="member-av"><img src="${WORKER}/avatar/${m.avatarHash}" alt="" onerror="this.parentNode.innerHTML='${initial}'"></div>`
+        :`<div class="member-av">${initial}</div>`;
+      const isMe=_userProfile.id&&m.id===_userProfile.id;
+      const editBtn=isMe?`<div class="member-edit" onclick="openProfileModal()">✏️ 编辑我的资料</div>`:'';
+      const crown=m.isAdmin?'<div class="member-crown">👑</div>':'';
+      const bio=(m.bio||'还没有简介').replace(/</g,'&lt;');
+      return`<div class="member-card${m.isAdmin?' is-admin':''}">${crown}${av}<div class="member-name">${(m.name||'').replace(/</g,'&lt;')}</div><div class="member-bio">${bio}</div>${editBtn}</div>`;
+    }).join('');
+  }catch{grid.innerHTML='<div class="members-locked">加载失败</div>';}
 }
 
 function showAdminBtn(token){
@@ -720,26 +816,29 @@ async function loadProfile(){
     const res=await fetch(`${WORKER}/profile`,{headers:{Authorization:'Bearer '+_gbToken}});
     if(res.ok){
       _userProfile=await res.json();
-      const nick=_userProfile.nickname||_userProfile.email.split('@')[0]||'我';
-      const avWrap=document.getElementById('pb-av-wrap');
-      if(_userProfile.avatarHash){
-        avWrap.outerHTML=`<img id="pb-av-wrap" class="pb-avatar" src="${WORKER}/avatar/${_userProfile.avatarHash}" alt="">`;
-      } else {
-        avWrap.className='pb-init';avWrap.textContent=nick[0];
+      const nick=_userProfile.nickname||_userProfile.defaultName||(_userProfile.email||'我').split('@')[0];
+      const wrap=document.getElementById('nav-av-wrap');
+      if(wrap){
+        if(_userProfile.avatarHash){
+          wrap.outerHTML=`<img id="nav-av-wrap" class="nav-av" src="${WORKER}/avatar/${_userProfile.avatarHash}?t=${Date.now()}" alt="">`;
+        } else {
+          wrap.outerHTML=`<span id="nav-av-wrap" class="nav-av-init">${nick[0]}</span>`;
+        }
       }
-      document.getElementById('pb-name').textContent=nick;
+      document.getElementById('nav-name').textContent=nick;
     }
   }catch{}
 }
 function openProfileModal(){
-  const nick=_userProfile.nickname||'';
-  document.getElementById('profile-nick-input').value=nick;
+  if(!_gbToken){openModal();return;}
+  document.getElementById('profile-nick-input').value=_userProfile.nickname||'';
+  document.getElementById('profile-bio-input').value=_userProfile.bio||'';
   document.getElementById('profile-msg').textContent='';
   const circle=document.getElementById('pa-circle');
   if(_userProfile.avatarHash){
-    circle.innerHTML=`<img src="${WORKER}/avatar/${_userProfile.avatarHash}" alt="">`;
+    circle.innerHTML=`<img src="${WORKER}/avatar/${_userProfile.avatarHash}?t=${Date.now()}" alt="">`;
   } else {
-    circle.textContent=(_userProfile.email||'U').split('@')[0][0]||'U';
+    circle.textContent=(_userProfile.defaultName||(_userProfile.email||'U').split('@')[0])[0]||'U';
   }
   document.getElementById('profile-modal').classList.add('open');
   setTimeout(()=>document.getElementById('profile-nick-input').focus(),100);
@@ -747,16 +846,18 @@ function openProfileModal(){
 function closeProfileModal(){document.getElementById('profile-modal').classList.remove('open');}
 async function saveProfile(){
   const nick=document.getElementById('profile-nick-input').value.trim();
+  const bio=document.getElementById('profile-bio-input').value.trim();
   const msg=document.getElementById('profile-msg');
   const btn=document.getElementById('profile-save-btn');
   btn.disabled=true;btn.textContent='保存中...';msg.textContent='';
   try{
-    const res=await fetch(`${WORKER}/profile`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({nickname:nick})});
+    const res=await fetch(`${WORKER}/profile`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({nickname:nick,bio})});
     const data=await res.json();
     if(data.success){
       msg.style.color='#6ecf8e';msg.textContent='保存成功';
-      _userProfile.nickname=nick;
+      _userProfile.nickname=nick;_userProfile.bio=bio;
       await loadProfile();
+      loadMembers();
       setTimeout(closeProfileModal,1200);
     }else{msg.style.color='#e87070';msg.textContent='保存失败';}
   }catch{msg.style.color='#e87070';msg.textContent='连接失败';}
@@ -777,7 +878,7 @@ async function handleAvatarSelect(input){
   try{
     const res=await fetch(`${WORKER}/profile/avatar`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken},body:form});
     const data=await res.json();
-    if(data.success){_userProfile.avatarHash=data.avatarHash;msg.style.color='#6ecf8e';msg.textContent='头像已更新';await loadProfile();}
+    if(data.success){_userProfile.avatarHash=data.avatarHash;msg.style.color='#6ecf8e';msg.textContent='头像已更新';await loadProfile();loadMembers();}
     else{msg.style.color='#e87070';msg.textContent=data.error||'上传失败';}
   }catch{msg.style.color='#e87070';msg.textContent='上传失败';}
 }
@@ -1026,7 +1127,6 @@ setLang('zh');
 </script>
 
 <!-- GUESTBOOK -->
-<button id="gb-btn" onclick="openGuestbook()">📜 留言板</button>
 <div id="gb-modal" onclick="if(event.target===this)closeGuestbook()">
   <div id="gb-box">
     <div id="gb-head">
@@ -1041,12 +1141,6 @@ setLang('zh');
   </div>
 </div>
 
-<!-- PROFILE BTN -->
-<button id="profile-btn" onclick="openProfileModal()">
-  <span id="pb-av-wrap" class="pb-init">U</span>
-  <span id="pb-name">我的资料</span>
-</button>
-
 <!-- PROFILE MODAL -->
 <div id="profile-modal" onclick="if(event.target===this)closeProfileModal()">
   <div id="profile-box">
@@ -1058,14 +1152,12 @@ setLang('zh');
     </div>
     <input id="avatar-file" type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAvatarSelect(this)">
     <input id="profile-nick-input" type="text" placeholder="设置昵称（最多20字）" maxlength="20">
+    <textarea id="profile-bio-input" placeholder="一句话简介（最多120字）" maxlength="120" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:10px 14px;color:#e8dcc8;font-size:.82rem;font-family:inherit;outline:none;text-align:center;resize:vertical;min-height:56px;margin-bottom:12px;line-height:1.6" onfocus="this.style.borderColor='rgba(212,175,55,.45)'" onblur="this.style.borderColor='rgba(212,175,55,.18)'"></textarea>
     <button id="profile-save-btn" onclick="saveProfile()">保　存</button>
     <div id="profile-msg"></div>
     <button onclick="logout()" style="margin-top:14px;background:none;border:none;color:rgba(220,80,80,.45);cursor:pointer;font-size:.75rem;letter-spacing:1px;font-family:inherit;transition:color .2s" onmouseover="this.style.color='rgba(220,80,80,.85)'" onmouseout="this.style.color='rgba(220,80,80,.45)'">退出登录</button>
   </div>
 </div>
-
-<!-- UPLOAD BTN -->
-<button id="upload-btn" onclick="openUploadModal()">📷 上传照片</button>
 
 <!-- UPLOAD MODAL -->
 <div id="upload-modal" onclick="if(event.target===this)closeUploadModal()">
@@ -1083,7 +1175,6 @@ setLang('zh');
 </div>
 
 <!-- CHAT -->
-<button id="chat-btn" onclick="toggleChat()"><span id="chat-btn-crown">👑</span>向国王禀报</button>
 <div id="chat-modal">
   <div id="chat-header">
     <img src="a.png" alt="A">
@@ -1182,8 +1273,7 @@ function enterSite(){
   document.getElementById('splash').classList.add('exit');
   document.getElementById('main').style.opacity='1';
   document.getElementById('lang-bar').style.opacity='1';
-  const ubtn=document.getElementById('unlock-btn');
-  ubtn.style.display='block';
+  document.getElementById('topnav').classList.add('show');
   const saved=sessionStorage.getItem('kzg_token');
   if(saved&&typeof isTokenAlive==='function'&&isTokenAlive(saved)){doUnlock(saved);}
 }
