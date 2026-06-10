@@ -189,19 +189,45 @@ body.unlocked .marq-lock{opacity:0}
 #main{opacity:0;transition:opacity .8s ease}
 
 /* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:radial-gradient(ellipse at 50% 40%,#1c0e06 0%,#0d0703 55%,#000 100%);padding:40px 20px;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r=".6" fill="rgba(212,175,55,.12)"/></svg>') repeat;pointer-events:none}
-.hero-logo{width:110px;height:110px;border-radius:50%;object-fit:cover;margin-bottom:28px;box-shadow:0 0 40px rgba(212,175,55,.3),0 0 80px rgba(180,40,40,.15);border:2px solid rgba(212,175,55,.3)}
-.hero h1{font-family:"Songti SC","STSong",serif;font-size:4.8rem;color:#d4af37;text-shadow:0 0 20px rgba(212,175,55,.5);line-height:1.1;margin-bottom:16px}
-.hero-sub{font-size:1.1rem;color:rgba(212,175,55,.7);letter-spacing:4px;margin-bottom:10px}
-.hero-ornament{display:flex;align-items:center;gap:18px;margin:24px 0}
-.hero-line{width:130px;height:1px;background:linear-gradient(90deg,transparent,#d4af37 40%,#8b1a1a,transparent)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:radial-gradient(ellipse at 50% 38%,#231307 0%,#0d0703 55%,#000 100%);padding:40px 20px;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r=".6" fill="rgba(212,175,55,.12)"/></svg>') repeat;pointer-events:none;z-index:1}
+.hero-aura{position:absolute;width:130vw;height:130vh;left:50%;top:42%;transform:translate(-50%,-50%);background:radial-gradient(circle at 50% 50%,rgba(212,175,55,.12) 0%,rgba(180,40,40,.06) 32%,transparent 62%);animation:auraDrift 16s ease-in-out infinite;pointer-events:none;z-index:0;will-change:transform,opacity}
+@keyframes auraDrift{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7}50%{transform:translate(-50%,-55%) scale(1.18);opacity:1}}
+.hero-dust{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.dust{position:absolute;bottom:-12px;border-radius:50%;background:radial-gradient(circle,#f3e5ab 0%,rgba(212,175,55,0) 70%);opacity:0;animation:dustFloat var(--dd) linear infinite var(--ddl)}
+@keyframes dustFloat{0%{transform:translateY(0) translateX(0);opacity:0}12%{opacity:.85}88%{opacity:.25}100%{transform:translateY(-92vh) translateX(var(--dx));opacity:0}}
+.hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;will-change:transform}
+.hero-logo{width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:30px;box-shadow:0 0 40px rgba(212,175,55,.3),0 0 80px rgba(180,40,40,.15);border:2px solid rgba(212,175,55,.3);animation:heroLogoIn 1.4s cubic-bezier(.16,1,.3,1) both,heroLogoFloat 6s ease-in-out infinite 1.4s}
+@keyframes heroLogoIn{from{opacity:0;transform:scale(.7) translateY(20px);filter:blur(10px)}to{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}}
+@keyframes heroLogoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero h1{font-family:"Songti SC","STSong",serif;font-size:clamp(3rem,9vw,5.6rem);line-height:1.1;margin-bottom:18px;letter-spacing:.05em;background:linear-gradient(180deg,#f9efc4 0%,#d4af37 52%,#a8841f 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(212,175,55,.35));animation:heroFadeUp 1.2s cubic-bezier(.16,1,.3,1) .3s both}
+.hero-sub{font-size:clamp(1rem,2.4vw,1.3rem);color:rgba(212,175,55,.75);letter-spacing:.6em;margin-bottom:10px;padding-left:.6em;animation:heroFadeUp 1.2s cubic-bezier(.16,1,.3,1) .55s both}
+.hero-ornament{display:flex;align-items:center;gap:18px;margin:26px 0;animation:heroFadeUp 1.2s cubic-bezier(.16,1,.3,1) .75s both}
+@keyframes heroFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hero-line{width:clamp(70px,18vw,150px);height:1px;background:linear-gradient(90deg,transparent,#d4af37 40%,#8b1a1a,transparent)}
 .hero-gem{width:8px;height:8px;background:#d4af37;transform:rotate(45deg);box-shadow:0 0 10px rgba(212,175,55,.8)}
+.scroll-cue{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;animation:heroFadeUp 1.2s ease 1.7s forwards;pointer-events:none}
+.scroll-cue span{font-size:.6rem;letter-spacing:4px;color:rgba(212,175,55,.4);font-family:"Cinzel","Times New Roman",serif}
+.scroll-mouse{width:22px;height:34px;border:1.5px solid rgba(212,175,55,.4);border-radius:12px;position:relative}
+.scroll-mouse::after{content:'';position:absolute;top:6px;left:50%;margin-left:-1.5px;width:3px;height:6px;background:#d4af37;border-radius:2px;animation:scrollDot 1.8s ease-in-out infinite}
+@keyframes scrollDot{0%{opacity:0;transform:translateY(0)}30%{opacity:1}70%{opacity:1;transform:translateY(10px)}100%{opacity:0;transform:translateY(12px)}}
+
+/* ── STATEMENT (苹果式大字声明) ── */
+.statement{min-height:86vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px;background:radial-gradient(ellipse at 50% 50%,#160c05 0%,#060300 72%);position:relative;overflow:hidden}
+.statement-line{font-family:"Songti SC","STSong",serif;font-size:clamp(1.7rem,5.4vw,3.9rem);line-height:1.65;color:#e8dcc8;max-width:920px;font-weight:400}
+.statement-line .hl{background:linear-gradient(180deg,#f9efc4,#d4af37 60%,#a8841f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.statement-sub{margin-top:38px;font-size:clamp(.82rem,2vw,1.02rem);color:rgba(212,175,55,.5);letter-spacing:.28em;line-height:2.1;max-width:640px}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(48px);transition:opacity 1.1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.dly1{transition-delay:.12s}.reveal.dly2{transition-delay:.24s}.reveal.dly3{transition-delay:.36s}.reveal.dly4{transition-delay:.48s}
 
 /* ── MARQUEE ── */
-.marq-section{background:#080402;padding:70px 0;overflow:hidden}
-.marq-head{text-align:center;margin-bottom:36px}
-.marq-head h2{font-family:"Songti SC",serif;font-size:1.6rem;color:#d4af37;letter-spacing:8px}
+.marq-section{background:linear-gradient(180deg,#000 0%,#080402 18%,#080402 100%);padding:110px 0 100px;overflow:hidden}
+.marq-head{text-align:center;margin-bottom:48px}
+.marq-eyebrow{font-family:"Cinzel","Times New Roman",serif;font-size:.66rem;letter-spacing:6px;color:rgba(212,175,55,.4);text-transform:uppercase;margin-bottom:14px}
+.marq-head h2{font-family:"Songti SC",serif;font-size:clamp(1.5rem,4vw,2.2rem);color:#d4af37;letter-spacing:8px}
 .marq-wrap{-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 7%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 7%,#000 93%,transparent 100%);overflow:hidden}
 .marq-track{display:flex;gap:14px;width:max-content;animation:marqScroll 60s linear infinite}
 .marq-wrap:hover .marq-track{animation-play-state:paused}
@@ -212,13 +238,15 @@ body.unlocked .marq-lock{opacity:0}
 .marq-card-title{font-family:"Songti SC",serif;font-size:.88rem;color:#d4af37;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 
 /* ── HISTORY ── */
-.history-section{padding:100px 40px;background:linear-gradient(180deg,#080402 0%,#0d0804 100%)}
-.section-header{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:60px}
-.section-header h2{font-family:"Songti SC","STSong",serif;font-size:2.1rem;color:#d4af37;white-space:nowrap;text-shadow:0 0 20px rgba(212,175,55,.3)}
+.history-section{padding:130px 40px;background:linear-gradient(180deg,#080402 0%,#0d0804 100%)}
+.section-header{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:70px}
+.section-header h2{font-family:"Songti SC","STSong",serif;font-size:clamp(1.6rem,4.5vw,2.3rem);color:#d4af37;white-space:nowrap;text-shadow:0 0 20px rgba(212,175,55,.3)}
 .sec-line{flex:1;max-width:180px;height:1px;background:linear-gradient(90deg,transparent,#d4af37 50%,transparent)}
 .history-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:980px;margin:0 auto}
-.hist-card{background:rgba(212,175,55,.03);border:1px solid rgba(212,175,55,.1);border-radius:16px;padding:34px;position:relative;transition:border-color .3s,background .3s}
-.hist-card:hover{border-color:rgba(212,175,55,.25);background:rgba(212,175,55,.06)}
+.hist-card{background:rgba(212,175,55,.03);border:1px solid rgba(212,175,55,.1);border-radius:18px;padding:38px;position:relative;transition:border-color .4s,background .4s,transform .4s,box-shadow .4s;overflow:hidden}
+.hist-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,175,55,.08),transparent 45%);opacity:0;transition:opacity .4s;pointer-events:none}
+.hist-card:hover{border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.06);transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.hist-card:hover::after{opacity:1}
 .hist-num{font-family:"Songti SC",serif;font-size:4.5rem;color:rgba(212,175,55,.07);position:absolute;top:14px;right:20px;line-height:1;user-select:none}
 [dir="rtl"] .hist-num{right:auto;left:20px}
 .hist-card h3{font-family:"Songti SC","STSong",serif;font-size:1.25rem;color:#d4af37;margin-bottom:14px;position:relative}
@@ -227,7 +255,7 @@ body.unlocked .marq-lock{opacity:0}
 .hist-card p{line-height:2;color:rgba(232,220,200,.72);font-size:.88rem;margin-top:16px}
 
 /* ── GALLERY ── */
-.gallery-section{padding:100px 40px;background:#060300}
+.gallery-section{padding:130px 40px;background:#060300}
 .gallery{columns:3;column-gap:16px;max-width:1180px;margin:0 auto}
 .photo-card{break-inside:avoid;margin-bottom:16px;border-radius:14px;overflow:hidden;background:#0f0c09;border:1px solid rgba(212,175,55,.07);transition:border-color .3s}
 .photo-card:hover{border-color:rgba(212,175,55,.2)}
@@ -411,29 +439,45 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 <!-- MAIN -->
 <div id="main">
   <section class="hero">
-    <img class="hero-logo" src="a.png" alt="龟兹国">
-    <div class="hero-ornament"><div class="hero-line"></div><div class="hero-gem"></div><div class="hero-line"></div></div>
-    <h1 data-i18n="siteTitle">龟兹国</h1>
-    <p class="hero-sub">欲擒故纵</p>
+    <div class="hero-aura"></div>
+    <div class="hero-dust" id="heroDust"></div>
+    <div class="hero-inner" id="heroInner">
+      <img class="hero-logo" src="a.png" alt="龟兹国">
+      <div class="hero-ornament"><div class="hero-line"></div><div class="hero-gem"></div><div class="hero-line"></div></div>
+      <h1 data-i18n="siteTitle">龟兹国</h1>
+      <p class="hero-sub">欲擒故纵</p>
+    </div>
+    <div class="scroll-cue">
+      <span data-i18n="scrollCue">向下探索</span>
+      <div class="scroll-mouse"></div>
+    </div>
+  </section>
+
+  <section class="statement">
+    <div class="statement-line reveal">千年丝路，<span class="hl">一念封疆</span>。<br>此处，是<span class="hl">龟兹</span>。</div>
+    <div class="statement-sub reveal dly2">天山南麓的明珠，东西文明的交汇。<br>登入此境，方见王的领地。</div>
   </section>
 
   <section class="marq-section">
-    <div class="marq-head"><h2 data-i18n="marqTitle">流光拾影</h2></div>
-    <div class="marq-wrap"><div class="marq-track" id="marqTrack"></div></div>
+    <div class="marq-head reveal">
+      <div class="marq-eyebrow">CHRONICLE OF LIGHT</div>
+      <h2 data-i18n="marqTitle">流光拾影</h2>
+    </div>
+    <div class="marq-wrap reveal dly1"><div class="marq-track" id="marqTrack"></div></div>
   </section>
 
   <section class="history-section">
-    <div class="section-header"><div class="sec-line"></div><h2 data-i18n="historyTitle">龟兹史话</h2><div class="sec-line"></div></div>
+    <div class="section-header reveal"><div class="sec-line"></div><h2 data-i18n="historyTitle">龟兹史话</h2><div class="sec-line"></div></div>
     <div class="history-grid">
-      <div class="hist-card"><div class="hist-num">壹</div><h3 data-i18n="h1title">古国雄风</h3><p data-i18n="h1body"></p></div>
-      <div class="hist-card"><div class="hist-num">贰</div><h3 data-i18n="h2title">丝路乐都</h3><p data-i18n="h2body"></p></div>
-      <div class="hist-card"><div class="hist-num">叁</div><h3 data-i18n="h3title">壁画圣地</h3><p data-i18n="h3body"></p></div>
-      <div class="hist-card"><div class="hist-num">肆</div><h3 data-i18n="h4title">鸠摩罗什</h3><p data-i18n="h4body"></p></div>
+      <div class="hist-card reveal"><div class="hist-num">壹</div><h3 data-i18n="h1title">古国雄风</h3><p data-i18n="h1body"></p></div>
+      <div class="hist-card reveal dly1"><div class="hist-num">贰</div><h3 data-i18n="h2title">丝路乐都</h3><p data-i18n="h2body"></p></div>
+      <div class="hist-card reveal dly2"><div class="hist-num">叁</div><h3 data-i18n="h3title">壁画圣地</h3><p data-i18n="h3body"></p></div>
+      <div class="hist-card reveal dly3"><div class="hist-num">肆</div><h3 data-i18n="h4title">鸠摩罗什</h3><p data-i18n="h4body"></p></div>
     </div>
   </section>
 
   <section class="gallery-section">
-    <div class="section-header"><div class="sec-line"></div><h2 data-i18n="galleryTitle">龟兹日志</h2><div class="sec-line"></div></div>
+    <div class="section-header reveal"><div class="sec-line"></div><h2 data-i18n="galleryTitle">龟兹日志</h2><div class="sec-line"></div></div>
     <div class="gallery" id="gallery"></div>
   </section>
 
@@ -475,10 +519,10 @@ const PHOTOS=[
 ];
 
 const I18N={
-  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
-  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
-  fr:{siteTitle:'Royaume de Kucha',marqTitle:'Éclats de Lumière',historyTitle:'L\'Histoire de Kucha',h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie.',h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour Tang. Des instruments voyagèrent de Kucha vers la Chine centrale.',h3title:'Les Fresques Sacrées',h3body:'Les Grottes de Kizil comportent plus de 200 salles ornées de fresques. Les traditions grecque, perse, indienne et chinoise y convergèrent.',h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413), fils du roi de Kucha, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise.',galleryTitle:'Chroniques de Kucha',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle Illumine les Cieux',statuses:['Chargement...','Récupération des Archives...','Rendu de la Carte...','Éveil de l\'Esprit...','Connexion Ancienne...','Initialisation...']},
-  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']}
+  zh:{siteTitle:'龟兹国',marqTitle:'流光拾影',historyTitle:'龟兹史话',h1title:'古国雄风',h1body:'龟兹国，汉代西域三十六国之一，地处今新疆库车、拜城一带。自公元前二世纪起，龟兹便是丝绸之路上最繁华的邦国之一，东西文明于此交汇融合。国势鼎盛之时，龟兹据有天山南麓膏腴之地，统辖八万余户，为西域诸国翘楚，声名远播四海。',h2title:'丝路乐都',h2body:'龟兹乐以其独特的异域韵律风靡大唐，"胡部新声"席卷长安，帝王将相无不为之倾倒。琵琶、竖箜篌、羯鼓随龟兹乐人的足迹传入中原，为中华音乐注入全新血脉。',h3title:'壁画圣地',h3body:'克孜尔千佛洞，被誉为"中国的第二个敦煌"，绵延两公里的山崖间凿有二百余座洞窟，窟内壁画斑斓，菩萨飞天，栩栩如生。此处是希腊、波斯、印度、中原四大文明艺术汇聚之处。',h4title:'鸠摩罗什',h4body:'鸠摩罗什（约344—413年），龟兹国王之子，母为天竺公主，是中国历史上最伟大的佛经翻译家之一。其译作《金刚经》《法华经》《阿弥陀经》至今仍是汉传佛教核心经典。',galleryTitle:'龟兹日志',scrollCue:'向下探索',footerText:'龟兹国 · 王的领地 · 愿丝路明珠永耀苍穹',statuses:['正在加载王国...','调取历史档案...','渲染丝路地图...','唤醒龟兹精魂...','连接古代频率...','初始化王者系统...']},
+  en:{siteTitle:'Kingdom of Kucha',marqTitle:'Glimpses of Light',historyTitle:'The History of Kucha',h1title:'The Ancient Kingdom',h1body:'The Kingdom of Kucha was one of the 36 kingdoms of the Western Regions during the Han Dynasty, located in present-day Kuqa, Xinjiang. From the 2nd century BCE, Kucha was one of the most prosperous states along the Silk Road, where Eastern and Western civilizations met.',h2title:'City of Music',h2body:'Kuchean music enchanted the Tang Dynasty court. Instruments like the pipa, konghou, and jie drum traveled from Kucha to Central China, infusing Chinese music with fresh bloodlines.',h3title:'The Sacred Murals',h3body:'The Kizil Thousand-Buddha Caves feature over 200 chambers carved into two kilometers of cliff faces, filled with vivid frescoes. Greek, Persian, Indian, and Chinese artistic traditions converged here.',h4title:'Kumārajīva',h4body:'Kumārajīva (c. 344–413 CE), son of the Kuchean king and an Indian princess, is one of the greatest Buddhist translators in Chinese history. His translations remain core texts of Chinese Buddhism.',galleryTitle:'Chronicles of Kucha',scrollCue:'SCROLL',footerText:'Kingdom of Kucha · The King\'s Domain · May the Silk Road Pearl Forever Illuminate the Heavens',statuses:['Loading the Kingdom...','Retrieving Historical Records...','Rendering the Silk Road Map...','Awakening the Spirit of Kucha...','Connecting Ancient Frequencies...','Initializing Royal Systems...']},
+  fr:{siteTitle:'Royaume de Kucha',marqTitle:'Éclats de Lumière',historyTitle:'L\'Histoire de Kucha',h1title:'L\'Ancien Royaume',h1body:'Le Royaume de Kucha était l\'un des 36 royaumes des Régions Occidentales. Dès le IIe siècle av. J.-C., Kucha était l\'un des États les plus prospères de la Route de la Soie.',h2title:'Cité de la Musique',h2body:'La musique kuchéenne enchanta la cour Tang. Des instruments voyagèrent de Kucha vers la Chine centrale.',h3title:'Les Fresques Sacrées',h3body:'Les Grottes de Kizil comportent plus de 200 salles ornées de fresques. Les traditions grecque, perse, indienne et chinoise y convergèrent.',h4title:'Kumārajīva',h4body:'Kumārajīva (v. 344–413), fils du roi de Kucha, est l\'un des plus grands traducteurs bouddhistes de l\'histoire chinoise.',galleryTitle:'Chroniques de Kucha',scrollCue:'DÉFILER',footerText:'Royaume de Kucha · Le Domaine du Roi · Que la Perle Illumine les Cieux',statuses:['Chargement...','Récupération des Archives...','Rendu de la Carte...','Éveil de l\'Esprit...','Connexion Ancienne...','Initialisation...']},
+  ar:{siteTitle:'مملكة كوتشا',marqTitle:'لمحات من النور',historyTitle:'تاريخ كوتشا',h1title:'المملكة القديمة',h1body:'كانت مملكة كوتشا إحدى ممالك المناطق الغربية. منذ القرن الثاني قبل الميلاد، كانت من أزهى الممالك على طريق الحرير.',h2title:'مدينة الموسيقى',h2body:'أسحرت موسيقى كوتشا بلاط تانغ. آلات انتقلت من كوتشا إلى وسط الصين.',h3title:'لوحات الكهوف المقدسة',h3body:'تُعدّ كهوف كيزيل من أعظم الكنوز الفنية. التقت التقاليد اليونانية والفارسية والهندية والصينية هنا.',h4title:'كومارَجيفا',h4body:'كومارَجيفا (نحو ٣٤٤–٤١٣ م)، ابن ملك كوتشا، أحد أعظم مترجمي الكتب البوذية.',galleryTitle:'سجلات كوتشا',scrollCue:'مرّر',footerText:'مملكة كوتشا · مملكة الملك · ليضيء درة طريق الحرير السماء',statuses:['تحميل المملكة...','استرجاع السجلات...','رسم الخريطة...','إيقاظ الروح...','الاتصال القديم...','تهيئة الأنظمة...']}
 };
 
 /* ── Stars & Particles ── */
@@ -504,10 +548,45 @@ const I18N={
 (function(){
   const g=document.getElementById('gallery');
   PHOTOS.forEach((p,i)=>{
-    const div=document.createElement('div');div.className='photo-card';
+    const div=document.createElement('div');div.className='photo-card reveal';
     div.innerHTML=`<div class="photo-img-wrap"><img data-photo="${p.file}" alt="${p.zh.title}" class="locked"><div class="lock-veil"><span class="lv-icon">🔒</span><p class="lv-txt">登录后查看</p></div></div><div class="photo-caption"><div class="photo-title" data-gidx="${i}" data-gfield="title">${p.zh.title}</div><div class="photo-quote" data-gidx="${i}" data-gfield="quote">${p.zh.quote}</div><div class="photo-author" data-gidx="${i}" data-gfield="author">${p.zh.author}</div><div class="photo-desc" data-gidx="${i}" data-gfield="desc">${p.zh.desc}</div><div class="photo-anime" data-gidx="${i}" data-gfield="anime">${p.zh.anime}</div></div>`;
     g.appendChild(div);
   });
+})();
+
+/* ── Hero 金尘 + 滚动渐显 + 视差 ── */
+(function(){
+  // 金尘漂浮
+  const dust=document.getElementById('heroDust');
+  if(dust){
+    for(let i=0;i<28;i++){
+      const d=document.createElement('div');d.className='dust';
+      const sz=Math.random()*4+1.5;
+      d.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;--dd:${7+Math.random()*8}s;--ddl:${-Math.random()*12}s;--dx:${(Math.random()*120-60)}px`;
+      dust.appendChild(d);
+    }
+  }
+  // 滚动渐显
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+  function observeReveals(){ document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el)); }
+  observeReveals();
+  window._observeReveals=observeReveals; // 供动态加入的卡片复用
+  // Hero 视差（仅作用于内容层，光晕保留自身漂浮动画）
+  const inner=document.getElementById('heroInner');
+  let ticking=false;
+  window.addEventListener('scroll',()=>{
+    if(ticking)return;ticking=true;
+    requestAnimationFrame(()=>{
+      const y=window.scrollY;
+      if(y<window.innerHeight&&inner){
+        inner.style.transform=`translateY(${y*0.28}px)`;
+        inner.style.opacity=String(Math.max(0,1-y/(window.innerHeight*0.75)));
+      }
+      ticking=false;
+    });
+  },{passive:true});
 })();
 
 /* ── Splash ── */
