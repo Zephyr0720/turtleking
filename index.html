@@ -235,7 +235,7 @@ body.unlocked .marq-lock{opacity:0}
 .reveal.dly1{transition-delay:.12s}.reveal.dly2{transition-delay:.24s}.reveal.dly3{transition-delay:.36s}.reveal.dly4{transition-delay:.48s}
 
 /* ── TOP NAV ── */
-#topnav{position:fixed;top:0;left:0;right:0;z-index:600;background:rgba(8,4,2,.72);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(212,175,55,.12);opacity:0;transform:translateY(-100%);transition:opacity .6s ease,transform .6s ease}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:600;background:rgba(8,4,2,.72);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid rgba(212,175,55,.12);box-shadow:0 2px 24px rgba(0,0,0,.28);opacity:0;transform:translateY(-100%);transition:opacity .6s ease,transform .6s ease}
 #topnav.show{opacity:1;transform:none}
 .nav-inner{max-width:1180px;margin:0 auto;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:14px}
 .nav-logo{display:flex;align-items:center;gap:8px;cursor:pointer;font-family:"Songti SC",serif;color:#d4af37;font-size:1rem;letter-spacing:3px;flex-shrink:0}
@@ -563,6 +563,19 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 .edit-save-btn{padding:5px 14px;background:linear-gradient(135deg,#7a1515,#c9960a);border:none;border-radius:6px;color:#f5e6b0;font-size:.75rem;cursor:pointer;margin-right:6px}
 .edit-cancel-btn{padding:5px 12px;background:none;border:1px solid rgba(212,175,55,.2);border-radius:6px;color:rgba(212,175,55,.55);font-size:.75rem;cursor:pointer}
 
+/* ── 全屏面板返回按钮 ── */
+.panel-back{background:none;border:none;color:#d4af37;cursor:pointer;font-size:1.35rem;padding:2px 6px 2px 0;line-height:1;flex-shrink:0;transition:opacity .2s,transform .2s}
+.panel-back:hover{opacity:.65;transform:translateX(-2px)}
+
+/* ── 高级感卡片质感统一 ── */
+.photo-card{box-shadow:0 4px 22px rgba(0,0,0,.22);border-radius:18px!important}
+.photo-card:hover{transform:translateY(-5px);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+.photo-img-wrap img{transition:transform .6s cubic-bezier(.16,1,.3,1),filter .8s,opacity .8s}
+.member-card,.hist-card{box-shadow:0 4px 18px rgba(0,0,0,.18)}
+body.light .photo-card{box-shadow:0 4px 22px rgba(120,90,20,.1)}
+body.light .photo-card:hover{box-shadow:0 18px 44px rgba(120,90,20,.18)}
+body.light .member-card,body.light .hist-card{box-shadow:0 4px 18px rgba(120,90,20,.08)}
+
 /* ════════ 手机端适配 ════════ */
 @media(max-width:680px){
   /* 顶栏：链接横向滚动，避免溢出 */
@@ -624,7 +637,7 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 <!-- TOP NAV -->
 <nav id="topnav">
   <div class="nav-inner">
-    <div class="nav-logo" onclick="scrollTop()"><img src="a.png" alt=""><span>龟兹国</span></div>
+    <div class="nav-logo" onclick="goHome()"><img src="a.png" alt=""><span>龟兹国</span></div>
     <div class="nav-links">
       <a onclick="navGallery()" data-i18n="navGallery">龟兹日志</a>
       <a onclick="navMembers()" data-i18n="navMembers">成员</a>
@@ -972,6 +985,13 @@ function doUnlock(token){
 /* ── 顶栏导航 ── */
 let _adminToken=null;
 function scrollTop(){window.scrollTo({top:0,behavior:'smooth'});}
+function goHome(){
+  ['gb-modal','chat-modal','profile-modal','upload-modal','contact-modal','login-modal'].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.classList.remove('open');
+  });
+  const ap=document.getElementById('admin-panel'); if(ap)ap.remove();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 function navTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
 function navGallery(){navTo('gallery-section');}
 function navMembers(){navTo('members-section');}
@@ -1661,6 +1681,7 @@ setLang('zh');
 <div id="gb-modal" onclick="if(event.target===this)closeGuestbook()">
   <div id="forum-box">
     <div id="forum-head">
+      <button class="panel-back" onclick="goHome()" title="返回主界面">←</button>
       <span id="forum-title">龟兹论坛</span>
       <button id="forum-close" onclick="closeGuestbook()">✕</button>
     </div>
@@ -1734,6 +1755,7 @@ setLang('zh');
 <!-- CHAT -->
 <div id="chat-modal">
   <div id="chat-header">
+    <button class="panel-back" onclick="goHome()" title="返回主界面">←</button>
     <img src="a.png" alt="A">
     <div id="chat-header-info">
       <div id="chat-header-name">龟兹国君主 A</div>
