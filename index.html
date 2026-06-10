@@ -517,6 +517,59 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 .photo-edit-area textarea:focus{border-color:rgba(212,175,55,.4)}
 .edit-save-btn{padding:5px 14px;background:linear-gradient(135deg,#7a1515,#c9960a);border:none;border-radius:6px;color:#f5e6b0;font-size:.75rem;cursor:pointer;margin-right:6px}
 .edit-cancel-btn{padding:5px 12px;background:none;border:1px solid rgba(212,175,55,.2);border-radius:6px;color:rgba(212,175,55,.55);font-size:.75rem;cursor:pointer}
+
+/* ════════ 手机端适配 ════════ */
+@media(max-width:680px){
+  /* 顶栏：链接横向滚动，避免溢出 */
+  #topnav .nav-inner{gap:8px;padding:0 12px}
+  .nav-links{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{flex-shrink:0;padding:6px 9px;font-size:.78rem;letter-spacing:0}
+  .nav-logo span{display:none}
+  #nav-name{display:none}
+  #nav-auth-btn{padding:6px 13px;font-size:.76rem}
+  /* 语言/主题按钮位置收紧 */
+  #lang-bar{top:62px;right:12px}
+  #lang-toggle{padding:6px 11px;font-size:.72rem}
+  #theme-toggle{top:62px;right:118px;width:34px;height:34px;font-size:.88rem}
+}
+@media(max-width:520px){
+  /* 区块内边距整体收紧 */
+  .statement{padding:76px 20px;min-height:auto}
+  .statement-line{font-size:1.65rem;line-height:1.55}
+  .statement-sub{margin-top:26px}
+  .marq-section{padding:70px 0 60px}
+  .marq-head{margin-bottom:34px}
+  .history-section{padding:70px 18px}
+  .gallery-section{padding:70px 18px}
+  .members-section{padding:70px 18px}
+  .section-header{margin-bottom:40px;gap:12px}
+  .sec-line{max-width:60px}
+  .hist-card{padding:26px 22px}
+  .members-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .member-card{padding:22px 14px}
+  .member-av{width:62px;height:62px;font-size:1.4rem}
+  .member-name{font-size:.95rem}
+  .member-bio{font-size:.74rem}
+  .hero-logo{width:96px;height:96px;margin-bottom:24px}
+  /* 弹窗适配窄屏 */
+  .modal-box{width:min(340px,92vw);padding:38px 26px}
+  /* 论坛/聊天全屏内边距 */
+  #forum-head{padding:15px 16px}
+  #forum-title{font-size:1rem;letter-spacing:2px}
+  .forum-view{padding:16px 14px 28px}
+  #chat-header{padding:14px 16px}
+  #chat-messages{padding:18px 14px}
+  .chat-msg{max-width:88%}
+  /* 后台面板 */
+  #admin-panel{padding:18px 12px!important}
+}
+@media(max-width:380px){
+  .members-grid{grid-template-columns:1fr}
+  .nav-links a{padding:6px 7px;font-size:.74rem}
+  #nav-auth-btn{padding:5px 10px;font-size:.72rem}
+  #theme-toggle{right:108px}
+}
 </style>
 </head>
 <body>
