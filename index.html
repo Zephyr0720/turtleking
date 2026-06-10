@@ -251,6 +251,69 @@ footer{padding:60px 40px;text-align:center;background:#040200;border-top:1px sol
 [dir="rtl"] body{font-family:'Helvetica Neue','Noto Sans Arabic',Arial,sans-serif}
 @media(max-width:900px){.gallery{columns:2}.history-grid{grid-template-columns:1fr}.hero h1{font-size:3.2rem}}
 @media(max-width:520px){.gallery{columns:1}.hero h1{font-size:2.4rem}.history-section{padding:70px 20px}.gallery-section{padding:70px 20px}}
+
+/* ── PROFILE ── */
+#profile-btn{position:fixed;top:18px;left:18px;z-index:500;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.4);color:#d4af37;padding:7px 14px 7px 10px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.72rem;letter-spacing:1px;backdrop-filter:blur(12px);display:none;align-items:center;gap:7px;transition:all .3s}
+#profile-btn:hover{border-color:rgba(212,175,55,.7)}
+.pb-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.5);flex-shrink:0}
+.pb-init{width:22px;height:22px;border-radius:50%;background:rgba(212,175,55,.18);display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0}
+#profile-modal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center}
+#profile-modal.open{display:flex}
+#profile-box{background:linear-gradient(160deg,#120a04,#0a0602);border:1px solid rgba(212,175,55,.2);border-radius:22px;width:min(340px,90vw);padding:36px 32px;text-align:center;box-shadow:0 20px 70px rgba(0,0,0,.9);position:relative}
+#profile-title{font-family:"Songti SC",serif;color:#d4af37;font-size:1.05rem;letter-spacing:4px;margin-bottom:22px}
+.pa-wrap{position:relative;width:88px;height:88px;margin:0 auto 18px;cursor:pointer}
+.pa-circle{width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,175,55,.4);box-shadow:0 0 18px rgba(212,175,55,.12);display:flex;align-items:center;justify-content:center;background:rgba(212,175,55,.08);font-size:2rem;color:#d4af37;overflow:hidden}
+.pa-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pa-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:.65rem;color:#d4af37;flex-direction:column;gap:3px}
+.pa-wrap:hover .pa-overlay{opacity:1}
+#profile-nick-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:9px;padding:10px 14px;color:#e8dcc8;font-size:.88rem;font-family:inherit;outline:none;text-align:center;letter-spacing:2px;margin-bottom:12px;transition:border-color .25s}
+#profile-nick-input:focus{border-color:rgba(212,175,55,.45)}
+#profile-save-btn{width:100%;padding:11px;background:linear-gradient(135deg,#8b1a1a,#b8922a);border:none;border-radius:9px;color:#fff;font-family:"Songti SC",serif;font-size:.9rem;letter-spacing:5px;cursor:pointer;transition:opacity .25s}
+#profile-save-btn:hover{opacity:.85}
+#profile-save-btn:disabled{opacity:.5;cursor:not-allowed}
+#profile-msg{margin-top:10px;font-size:.75rem;min-height:1.2em;color:rgba(212,175,55,.7)}
+.p-modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(212,175,55,.35);font-size:1.1rem;cursor:pointer;transition:color .2s}
+.p-modal-close:hover{color:#d4af37}
+
+/* ── UPLOAD PHOTO ── */
+#upload-btn{position:fixed;bottom:128px;left:16px;z-index:400;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.35);color:rgba(212,175,55,.75);padding:9px 18px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.75rem;letter-spacing:2px;backdrop-filter:blur(14px);transition:all .3s;display:none}
+#upload-btn:hover{border-color:rgba(212,175,55,.7);color:#d4af37}
+#upload-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center}
+#upload-modal.open{display:flex}
+#upload-box{background:linear-gradient(160deg,#120a04,#0a0602);border:1px solid rgba(212,175,55,.2);border-radius:22px;width:min(400px,92vw);padding:36px 32px;box-shadow:0 20px 70px rgba(0,0,0,.9);position:relative}
+#upload-title{font-family:"Songti SC",serif;color:#d4af37;font-size:1.05rem;letter-spacing:4px;text-align:center;margin-bottom:22px}
+#upload-drop{border:2px dashed rgba(212,175,55,.22);border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:14px;color:rgba(212,175,55,.45);font-size:.82rem;line-height:2}
+#upload-drop:hover{border-color:rgba(212,175,55,.5);color:#d4af37}
+#upload-preview{max-height:180px;max-width:100%;border-radius:8px;margin-bottom:8px;display:none}
+#upload-submit{width:100%;padding:11px;background:linear-gradient(135deg,#8b1a1a,#b8922a);border:none;border-radius:9px;color:#fff;font-family:"Songti SC",serif;font-size:.88rem;letter-spacing:4px;cursor:pointer;transition:opacity .25s}
+#upload-submit:hover{opacity:.85}
+#upload-submit:disabled{opacity:.5;cursor:not-allowed}
+#upload-msg{text-align:center;font-size:.78rem;min-height:1.2em;margin-top:10px;color:rgba(212,175,55,.7)}
+.u-modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(212,175,55,.35);font-size:1.1rem;cursor:pointer;transition:color .2s}
+.u-modal-close:hover{color:#d4af37}
+
+/* ── GUESTBOOK AVATAR + DELETE ── */
+.gb-item-inner{display:flex;gap:10px;align-items:flex-start}
+.gb-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.3);flex-shrink:0}
+.gb-avatar-init{width:32px;height:32px;border-radius:50%;background:rgba(212,175,55,.12);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#d4af37;flex-shrink:0;border:1px solid rgba(212,175,55,.15)}
+.gb-content{flex:1;min-width:0}
+.gb-del{background:none;border:none;color:rgba(220,80,80,.35);cursor:pointer;font-size:.82rem;padding:2px 4px;transition:color .2s;flex-shrink:0;line-height:1}
+.gb-del:hover{color:rgba(220,80,80,.85)}
+
+/* ── USER PHOTO CARD ── */
+.photo-uploader-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:.7rem;color:rgba(212,175,55,.45)}
+.photo-uploader-av{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.2);flex-shrink:0}
+.photo-uploader-av-init{width:18px;height:18px;border-radius:50%;background:rgba(212,175,55,.12);display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;color:#d4af37}
+.photo-card-actions{display:flex;gap:6px;margin-top:8px}
+.photo-edit-btn{background:none;border:none;color:rgba(212,175,55,.3);cursor:pointer;font-size:.78rem;padding:2px 5px;border-radius:4px;transition:all .2s;border:1px solid transparent}
+.photo-edit-btn:hover{color:#d4af37;border-color:rgba(212,175,55,.3)}
+.photo-del-btn{background:none;border:none;color:rgba(220,80,80,.3);cursor:pointer;font-size:.78rem;padding:2px 5px;border-radius:4px;transition:all .2s;border:1px solid transparent}
+.photo-del-btn:hover{color:rgba(220,80,80,.85);border-color:rgba(220,80,80,.3)}
+.photo-edit-area{display:none;margin-top:10px;border-top:1px solid rgba(212,175,55,.08);padding-top:10px}
+.photo-edit-area textarea{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(212,175,55,.18);border-radius:8px;padding:8px 10px;color:#e8dcc8;font-size:.78rem;font-family:inherit;outline:none;resize:vertical;min-height:52px;margin-bottom:6px}
+.photo-edit-area textarea:focus{border-color:rgba(212,175,55,.4)}
+.edit-save-btn{padding:5px 14px;background:linear-gradient(135deg,#7a1515,#c9960a);border:none;border-radius:6px;color:#f5e6b0;font-size:.75rem;cursor:pointer;margin-right:6px}
+.edit-cancel-btn{padding:5px 12px;background:none;border:1px solid rgba(212,175,55,.2);border-radius:6px;color:rgba(212,175,55,.55);font-size:.75rem;cursor:pointer}
 </style>
 </head>
 <body>
@@ -514,14 +577,15 @@ function doUnlock(token){
   document.querySelectorAll('img[data-photo]').forEach(img=>loadPhoto(img,token));
   const btn=document.getElementById('unlock-btn');
   btn.textContent='已解锁 ✓';btn.className='done';btn.onclick=null;
-  // 显示留言板按钮
-  const gbBtn=document.getElementById('gb-btn');
-  if(gbBtn) gbBtn.style.display='block';
+  document.getElementById('gb-btn').style.display='block';
+  document.getElementById('upload-btn').style.display='block';
+  document.getElementById('profile-btn').style.display='flex';
   closeModal();
-  // 管理员才显示后台按钮
+  loadProfile();
+  loadUserPhotos();
   try{
     const payload=JSON.parse(atob(token.split('.')[0]));
-    if(payload.u==='kuanghaiyang@kucha.org') showAdminBtn(token);
+    if(payload.u==='kuanghaiyang@kucha.org'){_isAdmin=true;showAdminBtn(token);}
   }catch{}
 }
 
@@ -529,7 +593,7 @@ function showAdminBtn(token){
   const ab=document.createElement('button');
   ab.id='admin-btn';
   ab.textContent='管理后台';
-  ab.style.cssText='position:fixed;top:18px;left:18px;z-index:500;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.4);color:#d4af37;padding:8px 18px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.75rem;letter-spacing:2px;backdrop-filter:blur(12px)';
+  ab.style.cssText='position:fixed;top:18px;left:120px;z-index:500;background:rgba(10,6,3,.85);border:1px solid rgba(212,175,55,.4);color:#d4af37;padding:8px 18px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.75rem;letter-spacing:2px;backdrop-filter:blur(12px)';
   ab.onclick=()=>openAdminPanel(token);
   document.body.appendChild(ab);
 }
@@ -587,6 +651,203 @@ async function tryQuestion(){
   finally{btn.disabled=false;btn.textContent='确　认';}
 }
 
+/* ── 全局状态 ── */
+let _isAdmin = false;
+let _userProfile = { email: '', nickname: '', avatarHash: '' };
+let _uploadFile = null;
+
+/* ── 个人资料 ── */
+async function loadProfile(){
+  if(!_gbToken)return;
+  try{
+    const res=await fetch(`${WORKER}/profile`,{headers:{Authorization:'Bearer '+_gbToken}});
+    if(res.ok){
+      _userProfile=await res.json();
+      const nick=_userProfile.nickname||_userProfile.email.split('@')[0]||'我';
+      const avWrap=document.getElementById('pb-av-wrap');
+      if(_userProfile.avatarHash){
+        avWrap.outerHTML=`<img id="pb-av-wrap" class="pb-avatar" src="${WORKER}/avatar/${_userProfile.avatarHash}" alt="">`;
+      } else {
+        avWrap.className='pb-init';avWrap.textContent=nick[0];
+      }
+      document.getElementById('pb-name').textContent=nick;
+    }
+  }catch{}
+}
+function openProfileModal(){
+  const nick=_userProfile.nickname||'';
+  document.getElementById('profile-nick-input').value=nick;
+  document.getElementById('profile-msg').textContent='';
+  const circle=document.getElementById('pa-circle');
+  if(_userProfile.avatarHash){
+    circle.innerHTML=`<img src="${WORKER}/avatar/${_userProfile.avatarHash}" alt="">`;
+  } else {
+    circle.textContent=(_userProfile.email||'U').split('@')[0][0]||'U';
+  }
+  document.getElementById('profile-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('profile-nick-input').focus(),100);
+}
+function closeProfileModal(){document.getElementById('profile-modal').classList.remove('open');}
+async function saveProfile(){
+  const nick=document.getElementById('profile-nick-input').value.trim();
+  const msg=document.getElementById('profile-msg');
+  const btn=document.getElementById('profile-save-btn');
+  btn.disabled=true;btn.textContent='保存中...';msg.textContent='';
+  try{
+    const res=await fetch(`${WORKER}/profile`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({nickname:nick})});
+    const data=await res.json();
+    if(data.success){
+      msg.style.color='#6ecf8e';msg.textContent='保存成功';
+      _userProfile.nickname=nick;
+      await loadProfile();
+      setTimeout(closeProfileModal,1200);
+    }else{msg.style.color='#e87070';msg.textContent='保存失败';}
+  }catch{msg.style.color='#e87070';msg.textContent='连接失败';}
+  finally{btn.disabled=false;btn.textContent='保　存';}
+}
+async function handleAvatarSelect(input){
+  const file=input.files[0];if(!file)return;
+  if(file.size>2*1024*1024){document.getElementById('profile-msg').textContent='图片不能超过2MB';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const c=document.getElementById('pa-circle');
+    c.innerHTML=`<img src="${e.target.result}" alt="">`;
+  };
+  reader.readAsDataURL(file);
+  const msg=document.getElementById('profile-msg');
+  msg.style.color='rgba(212,175,55,.7)';msg.textContent='上传中...';
+  const form=new FormData();form.append('avatar',file);
+  try{
+    const res=await fetch(`${WORKER}/profile/avatar`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken},body:form});
+    const data=await res.json();
+    if(data.success){_userProfile.avatarHash=data.avatarHash;msg.style.color='#6ecf8e';msg.textContent='头像已更新';await loadProfile();}
+    else{msg.style.color='#e87070';msg.textContent=data.error||'上传失败';}
+  }catch{msg.style.color='#e87070';msg.textContent='上传失败';}
+}
+
+/* ── 照片上传 ── */
+function openUploadModal(){
+  _uploadFile=null;
+  document.getElementById('upload-preview').style.display='none';
+  document.getElementById('upload-drop-hint').style.display='';
+  document.getElementById('upload-submit').disabled=true;
+  document.getElementById('upload-msg').textContent='';
+  document.getElementById('upload-file').value='';
+  document.getElementById('upload-modal').classList.add('open');
+}
+function closeUploadModal(){document.getElementById('upload-modal').classList.remove('open');}
+function handlePhotoSelect(input){
+  const file=input.files[0];if(!file)return;
+  _uploadFile=file;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const prev=document.getElementById('upload-preview');
+    prev.src=e.target.result;prev.style.display='block';
+    document.getElementById('upload-drop-hint').textContent=file.name;
+    document.getElementById('upload-submit').disabled=false;
+  };
+  reader.readAsDataURL(file);
+}
+async function submitUpload(){
+  if(!_uploadFile||!_gbToken)return;
+  const btn=document.getElementById('upload-submit');
+  const msg=document.getElementById('upload-msg');
+  btn.disabled=true;btn.textContent='上传中...';
+  msg.style.color='rgba(212,175,55,.7)';msg.textContent='AI 正在生成配文，请稍候...';
+  const form=new FormData();form.append('photo',_uploadFile);
+  try{
+    const res=await fetch(`${WORKER}/photos/upload`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken},body:form});
+    const data=await res.json();
+    if(data.success){
+      msg.style.color='#6ecf8e';msg.textContent='上传成功！照片已加入龟兹日志';
+      addUserPhotoCard(data.photo);
+      setTimeout(closeUploadModal,1500);
+    }else{msg.style.color='#e87070';msg.textContent=data.error||'上传失败';}
+  }catch{msg.style.color='#e87070';msg.textContent='上传失败，请重试';}
+  finally{btn.disabled=false;btn.textContent='上传并生成配文';}
+}
+async function loadUserPhotos(){
+  if(!_gbToken)return;
+  try{
+    const res=await fetch(`${WORKER}/photos/user`,{headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(data.photos&&data.photos.length)data.photos.forEach(p=>addUserPhotoCard(p));
+  }catch{}
+}
+function addUserPhotoCard(photo){
+  const g=document.getElementById('gallery');
+  const existing=document.getElementById(`uphoto-${photo.id}`);
+  if(existing)existing.remove();
+  const canEdit=_userProfile.email===photo.email||_isAdmin;
+  const avHtml=photo.avatarHash
+    ?`<img class="photo-uploader-av" src="${WORKER}/avatar/${photo.avatarHash}" alt="" onerror="this.style.display='none'">`
+    :`<span class="photo-uploader-av-init">${(photo.uploader||'?')[0]}</span>`;
+  const card=document.createElement('div');
+  card.className='photo-card';card.id=`uphoto-${photo.id}`;
+  card.innerHTML=`
+    <div class="photo-img-wrap"><img data-uphoto="${photo.id}" alt="${(photo.caption.title||'').replace(/"/g,'')}" style="opacity:.25;width:100%;display:block"></div>
+    <div class="photo-caption">
+      <div class="photo-uploader-row">${avHtml}<span>${photo.uploader}</span>·投稿</div>
+      <div class="photo-title">${photo.caption.title||''}</div>
+      <div class="photo-quote">${photo.caption.quote||''}</div>
+      <div class="photo-author">${photo.caption.author||''}</div>
+      <div class="photo-desc" id="up-desc-${photo.id}">${photo.caption.desc||''}</div>
+      <div class="photo-anime" id="up-anime-${photo.id}">${photo.caption.anime||''}</div>
+      <div class="photo-card-actions">
+        ${canEdit?`<button class="photo-edit-btn" onclick="toggleEditArea('${photo.id}',this)">✏️ 编辑</button>`:''}
+        ${_isAdmin?`<button class="photo-del-btn" onclick="deleteUserPhoto('${photo.id}',this.closest('.photo-card'))">🗑 删除</button>`:''}
+      </div>
+      <div class="photo-edit-area" id="up-edit-${photo.id}">
+        <textarea id="up-edit-desc-${photo.id}" placeholder="修改描述...">${photo.caption.desc||''}</textarea>
+        <textarea id="up-edit-anime-${photo.id}" placeholder="修改御批...">${photo.caption.anime||''}</textarea>
+        <button class="edit-save-btn" onclick="saveCaption('${photo.id}')">保存</button>
+        <button class="edit-cancel-btn" onclick="toggleEditArea('${photo.id}')">取消</button>
+      </div>
+    </div>`;
+  g.insertBefore(card,g.firstChild);
+  const img=card.querySelector('img[data-uphoto]');
+  fetch(`${WORKER}/uphoto/${photo.id}`,{headers:{Authorization:'Bearer '+_gbToken}})
+    .then(r=>r.ok?r.blob():null).then(b=>{if(b){img.src=URL.createObjectURL(b);img.style.opacity='1';}}).catch(()=>{});
+}
+function toggleEditArea(id,btn){
+  const area=document.getElementById(`up-edit-${id}`);
+  if(!area)return;
+  const showing=area.style.display==='block';
+  area.style.display=showing?'none':'block';
+  if(btn)btn.textContent=showing?'✏️ 编辑':'✏️ 收起';
+}
+async function saveCaption(id){
+  const desc=document.getElementById(`up-edit-desc-${id}`).value.trim();
+  const anime=document.getElementById(`up-edit-anime-${id}`).value.trim();
+  try{
+    const res=await fetch(`${WORKER}/photos/caption/${id}`,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_gbToken},body:JSON.stringify({desc,anime})});
+    const data=await res.json();
+    if(data.success){
+      document.getElementById(`up-desc-${id}`).textContent=desc;
+      document.getElementById(`up-anime-${id}`).textContent=anime;
+      document.getElementById(`up-edit-${id}`).style.display='none';
+      const editBtn=document.getElementById(`uphoto-${id}`).querySelector('.photo-edit-btn');
+      if(editBtn)editBtn.textContent='✏️ 编辑';
+    }
+  }catch{}
+}
+async function deleteUserPhoto(id,cardEl){
+  if(!confirm('确定删除这张照片？'))return;
+  try{
+    const res=await fetch(`${WORKER}/photos/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(data.success&&cardEl)cardEl.remove();
+  }catch{}
+}
+async function deleteMessage(id,itemEl){
+  if(!confirm('确定删除这条留言？'))return;
+  try{
+    const res=await fetch(`${WORKER}/guestbook/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+_gbToken}});
+    const data=await res.json();
+    if(data.success&&itemEl)itemEl.remove();
+  }catch{}
+}
+
 /* ── 留言板 ── */
 let _gbToken = null;
 function fmtMsgTime(ts){
@@ -612,14 +873,13 @@ async function loadMessages(){
       box.innerHTML='<div style="color:rgba(212,175,55,.3);text-align:center;padding:40px;font-size:.82rem">还没有留言，来第一个吧 ✍️</div>';
       return;
     }
-    box.innerHTML=data.messages.map(m=>`
-      <div class="gb-item">
-        <div class="gb-meta">
-          <span class="gb-name">${m.name.replace(/</g,'&lt;')}</span>
-          <span class="gb-time">${fmtMsgTime(m.time)}</span>
-        </div>
-        <div class="gb-text">${m.text.replace(/</g,'&lt;')}</div>
-      </div>`).join('');
+    box.innerHTML=data.messages.map(m=>{
+      const av=m.avatarHash
+        ?`<img class="gb-avatar" src="${WORKER}/avatar/${m.avatarHash}" alt="" onerror="this.style.display='none'">`
+        :`<div class="gb-avatar-init">${(m.name||'?')[0]}</div>`;
+      const del=_isAdmin?`<button class="gb-del" onclick="deleteMessage('${m.time}',this.closest('.gb-item'))" title="删除">🗑</button>`:'';
+      return`<div class="gb-item"><div class="gb-item-inner">${av}<div class="gb-content"><div class="gb-meta"><span class="gb-name">${m.name.replace(/</g,'&lt;')}</span><span class="gb-time">${fmtMsgTime(m.time)}</span></div><div class="gb-text">${m.text.replace(/</g,'&lt;')}</div></div>${del}</div></div>`;
+    }).join('');
   }catch{box.innerHTML='<div style="color:#e87070;text-align:center;padding:40px;font-size:.82rem">加载失败</div>';}
 }
 async function submitMsg(){
@@ -722,6 +982,46 @@ setLang('zh');
       <input id="gb-input" type="text" placeholder="留下你的话..." maxlength="300" onkeydown="if(event.key==='Enter')submitMsg()">
       <button id="gb-send" onclick="submitMsg()">➤</button>
     </div>
+  </div>
+</div>
+
+<!-- PROFILE BTN -->
+<button id="profile-btn" onclick="openProfileModal()">
+  <span id="pb-av-wrap" class="pb-init">U</span>
+  <span id="pb-name">我的资料</span>
+</button>
+
+<!-- PROFILE MODAL -->
+<div id="profile-modal" onclick="if(event.target===this)closeProfileModal()">
+  <div id="profile-box">
+    <button class="p-modal-close" onclick="closeProfileModal()">✕</button>
+    <div id="profile-title">个人资料</div>
+    <div class="pa-wrap" onclick="document.getElementById('avatar-file').click()" title="点击更换头像">
+      <div id="pa-circle" class="pa-circle">U</div>
+      <div class="pa-overlay">📷<br>更换头像</div>
+    </div>
+    <input id="avatar-file" type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAvatarSelect(this)">
+    <input id="profile-nick-input" type="text" placeholder="设置昵称（最多20字）" maxlength="20">
+    <button id="profile-save-btn" onclick="saveProfile()">保　存</button>
+    <div id="profile-msg"></div>
+  </div>
+</div>
+
+<!-- UPLOAD BTN -->
+<button id="upload-btn" onclick="openUploadModal()">📷 上传照片</button>
+
+<!-- UPLOAD MODAL -->
+<div id="upload-modal" onclick="if(event.target===this)closeUploadModal()">
+  <div id="upload-box">
+    <button class="u-modal-close" onclick="closeUploadModal()">✕</button>
+    <div id="upload-title">上传龟兹日志</div>
+    <div id="upload-drop" onclick="document.getElementById('upload-file').click()">
+      <img id="upload-preview" alt="">
+      <div id="upload-drop-hint">📷 点击选择照片<br><span style="font-size:.7rem;opacity:.6">支持 jpg / png / webp，最大10MB</span></div>
+    </div>
+    <input id="upload-file" type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhotoSelect(this)">
+    <button id="upload-submit" onclick="submitUpload()" disabled>上传并生成配文</button>
+    <div id="upload-msg"></div>
   </div>
 </div>
 
