@@ -394,6 +394,51 @@ body.light .forum-detail-title{color:#8a6a14}
 #contact-msg{text-align:center;font-size:.78rem;min-height:1.2em;margin-top:10px;color:rgba(212,175,55,.7)}
 .member-mail{margin-top:10px;font-size:.72rem;color:rgba(212,175,55,.5);cursor:pointer;border:1px solid rgba(212,175,55,.22);border-radius:100px;padding:5px 16px;display:inline-block;transition:all .2s}
 .member-mail:hover{color:#d4af37;border-color:rgba(212,175,55,.55)}
+
+/* ── 论坛信息流（推特 / IG 风格）── */
+.tw-composer{border-bottom:8px solid rgba(212,175,55,.05);padding:14px 4px 16px;margin-bottom:4px}
+.tw-composer-top{display:flex;gap:12px}
+.tw-compose-av{width:44px;height:44px;border-radius:50%;flex-shrink:0;background:rgba(212,175,55,.16);display:flex;align-items:center;justify-content:center;color:#d4af37;overflow:hidden;border:1px solid rgba(212,175,55,.3);font-size:1rem}
+.tw-compose-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+#forum-content-input{flex:1;background:none;border:none;color:#e8dcc8;font-size:1.05rem;font-family:inherit;outline:none;resize:none;line-height:1.6;min-height:48px;padding-top:9px}
+#forum-content-input::placeholder{color:rgba(212,175,55,.32)}
+.tw-title-inline{width:100%;background:none;border:none;border-bottom:1px solid rgba(212,175,55,.1);color:#d4af37;font-size:.88rem;font-family:inherit;outline:none;padding:8px 2px;margin-top:4px}
+.tw-title-inline::placeholder{color:rgba(212,175,55,.3)}
+.tw-composer-bar{display:flex;align-items:center;gap:12px;margin-top:14px;padding-left:56px}
+.tw-media-btn{background:none;border:none;color:#d4af37;cursor:pointer;font-size:.85rem;font-family:"Songti SC",serif;padding:4px 0;white-space:nowrap}
+#forum-media-name{font-size:.72rem;color:rgba(212,175,55,.45);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tw-post-btn{background:linear-gradient(135deg,#8b1a1a,#c9960a);border:none;color:#fff;padding:8px 24px;border-radius:100px;cursor:pointer;font-family:"Songti SC",serif;font-size:.85rem;letter-spacing:1px;font-weight:600;transition:opacity .2s}
+.tw-post-btn:hover{opacity:.88}.tw-post-btn:disabled{opacity:.5;cursor:not-allowed}
+#forum-media-preview img,#forum-media-preview video{max-width:100%;max-height:260px;border-radius:14px;display:block;margin-top:12px;margin-left:56px}
+.tw-post{display:flex;gap:12px;padding:16px 4px;border-bottom:1px solid rgba(212,175,55,.08);cursor:pointer;transition:background .2s}
+.tw-post:hover{background:rgba(212,175,55,.025)}
+.tw-post-av{width:44px;height:44px;border-radius:50%;flex-shrink:0;object-fit:cover;border:1px solid rgba(212,175,55,.3)}
+.tw-post-av-init{width:44px;height:44px;border-radius:50%;flex-shrink:0;background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center;color:#d4af37;font-size:1rem}
+.tw-post-main{flex:1;min-width:0}
+.tw-post-head{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;flex-wrap:wrap}
+.tw-post-name{color:#f0e0c0;font-weight:600;font-size:.92rem;font-family:"Songti SC",serif}
+.tw-post-name .crown{color:#d4af37;margin-left:2px}
+.tw-post-time{color:rgba(212,175,55,.4);font-size:.78rem}
+.tw-post-title{color:#d4af37;font-weight:600;font-size:.96rem;margin:3px 0 4px;font-family:"Songti SC",serif;word-break:break-word}
+.tw-post-text{color:#e0d4bc;font-size:.92rem;line-height:1.6;word-break:break-word;white-space:pre-wrap}
+.tw-post-media{margin-top:11px;border-radius:16px;overflow:hidden;border:1px solid rgba(212,175,55,.12);background:rgba(0,0,0,.3)}
+.tw-post-media img,.tw-post-media video{width:100%;display:block;max-height:520px;object-fit:cover;background:#000}
+.tw-actions{display:flex;gap:28px;margin-top:13px;color:rgba(212,175,55,.5)}
+.tw-act{display:flex;align-items:center;gap:6px;background:none;border:none;color:inherit;font:inherit;cursor:pointer;font-size:.82rem;padding:0;transition:color .2s}
+.tw-act:hover{color:#d4af37}
+.tw-act.on-like{color:#e0708a}
+.tw-act.on-fav{color:#d4af37}
+.tw-act .ic{font-size:.98rem}
+.tw-del{margin-left:auto;color:rgba(220,80,80,.4);background:none;border:none;cursor:pointer;font-size:.8rem}
+.tw-del:hover{color:rgba(220,80,80,.9)}
+/* 浅色 */
+body.light .tw-composer{border-bottom-color:rgba(156,122,24,.1)}
+body.light #forum-content-input{color:#4a3b22}
+body.light .tw-post-name{color:#3a2e1c}
+body.light .tw-post-text{color:rgba(74,59,34,.85)}
+body.light .tw-post{border-bottom-color:rgba(156,122,24,.12)}
+body.light .tw-post:hover{background:rgba(156,122,24,.04)}
+body.light .tw-post-title{color:#8a6a14}
 body.light #contact-box{background:linear-gradient(160deg,#fdf7e8,#f3ead6)!important}
 body.light #contact-subject,body.light #contact-message{background:rgba(255,255,255,.7);color:#4a3b22}
 body.light .forum-media-badge{background:rgba(156,122,24,.1);color:rgba(120,90,20,.7)}
@@ -1310,9 +1355,17 @@ function avatarHTML(hash,name,cls,initCls){
 function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function showForumView(view){
-  ['forum-list','forum-compose','forum-detail'].forEach(id=>{
+  ['forum-list','forum-detail'].forEach(id=>{
     document.getElementById(id).style.display = (id===view)?'block':'none';
   });
+}
+function relTime(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<60)return '刚刚';
+  if(s<3600)return Math.floor(s/60)+'分钟前';
+  if(s<86400)return Math.floor(s/3600)+'小时前';
+  if(s<2592000)return Math.floor(s/86400)+'天前';
+  return fmtMsgTime(ts).slice(5,10);
 }
 async function openGuestbook(){
   document.getElementById('gb-modal').classList.add('open');
@@ -1323,20 +1376,15 @@ function closeGuestbook(){
 }
 function forumBackToList(){
   showForumView('forum-list');
+  // 顶部发帖框头像
+  const av=document.getElementById('tw-compose-av');
+  if(av){
+    if(_userProfile.avatarHash){av.innerHTML=`<img src="${WORKER}/avatar/${_userProfile.avatarHash}" alt="">`;}
+    else{av.textContent=(_userProfile.nickname||_userProfile.defaultName||'我')[0];}
+  }
   loadPosts();
 }
 let _forumMedia=null;
-function forumCompose(){
-  if(!_gbToken){closeGuestbook();openModal();return;}
-  document.getElementById('forum-title-input').value='';
-  document.getElementById('forum-content-input').value='';
-  document.getElementById('forum-media-file').value='';
-  document.getElementById('forum-media-name').textContent='';
-  document.getElementById('forum-media-preview').innerHTML='';
-  _forumMedia=null;
-  showForumView('forum-compose');
-  setTimeout(()=>document.getElementById('forum-content-input').focus(),100);
-}
 function handleForumMedia(input){
   const file=input.files[0];if(!file)return;
   if(file.size>25*1024*1024){document.getElementById('forum-media-name').textContent='文件不能超过25MB';input.value='';return;}
@@ -1346,29 +1394,70 @@ function handleForumMedia(input){
   const url=URL.createObjectURL(file);
   prev.innerHTML=file.type.startsWith('video')?`<video src="${url}" controls></video>`:`<img src="${url}" alt="">`;
 }
+function loadFeedMedia(){
+  document.querySelectorAll('#tw-feed [data-media]').forEach(el=>{
+    if(el.dataset.loaded)return; el.dataset.loaded='1';
+    fetch(`${WORKER}/forum-media/${el.dataset.media}`,{headers:{Authorization:'Bearer '+_gbToken}})
+      .then(r=>r.ok?r.blob():null).then(b=>{if(b)el.src=URL.createObjectURL(b);}).catch(()=>{});
+  });
+}
 async function loadPosts(){
-  const box=document.getElementById('forum-list');
-  if(!_gbToken){box.innerHTML='<div class="forum-empty">登录后即可浏览与发帖</div>';return;}
-  box.innerHTML='<div class="forum-empty">加载中...</div>';
+  const feed=document.getElementById('tw-feed');
+  if(!_gbToken){feed.innerHTML='<div class="forum-empty">登录后即可浏览与发帖</div>';return;}
+  feed.innerHTML='<div class="forum-empty">加载中...</div>';
   try{
     const res=await fetch(`${WORKER}/posts`,{headers:{Authorization:'Bearer '+_gbToken}});
     const data=await res.json();
-    if(!data.posts||!data.posts.length){box.innerHTML='<div class="forum-empty">还没有帖子，来发第一帖吧 ✍️</div>';return;}
-    box.innerHTML=data.posts.map(p=>{
-      const av=avatarHTML(p.avatarHash,p.authorName,'forum-av','forum-av-init');
-      return`<div class="forum-item" onclick="openPost('${p.id}')">
-        <div class="forum-item-head">${av}<div><div class="forum-meta-name">${esc(p.authorName)}</div><div class="forum-meta-time">${fmtMsgTime(p.time)}</div></div></div>
-        ${p.title&&p.title!=='无标题'?`<div class="forum-title-text">${esc(p.title)}</div>`:''}
-        <div class="forum-body-preview">${esc(p.body)}</div>
-        ${p.mediaType==='image'?'<div class="forum-media-badge">🖼 含图片</div>':p.mediaType==='video'?'<div class="forum-media-badge">🎬 含视频</div>':''}
-        <div class="forum-stats">
-          <span class="forum-stat-btn ${p.liked?'on-like':''}">❤ ${p.likeCount}</span>
-          <span class="forum-stat-btn">💬 ${p.commentCount}</span>
-          <span class="forum-stat-btn ${p.faved?'on-fav':''}">★ ${p.favCount}</span>
+    if(!data.posts||!data.posts.length){feed.innerHTML='<div class="forum-empty">还没有动态，发布第一条吧 ✍️</div>';return;}
+    feed.innerHTML=data.posts.map(p=>{
+      const av=p.avatarHash
+        ?`<img class="tw-post-av" src="${WORKER}/avatar/${p.avatarHash}" alt="" onerror="this.style.visibility='hidden'">`
+        :`<div class="tw-post-av-init">${(p.authorName||'?')[0]}</div>`;
+      const media=p.mediaType==='image'
+        ?`<div class="tw-post-media"><img data-media="${p.id}" alt=""></div>`
+        :p.mediaType==='video'
+        ?`<div class="tw-post-media"><video data-media="${p.id}" controls playsinline></video></div>`:'';
+      const del=p.canDelete?`<button class="tw-del" onclick="event.stopPropagation();deletePostFeed('${p.id}',this)">🗑</button>`:'';
+      return`<div class="tw-post" onclick="openPost('${p.id}')">
+        ${av}
+        <div class="tw-post-main">
+          <div class="tw-post-head"><span class="tw-post-name">${esc(p.authorName)}</span><span class="tw-post-time">· ${relTime(p.time)}</span></div>
+          ${p.title&&p.title!=='无标题'?`<div class="tw-post-title">${esc(p.title)}</div>`:''}
+          ${p.body?`<div class="tw-post-text">${esc(p.body)}</div>`:''}
+          ${media}
+          <div class="tw-actions">
+            <button class="tw-act" onclick="event.stopPropagation();openPost('${p.id}')"><span class="ic">💬</span><span>${p.commentCount}</span></button>
+            <button class="tw-act ${p.liked?'on-like':''}" onclick="event.stopPropagation();twLike('${p.id}',this)"><span class="ic">${p.liked?'❤️':'🤍'}</span><span class="n">${p.likeCount}</span></button>
+            <button class="tw-act ${p.faved?'on-fav':''}" onclick="event.stopPropagation();twFav('${p.id}',this)"><span class="ic">${p.faved?'⭐':'☆'}</span><span class="n">${p.favCount}</span></button>
+            ${del}
+          </div>
         </div>
       </div>`;
     }).join('');
-  }catch{box.innerHTML='<div class="forum-empty">加载失败</div>';}
+    loadFeedMedia();
+  }catch{feed.innerHTML='<div class="forum-empty">加载失败</div>';}
+}
+async function twLike(id,btn){
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}/like`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken}});
+    const d=await res.json();
+    if(d.success){btn.classList.toggle('on-like',d.liked);btn.querySelector('.ic').textContent=d.liked?'❤️':'🤍';btn.querySelector('.n').textContent=d.likeCount;}
+  }catch{}
+}
+async function twFav(id,btn){
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}/favorite`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken}});
+    const d=await res.json();
+    if(d.success){btn.classList.toggle('on-fav',d.faved);btn.querySelector('.ic').textContent=d.faved?'⭐':'☆';btn.querySelector('.n').textContent=d.favCount;}
+  }catch{}
+}
+async function deletePostFeed(id,el){
+  if(!confirm('确定删除这条动态？'))return;
+  try{
+    const res=await fetch(`${WORKER}/posts/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+_gbToken}});
+    const d=await res.json();
+    if(d.success){const card=el.closest('.tw-post');if(card)card.remove();}
+  }catch{}
 }
 async function submitPost(){
   const title=document.getElementById('forum-title-input').value.trim();
@@ -1382,7 +1471,16 @@ async function submitPost(){
     if(_forumMedia)form.append('media',_forumMedia);
     const res=await fetch(`${WORKER}/posts`,{method:'POST',headers:{Authorization:'Bearer '+_gbToken},body:form});
     const data=await res.json();
-    if(data.success){_forumMedia=null;forumBackToList();}
+    if(data.success){
+      // 清空发帖框
+      document.getElementById('forum-title-input').value='';
+      document.getElementById('forum-content-input').value='';
+      document.getElementById('forum-media-file').value='';
+      document.getElementById('forum-media-name').textContent='';
+      document.getElementById('forum-media-preview').innerHTML='';
+      _forumMedia=null;
+      loadPosts();
+    }
     else{alert(data.error||'发布失败');}
   }catch{alert('发布失败，请重试');}
   finally{btn.disabled=false;btn.textContent='发布';}
@@ -1411,8 +1509,8 @@ async function openPost(id){
       ${p.body?`<div class="forum-detail-body">${esc(p.body)}</div>`:''}
       ${mediaHtml}
       <div class="forum-detail-actions">
-        <button class="forum-stat-btn ${p.liked?'on-like':''}" id="pd-like" onclick="togglePostLike('${p.id}')">❤ <span id="pd-like-n">${p.likeCount}</span></button>
-        <button class="forum-stat-btn ${p.faved?'on-fav':''}" id="pd-fav" onclick="togglePostFav('${p.id}')">★ <span id="pd-fav-n">${p.favCount}</span></button>
+        <button class="forum-stat-btn ${p.liked?'on-like':''}" id="pd-like" onclick="togglePostLike('${p.id}')"><span id="pd-like-ic">${p.liked?'❤️':'🤍'}</span> <span id="pd-like-n">${p.likeCount}</span></button>
+        <button class="forum-stat-btn ${p.faved?'on-fav':''}" id="pd-fav" onclick="togglePostFav('${p.id}')"><span id="pd-fav-ic">${p.faved?'⭐':'☆'}</span> <span id="pd-fav-n">${p.favCount}</span></button>
         ${p.canDelete?`<button class="forum-del-link" onclick="deletePost('${p.id}')">🗑 删除</button>`:''}
       </div>
       <div class="fc-title">评论 ${(p.comments||[]).length}</div>
@@ -1434,6 +1532,7 @@ async function togglePostLike(id){
     if(data.success){
       const btn=document.getElementById('pd-like');
       document.getElementById('pd-like-n').textContent=data.likeCount;
+      document.getElementById('pd-like-ic').textContent=data.liked?'❤️':'🤍';
       btn.classList.toggle('on-like',data.liked);
     }
   }catch{}
@@ -1445,6 +1544,7 @@ async function togglePostFav(id){
     if(data.success){
       const btn=document.getElementById('pd-fav');
       document.getElementById('pd-fav-n').textContent=data.favCount;
+      document.getElementById('pd-fav-ic').textContent=data.faved?'⭐':'☆';
       btn.classList.toggle('on-fav',data.faved);
     }
   }catch{}
@@ -1562,23 +1662,24 @@ setLang('zh');
   <div id="forum-box">
     <div id="forum-head">
       <span id="forum-title">龟兹论坛</span>
-      <button id="forum-new-btn" onclick="forumCompose()">＋ 发帖</button>
       <button id="forum-close" onclick="closeGuestbook()">✕</button>
     </div>
-    <div id="forum-list" class="forum-view"></div>
-    <div id="forum-compose" class="forum-view" style="display:none">
-      <input id="forum-title-input" type="text" placeholder="标题（选填）" maxlength="60">
-      <textarea id="forum-content-input" placeholder="在龟兹论坛说点什么..." maxlength="2000"></textarea>
-      <div id="forum-media-row">
-        <button type="button" class="forum-media-pick" onclick="document.getElementById('forum-media-file').click()">🖼 添加图片 / 视频</button>
-        <span id="forum-media-name" style="font-size:.74rem;color:rgba(212,175,55,.45);margin-left:10px"></span>
-        <input id="forum-media-file" type="file" accept="image/*,video/mp4,video/webm" style="display:none" onchange="handleForumMedia(this)">
+    <div id="forum-list" class="forum-view">
+      <div class="tw-composer">
+        <div class="tw-composer-top">
+          <div class="tw-compose-av" id="tw-compose-av">U</div>
+          <textarea id="forum-content-input" placeholder="此刻有什么新鲜事？" maxlength="2000" rows="2"></textarea>
+        </div>
+        <input id="forum-title-input" type="text" placeholder="标题（选填）" maxlength="60" class="tw-title-inline">
         <div id="forum-media-preview"></div>
+        <div class="tw-composer-bar">
+          <button type="button" class="tw-media-btn" onclick="document.getElementById('forum-media-file').click()">🖼 图片 / 视频</button>
+          <input id="forum-media-file" type="file" accept="image/*,video/mp4,video/webm" style="display:none" onchange="handleForumMedia(this)">
+          <span id="forum-media-name"></span>
+          <button id="forum-submit" class="tw-post-btn" onclick="submitPost()">发布</button>
+        </div>
       </div>
-      <div class="forum-compose-actions">
-        <button onclick="forumBackToList()" class="forum-btn-ghost">取消</button>
-        <button id="forum-submit" onclick="submitPost()" class="forum-btn-gold">发布</button>
-      </div>
+      <div id="tw-feed"></div>
     </div>
     <div id="forum-detail" class="forum-view" style="display:none"></div>
   </div>
