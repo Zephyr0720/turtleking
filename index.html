@@ -888,26 +888,83 @@ function showAdminBtn(token){
   document.body.appendChild(ab);
 }
 
+let _adminLogs=[];
+function fmtLogTime(ts){
+  const d=new Date(ts);
+  return d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0')
+    +' '+(d.getHours()+'').padStart(2,'0')+':'+(d.getMinutes()+'').padStart(2,'0')+':'+(d.getSeconds()+'').padStart(2,'0');
+}
 async function openAdminPanel(token){
   let panel=document.getElementById('admin-panel');
   if(!panel){
     panel=document.createElement('div');
     panel.id='admin-panel';
-    panel.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:flex;flex-direction:column;padding:40px;overflow:auto';
+    panel.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(6,3,1,.96);backdrop-filter:blur(16px);overflow:auto;padding:36px 24px';
     document.body.appendChild(panel);
   }
-  panel.innerHTML='<div style="max-width:900px;margin:0 auto;width:100%"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><h2 style="font-family:Songti SC,serif;color:#d4af37;font-size:1.4rem;letter-spacing:4px">登录日志</h2><button onclick="document.getElementById(\'admin-panel\').remove()" style="background:none;border:1px solid rgba(212,175,55,.3);color:#d4af37;padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div><div id="admin-log-content" style="color:#e8dcc8;font-family:Courier New,monospace;font-size:.8rem;line-height:2">加载中...</div></div>';
+  panel.innerHTML='<div style="max-width:960px;margin:0 auto;width:100%"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><h2 style="font-family:Songti SC,serif;color:#d4af37;font-size:1.4rem;letter-spacing:4px">访问记录 · 统计</h2><button onclick="document.getElementById(\'admin-panel\').remove()" style="background:none;border:1px solid rgba(212,175,55,.3);color:#d4af37;padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div><div id="admin-body" style="color:#e8dcc8">加载中...</div></div>';
   try{
-    const res=await fetch(`${WORKER}/admin/logs`,{headers:{'Authorization':'Bearer '+token}});
+    const res=await fetch(`${WORKER}/admin/logs`,{headers:{Authorization:'Bearer '+token}});
     const data=await res.json();
-    const el=document.getElementById('admin-log-content');
-    if(!data.logs||!data.logs.length){el.textContent='暂无记录';return;}
-    el.innerHTML='<div style="margin-bottom:12px;color:rgba(212,175,55,.6)">共 '+data.total+' 条记录（最新在前）</div>'+
-      data.logs.map(l=>{
-        const ok=l.includes('✓');
-        return '<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);color:'+(ok?'#6ecf8e':'#e87070')+'">'+l+'</div>';
-      }).join('');
-  }catch(e){document.getElementById('admin-log-content').textContent='加载失败: '+e.message;}
+    _adminLogs=data.logs||[];
+    renderAdminPanel(data);
+  }catch(e){document.getElementById('admin-body').textContent='加载失败: '+e.message;}
+}
+function renderAdminPanel(data){
+  const body=document.getElementById('admin-body');
+  if(!_adminLogs.length){body.innerHTML='<div style="color:rgba(212,175,55,.4);padding:40px;text-align:center">暂无访问记录</div>';return;}
+  const s=data.stats||{};
+  const card=(label,val,color)=>`<div style="flex:1;min-width:120px;background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.14);border-radius:12px;padding:16px 18px"><div style="font-size:1.7rem;color:${color||'#d4af37'};font-family:Songti SC,serif">${val}</div><div style="font-size:.72rem;color:rgba(212,175,55,.5);letter-spacing:1px;margin-top:4px">${label}</div></div>`;
+  const stTop=(obj,n)=>Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]).slice(0,n);
+  // 顶部统计卡
+  let html='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">'+
+    card('总访问',data.total)+card('成功',s.success||0,'#6ecf8e')+card('失败',s.fail||0,'#e87070')+card('独立IP',s.uniqueIps||0)+'</div>';
+  // 地区 / 日期 分布
+  const regBars=stTop(s.byRegion,8).map(([k,v])=>barRow(k,v,data.total)).join('');
+  const dateBars=stTop(s.byDate,8).map(([k,v])=>barRow(k,v,data.total)).join('');
+  html+='<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:22px">'+
+    '<div style="flex:1;min-width:260px"><div style="color:rgba(212,175,55,.6);font-size:.82rem;letter-spacing:2px;margin-bottom:10px">📍 地区分布 Top8</div>'+(regBars||'<div style="color:rgba(212,175,55,.3);font-size:.8rem">暂无</div>')+'</div>'+
+    '<div style="flex:1;min-width:260px"><div style="color:rgba(212,175,55,.6);font-size:.82rem;letter-spacing:2px;margin-bottom:10px">📅 日期分布 Top8</div>'+(dateBars||'<div style="color:rgba(212,175,55,.3);font-size:.8rem">暂无</div>')+'</div></div>';
+  // 筛选器
+  const regions=[...new Set(_adminLogs.map(l=>l.region))].sort();
+  const dates=[...new Set(_adminLogs.map(l=>l.date))].sort().reverse();
+  html+='<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(212,175,55,.1)">'+
+    '<span style="color:rgba(212,175,55,.5);font-size:.78rem">筛选：</span>'+
+    selEl('flt-region','全部地区',regions)+selEl('flt-date','全部日期',dates)+
+    '<select id="flt-result" onchange="applyAdminFilter()" style="'+selCss()+'"><option value="">全部结果</option><option value="ok">仅成功</option><option value="fail">仅失败</option></select>'+
+    '</div>';
+  html+='<div id="admin-table"></div>';
+  body.innerHTML=html;
+  applyAdminFilter();
+}
+function barRow(label,val,total){
+  const pct=total?Math.round(val/total*100):0;
+  return '<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:.74rem;margin-bottom:3px"><span style="color:rgba(232,220,200,.75);max-width:75%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+label+'</span><span style="color:rgba(212,175,55,.55)">'+val+'</span></div><div style="height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#8b1a1a,#d4af37);border-radius:3px"></div></div></div>';
+}
+function selCss(){return 'background:rgba(10,6,3,.9);border:1px solid rgba(212,175,55,.25);color:#d4af37;padding:7px 12px;border-radius:8px;font-size:.78rem;cursor:pointer;outline:none';}
+function selEl(id,allLabel,opts){
+  return '<select id="'+id+'" onchange="applyAdminFilter()" style="'+selCss()+'"><option value="">'+allLabel+'</option>'+
+    opts.map(o=>'<option value="'+o.replace(/"/g,'')+'">'+o+'</option>').join('')+'</select>';
+}
+function applyAdminFilter(){
+  const reg=document.getElementById('flt-region').value;
+  const dat=document.getElementById('flt-date').value;
+  const rst=document.getElementById('flt-result').value;
+  let rows=_adminLogs.filter(l=>
+    (!reg||l.region===reg)&&(!dat||l.date===dat)&&(!rst||(rst==='ok'?l.ok:!l.ok))
+  );
+  const t=document.getElementById('admin-table');
+  t.innerHTML='<div style="color:rgba(212,175,55,.5);font-size:.76rem;margin-bottom:8px">符合条件 '+rows.length+' 条</div>'+
+    '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.76rem;font-family:Courier New,monospace">'+
+    '<tr style="color:rgba(212,175,55,.5);text-align:left">'+['时间','结果','IP','地区','用户','备注'].map(h=>'<th style="padding:7px 10px;border-bottom:1px solid rgba(212,175,55,.15);white-space:nowrap">'+h+'</th>').join('')+'</tr>'+
+    rows.slice(0,500).map(l=>'<tr style="border-bottom:1px solid rgba(255,255,255,.04)">'+
+      '<td style="padding:6px 10px;white-space:nowrap;color:rgba(232,220,200,.7)">'+fmtLogTime(l.time)+'</td>'+
+      '<td style="padding:6px 10px;color:'+(l.ok?'#6ecf8e':'#e87070')+'">'+(l.ok?'✓':'✗')+'</td>'+
+      '<td style="padding:6px 10px;color:rgba(232,220,200,.6)">'+(l.ip||'')+'</td>'+
+      '<td style="padding:6px 10px;color:rgba(232,220,200,.7)">'+(l.region||'')+'</td>'+
+      '<td style="padding:6px 10px;color:rgba(212,175,55,.7)">'+(l.user||'')+'</td>'+
+      '<td style="padding:6px 10px;color:rgba(232,220,200,.55)">'+(l.note||'')+'</td></tr>').join('')+
+    '</table></div>'+(rows.length>500?'<div style="color:rgba(212,175,55,.3);font-size:.72rem;margin-top:8px">仅显示前 500 条</div>':'');
 }
 
 async function tryLogin(){
