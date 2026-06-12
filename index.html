@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>龟兹国 · Kingdom of Kucha</title>
 <style>
-/* ════════ 龟兹国 · v2 王朝纪元 — 全新设计 ════════ */
+/* ════════ 龟兹国 · v3 鎏金纪元 — 高级感升级 ════════ */
 @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
 :root{
   --bg0:#050302;--bg1:#0c0704;--bg2:#140c05;
@@ -125,10 +125,12 @@ body::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#8b1a1a,#d4af37)
 #music-mute:hover{color:#d4af37}
 /* ── AI 国王聊天（全屏）── */
 #chat-btn{display:none}
-#chat-modal{position:fixed;inset:0;z-index:5000;width:100%;height:100%;background:radial-gradient(ellipse at 50% 0%,#1a0e05 0%,#0a0602 70%);border:none;border-radius:0;display:none;flex-direction:column;overflow:hidden}
-#chat-modal.open{display:flex;animation:panelIn .4s var(--ease)}
+#chat-modal{position:fixed;right:24px;bottom:24px;z-index:5000;width:min(430px,94vw);height:min(640px,82vh);min-width:320px;min-height:420px;max-width:96vw;max-height:92vh;background:radial-gradient(ellipse at 50% 0%,#1a0e05 0%,#0a0602 70%);border:1px solid rgba(212,175,55,.28);border-radius:22px;display:none;flex-direction:column;overflow:hidden;resize:both;box-shadow:0 30px 90px rgba(0,0,0,.75),0 0 44px rgba(212,175,55,.1)}
+#chat-modal.open{display:flex;animation:chatPop .45s var(--ease)}
+@keyframes chatPop{from{opacity:0;transform:translateY(26px) scale(.95)}to{opacity:1;transform:none}}
 @keyframes panelIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
-#chat-header{padding:16px 22px;border-bottom:1px solid rgba(212,175,55,.14);display:flex;align-items:center;gap:12px;flex-shrink:0;background:linear-gradient(90deg,rgba(100,18,18,.42),rgba(0,0,0,.2));max-width:820px;margin:0 auto;width:100%}
+@media(max-width:680px){#chat-modal{inset:0!important;width:100%!important;height:100%!important;border-radius:0;resize:none;right:0;bottom:0;min-width:0;min-height:0;max-width:none;max-height:none}}
+#chat-header{padding:14px 18px;border-bottom:1px solid rgba(212,175,55,.14);display:flex;align-items:center;gap:12px;flex-shrink:0;background:linear-gradient(90deg,rgba(100,18,18,.42),rgba(0,0,0,.2));width:100%;cursor:move;user-select:none;-webkit-user-select:none;touch-action:none}
 #chat-header img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,175,55,.6);box-shadow:0 0 18px rgba(212,175,55,.3);animation:avatarPulse 3s ease-in-out infinite}
 @keyframes avatarPulse{0%,100%{box-shadow:0 0 12px rgba(212,175,55,.25)}50%{box-shadow:0 0 26px rgba(212,175,55,.5)}}
 #chat-header-info{flex:1}
@@ -533,6 +535,41 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 .photo-edit-area textarea:focus{border-color:rgba(212,175,55,.4)}
 .edit-save-btn{padding:5px 14px;background:linear-gradient(135deg,#7a1515,#c9960a);border:none;border-radius:6px;color:#f5e6b0;font-size:.75rem;cursor:pointer;margin-right:6px}
 .edit-cancel-btn{padding:5px 12px;background:none;border:1px solid rgba(212,175,55,.2);border-radius:6px;color:rgba(212,175,55,.55);font-size:.75rem;cursor:pointer}
+/* ════════ v3 升级：高级动画 ════════ */
+/* 大字声明 · 逐字鎏金显现 */
+.statement-line .ch{display:inline-block;opacity:0;transform:translateY(.55em) scale(.92) rotate(3deg);filter:blur(10px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease);transition-delay:var(--chd,0s);will-change:transform,filter}
+.statement-line.chars-in .ch{opacity:1;transform:none;filter:blur(0)}
+.statement-line .hl .ch{background:linear-gradient(180deg,#f9efc4,#d4af37 60%,#a8841f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* 节标题 · 金线延展 + 字距收拢 */
+.section-header .sec-line{transform:scaleX(0);transition:transform 1.3s var(--ease) .15s}
+.section-header .sec-line:first-child{transform-origin:right center}
+.section-header .sec-line:last-child{transform-origin:left center}
+[dir="rtl"] .section-header .sec-line:first-child{transform-origin:left center}
+[dir="rtl"] .section-header .sec-line:last-child{transform-origin:right center}
+.section-header.in .sec-line{transform:scaleX(1)}
+.section-header h2{transition:letter-spacing 1.5s var(--ease)}
+.section-header.reveal:not(.in) h2{letter-spacing:20px}
+/* 相册 · Ken Burns 入场 */
+.photo-card.reveal:not(.in) .photo-img-wrap img{transform:scale(1.15)}
+/* 返回顶部 · 滚动进度环 */
+#back-top::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(#d4af37 var(--sp,0%),rgba(212,175,55,.1) var(--sp,0%));-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));mask:radial-gradient(closest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));pointer-events:none}
+/* 环境光晕 · 缓慢漂移 */
+.history-section::after,.gallery-section::after,.members-section::after{content:'';position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.055) 0%,rgba(139,26,26,.03) 45%,transparent 68%);pointer-events:none;animation:orbDrift 24s ease-in-out infinite alternate;z-index:0}
+.history-section::after{top:8%;left:-160px}
+.gallery-section::after{bottom:4%;right:-180px;animation-delay:-9s;animation-duration:30s}
+.members-section::after{top:20%;left:-140px;animation-delay:-15s}
+@keyframes orbDrift{from{transform:translate(0,0) scale(1)}to{transform:translate(110px,-70px) scale(1.25)}}
+/* 导航 · 当前区域高亮 */
+.nav-links a.active{color:#d4af37}
+.nav-links a.active::after{width:55%}
+/* 底纹大字 · 滚动视差（支持 scroll-timeline 的浏览器渐进增强） */
+@supports (animation-timeline: view()){
+  .history-section::before,.gallery-section::before,.members-section::before{animation:ghostDrift linear both;animation-timeline:view();animation-range:entry 0% exit 100%}
+  @keyframes ghostDrift{from{transform:translateY(9%)}to{transform:translateY(-9%)}}
+  .statement::before{animation:ghostDrift2 linear both;animation-timeline:view();animation-range:entry 0% exit 100%}
+  @keyframes ghostDrift2{from{transform:translate(-50%,-44%)}to{transform:translate(-50%,-56%)}}
+}
+
 /* ── 浅色主题 ── */
 body.light{background:#f1e7d2;color:#4a3b22}
 body.light #grain{opacity:.035}
@@ -1961,7 +1998,9 @@ window.addEventListener('scroll',()=>{
   if(_spTick)return;_spTick=true;
   requestAnimationFrame(()=>{
     const h=document.documentElement.scrollHeight-window.innerHeight;
-    prog.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+    const pct=h>0?(window.scrollY/h*100):0;
+    prog.style.width=pct+'%';
+    backTop.style.setProperty('--sp',pct.toFixed(1)+'%');
     backTop.classList.toggle('show',window.scrollY>600);
     _spTick=false;
   });
@@ -1974,10 +2013,10 @@ window.addEventListener('scroll',()=>{
   const hero=document.getElementById('hero');
   if(!cv||!hero)return;
   const ctx=cv.getContext('2d');
-  let W,H,pts=[],mx=-9999,my=-9999,running=true,raf;
+  let W,H,pts=[],meteors=[],mx=-9999,my=-9999,running=true,raf;
   function resize(){W=cv.width=hero.offsetWidth;H=cv.height=hero.offsetHeight;
     const n=Math.min(90,Math.floor(W*H/16000));
-    pts=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.6+.5}));
+    pts=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.6+.5,ph:Math.random()*6.283}));
   }
   resize();window.addEventListener('resize',resize);
   hero.addEventListener('pointermove',e=>{const b=hero.getBoundingClientRect();mx=e.clientX-b.left;my=e.clientY-b.top;});
@@ -1985,6 +2024,7 @@ window.addEventListener('scroll',()=>{
   function frame(){
     if(!running)return;
     ctx.clearRect(0,0,W,H);
+    const now=performance.now()/1000;
     for(const p of pts){
       p.x+=p.vx;p.y+=p.vy;
       if(p.x<0||p.x>W)p.vx*=-1;
@@ -1992,12 +2032,27 @@ window.addEventListener('scroll',()=>{
       const dxm=p.x-mx,dym=p.y-my,dm=Math.hypot(dxm,dym);
       if(dm<120&&dm>0){p.x+=dxm/dm*.6;p.y+=dym/dm*.6;}
       ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);
-      ctx.fillStyle='rgba(212,175,55,.55)';ctx.fill();
+      ctx.fillStyle='rgba(212,175,55,'+(.35+.25*Math.sin(now*1.7+p.ph)).toFixed(3)+')';ctx.fill();
     }
     for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
       const a=pts[i],b=pts[j],d=Math.hypot(a.x-b.x,a.y-b.y);
       if(d<110){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
         ctx.strokeStyle='rgba(212,175,55,'+(.16*(1-d/110)).toFixed(3)+')';ctx.lineWidth=.6;ctx.stroke();}
+    }
+    // 鎏金流星
+    if(meteors.length<2&&Math.random()<.005)
+      meteors.push({x:Math.random()*W*.7+W*.15,y:Math.random()*H*.35,vx:(Math.random()<.5?-1:1)*(5+Math.random()*4),vy:2+Math.random()*2,life:1});
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];m.x+=m.vx;m.y+=m.vy;m.life-=.012;
+      if(m.life<=0||m.y>H+40||m.x<-160||m.x>W+160){meteors.splice(i,1);continue;}
+      const tx=m.x-m.vx*16,ty=m.y-m.vy*16;
+      const g=ctx.createLinearGradient(m.x,m.y,tx,ty);
+      g.addColorStop(0,'rgba(249,239,196,'+(.85*m.life).toFixed(3)+')');
+      g.addColorStop(1,'rgba(212,175,55,0)');
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(tx,ty);
+      ctx.strokeStyle=g;ctx.lineWidth=1.8;ctx.stroke();
+      ctx.beginPath();ctx.arc(m.x,m.y,2.2,0,6.283);
+      ctx.fillStyle='rgba(255,250,220,'+(.9*m.life).toFixed(3)+')';ctx.fill();
     }
     raf=requestAnimationFrame(frame);
   }
@@ -2132,6 +2187,83 @@ document.getElementById('gallery').addEventListener('click',e=>{
     em.style.transform=`translate(${(e.clientX-cx)/40}px,${(e.clientY-cy)/40}px)`;
   },{passive:true});
   hero.addEventListener('pointerleave',()=>{em.style.transform='';});
+})();
+
+/* ════════ v3 高级动画 ════════ */
+
+/* ── 大字声明 · 逐字鎏金显现 ── */
+(function(){
+  document.querySelectorAll('.statement-line').forEach(line=>{
+    line.classList.remove('reveal','dly1','dly2','dly3','dly4');
+    let n=0;
+    (function split(node){
+      [...node.childNodes].forEach(c=>{
+        if(c.nodeType===3){
+          const frag=document.createDocumentFragment();
+          for(const ch of c.textContent){
+            if(!ch.trim()){frag.appendChild(document.createTextNode(ch));continue;}
+            const s=document.createElement('span');s.className='ch';
+            s.style.setProperty('--chd',(n++*0.05)+'s');s.textContent=ch;
+            frag.appendChild(s);
+          }
+          node.replaceChild(frag,c);
+        }else if(c.nodeType===1&&c.tagName!=='BR'){split(c);}
+      });
+    })(line);
+    // 渐变改由每个字符自绘，父级清掉避免双重裁切
+    line.querySelectorAll('.hl').forEach(h=>{h.style.background='none';});
+    new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{if(en.isIntersecting){line.classList.add('chars-in');o.disconnect();}});
+    },{threshold:.35}).observe(line);
+  });
+})();
+
+/* ── 相册卡片 · 交错入场（入场后清除延迟，避免 hover 迟滞）── */
+(function(){
+  document.querySelectorAll('#gallery .photo-card').forEach((c,i)=>{
+    c.style.transitionDelay=(i%6)*70+'ms';
+    c.addEventListener('transitionend',function h(e){
+      if(e.target!==c||e.propertyName!=='opacity')return;
+      c.style.transitionDelay='';c.removeEventListener('transitionend',h);
+    });
+  });
+})();
+
+/* ── 磁吸按钮 ── */
+(function(){
+  if(reduced||!finePointer)return;
+  const SEL='.btn-royal,.btn-ghost,#enter-btn,#nav-auth-btn,.tw-post-btn,.modal-btn';
+  let cur=null;
+  document.addEventListener('pointermove',e=>{
+    const m=e.target.closest(SEL);
+    if(cur&&cur!==m){cur.style.transform='';cur=null;}
+    if(!m)return;
+    cur=m;
+    const r=m.getBoundingClientRect();
+    const dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+    m.style.transform=`translate(${(dx*.18).toFixed(1)}px,${(dy*.22).toFixed(1)}px)`;
+  },{passive:true});
+  document.addEventListener('pointerout',e=>{
+    const m=e.target.closest(SEL);
+    if(m&&!m.contains(e.relatedTarget)){m.style.transform='';if(cur===m)cur=null;}
+  },{passive:true});
+})();
+
+/* ── 导航 · 当前区域高亮 ── */
+(function(){
+  const links=document.querySelectorAll('.nav-links a');
+  const secs=[
+    {el:document.getElementById('gallery-section'),a:links[0]},
+    {el:document.getElementById('members-section'),a:links[1]}
+  ].filter(s=>s.el&&s.a);
+  if(!secs.length)return;
+  const io=new IntersectionObserver(es=>{
+    es.forEach(en=>{
+      const m=secs.find(s=>s.el===en.target);
+      if(m)m.a.classList.toggle('active',en.isIntersecting);
+    });
+  },{rootMargin:'-30% 0px -55% 0px'});
+  secs.forEach(s=>io.observe(s.el));
 })();
 })();
 </script>
