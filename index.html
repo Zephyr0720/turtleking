@@ -570,6 +570,64 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   @keyframes ghostDrift2{from{transform:translate(-50%,-44%)}to{transform:translate(-50%,-56%)}}
 }
 
+/* ════════ v4 升级：银河系 · 科技感 ════════ */
+/* 银河背景画布（全站固定底层） */
+#galaxy{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 38%,#0a0918 0%,#050410 48%,#010103 100%)}
+body{background:#010103}
+#main{position:relative;z-index:1}
+/* 区块背景半透明化 · 星河透出 */
+.hero{background:radial-gradient(ellipse at 50% 36%,rgba(38,20,10,.5) 0%,rgba(13,7,3,.38) 56%,rgba(0,0,0,.12) 100%)}
+.statement{background:radial-gradient(ellipse at 50% 50%,rgba(24,13,5,.58) 0%,rgba(4,2,2,.5) 72%)}
+.stats-strip{background:rgba(4,2,2,.5)}
+.marq-section{background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(8,4,2,.58) 18%,rgba(8,4,2,.58) 100%)}
+.history-section{background:linear-gradient(180deg,rgba(8,4,2,.58) 0%,rgba(13,8,4,.58) 100%)}
+.gallery-section{background:rgba(5,3,1,.52)}
+.members-section{background:linear-gradient(180deg,rgba(5,3,1,.52) 0%,rgba(10,6,3,.58) 100%)}
+footer{background:rgba(3,2,0,.45)}
+body.light #galaxy{display:none}
+/* 点击涟漪（全局交互动效） */
+.click-ripple{position:fixed;z-index:9400;pointer-events:none;border-radius:50%;border:1.5px solid rgba(212,175,55,.85);box-shadow:0 0 18px rgba(212,175,55,.5),inset 0 0 12px rgba(212,175,55,.3);transform:translate(-50%,-50%) scale(0);animation:rippleOut .7s var(--ease) forwards}
+@keyframes rippleOut{0%{opacity:.9;transform:translate(-50%,-50%) scale(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+/* 注册面板 */
+.reg-send-row{display:flex;gap:8px;margin-bottom:11px}
+.reg-send-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.18);border-radius:10px;padding:12px 14px;color:#e8dcc8;font-size:.85rem;font-family:inherit;outline:none;transition:all .25s;text-align:center}
+.reg-send-row input:focus{border-color:rgba(212,175,55,.55)}
+#regSendBtn{flex-shrink:0;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.35);color:#d4af37;border-radius:10px;padding:0 14px;cursor:pointer;font-size:.74rem;font-family:inherit;letter-spacing:1px;transition:all .25s;white-space:nowrap}
+#regSendBtn:hover:not(:disabled){background:rgba(212,175,55,.16);border-color:#d4af37}
+#regSendBtn:disabled{opacity:.45;cursor:not-allowed}
+.reg-av-row{display:flex;align-items:center;gap:14px;margin:4px 0 14px;text-align:left}
+#regAvPreview{width:58px;height:58px;border-radius:50%;border:2px dashed rgba(212,175,55,.35);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:rgba(212,175,55,.5);cursor:pointer;overflow:hidden;flex-shrink:0;transition:all .25s;background:rgba(212,175,55,.04)}
+#regAvPreview:hover{border-color:#d4af37;box-shadow:0 0 14px rgba(212,175,55,.25)}
+#regAvPreview img{width:100%;height:100%;object-fit:cover}
+.reg-av-hint{font-size:.68rem;color:rgba(212,175,55,.4);line-height:1.7;flex:1}
+/* 后台 · 选项卡与成员管理 */
+.adm-tabs{display:flex;gap:8px;margin-bottom:22px}
+.adm-tab{background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.2);color:rgba(212,175,55,.6);padding:8px 22px;border-radius:100px;cursor:pointer;font-family:var(--serif);font-size:.85rem;letter-spacing:2px;transition:all .25s}
+.adm-tab:hover{color:#d4af37;border-color:rgba(212,175,55,.5)}
+.adm-tab.on{background:rgba(212,175,55,.16);color:#d4af37;border-color:rgba(212,175,55,.6);box-shadow:0 0 14px rgba(212,175,55,.15)}
+.adm-user{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1px solid rgba(212,175,55,.12);border-radius:14px;margin-bottom:10px;background:rgba(212,175,55,.025);flex-wrap:wrap;transition:border-color .25s}
+.adm-user:hover{border-color:rgba(212,175,55,.3)}
+.adm-user.is-banned{border-color:rgba(220,80,80,.35);background:rgba(140,30,30,.06)}
+.adm-user.is-muted{border-color:rgba(230,170,60,.3)}
+.adm-uav{width:42px;height:42px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.35);flex-shrink:0}
+.adm-uav-init{width:42px;height:42px;border-radius:50%;background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center;color:#d4af37;font-size:1rem;flex-shrink:0}
+.adm-uinfo{flex:1;min-width:160px}
+.adm-uname{color:#e8dcc8;font-size:.9rem;font-family:var(--serif)}
+.adm-uemail{color:rgba(212,175,55,.45);font-size:.72rem;margin-top:2px;font-family:"Courier New",monospace}
+.adm-badge{display:inline-block;font-size:.62rem;padding:2px 9px;border-radius:100px;margin-left:6px;letter-spacing:1px;vertical-align:middle}
+.adm-badge.b-admin{background:rgba(212,175,55,.18);color:#d4af37;border:1px solid rgba(212,175,55,.4)}
+.adm-badge.b-builtin{background:rgba(120,140,220,.12);color:#9ab;border:1px solid rgba(120,140,220,.3)}
+.adm-badge.b-ban{background:rgba(220,80,80,.15);color:#e87070;border:1px solid rgba(220,80,80,.4)}
+.adm-badge.b-mute{background:rgba(230,170,60,.12);color:#e6aa3c;border:1px solid rgba(230,170,60,.35)}
+.adm-acts{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.adm-sel{background:rgba(10,6,3,.9);border:1px solid rgba(212,175,55,.25);color:#d4af37;padding:6px 9px;border-radius:8px;font-size:.72rem;cursor:pointer;outline:none;font-family:inherit}
+.adm-btn{background:none;border:1px solid rgba(212,175,55,.3);color:rgba(212,175,55,.75);padding:6px 13px;border-radius:100px;cursor:pointer;font-size:.72rem;font-family:inherit;letter-spacing:1px;transition:all .2s;white-space:nowrap}
+.adm-btn:hover{color:#d4af37;border-color:#d4af37;background:rgba(212,175,55,.08)}
+.adm-btn.danger{border-color:rgba(220,80,80,.4);color:rgba(230,110,110,.85)}
+.adm-btn.danger:hover{border-color:#e87070;color:#e87070;background:rgba(220,80,80,.08)}
+.adm-btn.safe{border-color:rgba(110,207,142,.4);color:rgba(110,207,142,.85)}
+.adm-btn.safe:hover{border-color:#6ecf8e;color:#6ecf8e;background:rgba(110,207,142,.08)}
+
 /* ── 浅色主题 ── */
 body.light{background:#f1e7d2;color:#4a3b22}
 body.light #grain{opacity:.035}
@@ -710,6 +768,7 @@ body.light #lb-title{color:#8a6a14;text-shadow:none}
 </head>
 <body>
 
+<canvas id="galaxy"></canvas>
 <div id="flash"></div>
 <div id="grain"></div>
 <div id="scroll-progress"></div>
@@ -810,7 +869,32 @@ body.light #lb-title{color:#8a6a14;text-shadow:none}
       <div class="modal-error" id="mErr"></div>
       <div class="modal-alt">
         <a href="#" onclick="return switchPanel('forgot')">忘记密码？</a>
+        　·
+        <a href="#" onclick="return switchPanel('register')">注册账号</a>
       </div>
+    </div>
+
+    <!-- 注册新账号 -->
+    <div id="panel-register" style="display:none">
+      <h2 class="modal-title">入籍龟兹</h2>
+      <p class="modal-sub">注册新账号 · 加入王国</p>
+      <div class="modal-orn"><div class="modal-orn-line"></div><div class="modal-orn-gem"></div><div class="modal-orn-line"></div></div>
+      <div class="reg-send-row">
+        <input type="email" id="regEmail" placeholder="邮　箱" autocomplete="email" spellcheck="false">
+        <button id="regSendBtn" onclick="sendRegCode()">发送验证码</button>
+      </div>
+      <div class="modal-field"><input type="text" id="regCode" placeholder="6位验证码" maxlength="6" autocomplete="one-time-code"></div>
+      <div class="modal-field"><input type="text" id="regNick" placeholder="用户名" maxlength="20"></div>
+      <div class="modal-field"><input type="password" id="regPass" placeholder="密码（至少6位）" autocomplete="new-password"></div>
+      <div class="modal-field"><input type="password" id="regPass2" placeholder="确认密码" autocomplete="new-password"></div>
+      <div class="reg-av-row">
+        <div id="regAvPreview" onclick="document.getElementById('regAvFile').click()">📷</div>
+        <div class="reg-av-hint">点击上传头像（可选）<br>不上传将随机分配一张龟兹日志照片</div>
+        <input type="file" id="regAvFile" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleRegAvatar(this)">
+      </div>
+      <button class="modal-btn" id="regBtn" onclick="doRegister()">入　籍</button>
+      <div class="modal-error" id="regErr"></div>
+      <div class="modal-alt"><a href="#" onclick="return switchPanel('cred')">← 返回登录</a></div>
     </div>
 
     <!-- 忘记密码：输入邮箱 -->
@@ -1063,14 +1147,73 @@ function isTokenAlive(token){
 function openModal(){document.getElementById('login-modal').classList.add('open');setTimeout(()=>document.getElementById('mUser').focus(),100);}
 function closeModal(){document.getElementById('login-modal').classList.remove('open');}
 function switchPanel(p){
-  ['cred','forgot','reset'].forEach(id=>{
+  ['cred','forgot','reset','register'].forEach(id=>{
     const el=document.getElementById('panel-'+id);
     if(el) el.style.display=p===id?'':'none';
   });
-  ['fErr','rErr'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.color='';});
-  const focusMap={cred:'mUser',forgot:'fEmail',reset:'rCode'};
+  ['fErr','rErr','regErr'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.color='';});
+  const focusMap={cred:'mUser',forgot:'fEmail',reset:'rCode',register:'regEmail'};
   if(focusMap[p])setTimeout(()=>document.getElementById(focusMap[p])?.focus(),100);
   return false;
+}
+
+/* ── 注册 ── */
+let _regAvFile=null,_regTimer=null;
+function handleRegAvatar(input){
+  const f=input.files&&input.files[0];
+  if(!f)return;
+  if(f.size>2*1024*1024){document.getElementById('regErr').textContent='头像图片不超过2MB';input.value='';return;}
+  _regAvFile=f;
+  const url=URL.createObjectURL(f);
+  document.getElementById('regAvPreview').innerHTML=`<img src="${url}" alt="">`;
+}
+async function sendRegCode(){
+  const email=document.getElementById('regEmail').value.trim();
+  const err=document.getElementById('regErr');
+  const btn=document.getElementById('regSendBtn');
+  err.style.color='';err.textContent='';
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='请输入正确的邮箱';return;}
+  btn.disabled=true;btn.textContent='发送中...';
+  try{
+    const res=await fetch(`${WORKER}/register/send`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await res.json();
+    if(data.success){
+      err.style.color='#6ecf8e';err.textContent='验证码已发送，请查收邮箱';
+      let s=60;btn.textContent=s+'s';
+      clearInterval(_regTimer);
+      _regTimer=setInterval(()=>{s--;if(s<=0){clearInterval(_regTimer);btn.disabled=false;btn.textContent='重新发送';}else btn.textContent=s+'s';},1000);
+      return;
+    }
+    err.textContent=data.error||'发送失败';
+  }catch{err.textContent='连接失败';}
+  btn.disabled=false;btn.textContent='发送验证码';
+}
+async function doRegister(){
+  const email=document.getElementById('regEmail').value.trim();
+  const code=document.getElementById('regCode').value.trim();
+  const nick=document.getElementById('regNick').value.trim();
+  const p1=document.getElementById('regPass').value.trim();
+  const p2=document.getElementById('regPass2').value.trim();
+  const err=document.getElementById('regErr');
+  const btn=document.getElementById('regBtn');
+  err.style.color='';err.textContent='';
+  if(!email||!code||!nick){err.textContent='请完整填写邮箱、验证码和用户名';return;}
+  if(p1.length<6){err.textContent='密码至少6位';return;}
+  if(p1!==p2){err.textContent='两次密码不一致';return;}
+  btn.disabled=true;btn.textContent='入籍中...';
+  try{
+    const fd=new FormData();
+    fd.append('email',email);fd.append('code',code);
+    fd.append('password',p1);fd.append('nickname',nick);
+    if(_regAvFile)fd.append('avatar',_regAvFile);
+    const res=await fetch(`${WORKER}/register`,{method:'POST',body:fd});
+    const data=await res.json();
+    if(data.success&&data.token){
+      err.style.color='#6ecf8e';err.textContent='入籍成功，欢迎来到龟兹国 👑';
+      setTimeout(()=>doUnlock(data.token),800);
+    }else{err.textContent=data.error||'注册失败';}
+  }catch{err.textContent='连接失败';}
+  finally{btn.disabled=false;btn.textContent='入　籍';}
 }
 
 function doUnlock(token){
@@ -1186,13 +1329,88 @@ async function openAdminPanel(token){
     panel.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(6,3,1,.96);backdrop-filter:blur(16px);overflow:auto;padding:36px 24px';
     document.body.appendChild(panel);
   }
-  panel.innerHTML='<div style="max-width:960px;margin:0 auto;width:100%"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><h2 style="font-family:Songti SC,serif;color:#d4af37;font-size:1.4rem;letter-spacing:4px">访问记录 · 统计</h2><button onclick="document.getElementById(\'admin-panel\').remove()" style="background:none;border:1px solid rgba(212,175,55,.3);color:#d4af37;padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div><div id="admin-body" style="color:#e8dcc8">加载中...</div></div>';
+  panel.innerHTML='<div style="max-width:960px;margin:0 auto;width:100%">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><h2 style="font-family:Songti SC,serif;color:#d4af37;font-size:1.4rem;letter-spacing:4px">王国后台</h2><button onclick="document.getElementById(\'admin-panel\').remove()" style="background:none;border:1px solid rgba(212,175,55,.3);color:#d4af37;padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div>'+
+    '<div class="adm-tabs"><button class="adm-tab on" id="adm-tab-logs" onclick="switchAdminTab(\'logs\')">访问统计</button><button class="adm-tab" id="adm-tab-users" onclick="switchAdminTab(\'users\')">成员管理</button></div>'+
+    '<div id="admin-body" style="color:#e8dcc8">加载中...</div></div>';
+  switchAdminTab('logs');
+}
+function switchAdminTab(tab){
+  document.getElementById('adm-tab-logs').classList.toggle('on',tab==='logs');
+  document.getElementById('adm-tab-users').classList.toggle('on',tab==='users');
+  document.getElementById('admin-body').innerHTML='<div style="color:rgba(212,175,55,.4);padding:30px;text-align:center">加载中...</div>';
+  if(tab==='logs')loadAdminLogs();else loadAdminUsers();
+}
+async function loadAdminLogs(){
   try{
-    const res=await fetch(`${WORKER}/admin/logs`,{headers:{Authorization:'Bearer '+token}});
+    const res=await fetch(`${WORKER}/admin/logs`,{headers:{Authorization:'Bearer '+_adminToken}});
     const data=await res.json();
     _adminLogs=data.logs||[];
     renderAdminPanel(data);
   }catch(e){document.getElementById('admin-body').textContent='加载失败: '+e.message;}
+}
+
+/* ── 后台 · 成员管理 ── */
+function fmtUntilLocal(until){
+  if(!until)return'永久';
+  const d=new Date(until);
+  return (d.getMonth()+1)+'月'+d.getDate()+'日 '+(d.getHours()+'').padStart(2,'0')+':'+(d.getMinutes()+'').padStart(2,'0');
+}
+async function loadAdminUsers(){
+  const body=document.getElementById('admin-body');
+  try{
+    const res=await fetch(`${WORKER}/admin/users`,{headers:{Authorization:'Bearer '+_adminToken}});
+    const data=await res.json();
+    const users=data.users||[];
+    if(!users.length){body.innerHTML='<div style="color:rgba(212,175,55,.4);padding:30px;text-align:center">暂无成员</div>';return;}
+    const durOpts='<option value="10">10分钟</option><option value="60">1小时</option><option value="1440">24小时</option><option value="10080">7天</option><option value="0">永久</option>';
+    body.innerHTML='<div style="color:rgba(212,175,55,.45);font-size:.76rem;margin-bottom:14px">共 '+users.length+' 个账号 · 封禁=无法登录与访问 · 禁言=无法发帖/评论/留言</div>'+
+      users.map((u,i)=>{
+        const em=u.email.replace(/'/g,'').replace(/</g,'');
+        const av=u.avatarHash
+          ?`<img class="adm-uav" src="${WORKER}/avatar/${u.avatarHash}" alt="" onerror="this.outerHTML='<span class=adm-uav-init>${(u.name||'?')[0]}</span>'">`
+          :`<span class="adm-uav-init">${(u.name||'?')[0]}</span>`;
+        let badges='';
+        if(u.isAdmin)badges+='<span class="adm-badge b-admin">👑 国王</span>';
+        else if(u.isBuiltin)badges+='<span class="adm-badge b-builtin">内置</span>';
+        if(u.ban)badges+='<span class="adm-badge b-ban">🚫 封禁'+(u.ban.until?'至'+fmtUntilLocal(u.ban.until):'（永久）')+'</span>';
+        if(u.mute)badges+='<span class="adm-badge b-mute">🔇 禁言'+(u.mute.until?'至'+fmtUntilLocal(u.mute.until):'（永久）')+'</span>';
+        const reg=u.createdAt?'<span style="color:rgba(212,175,55,.3);font-size:.66rem;margin-left:8px">注册于 '+fmtUntilLocal(u.createdAt)+'</span>':'';
+        let acts='';
+        if(!u.isAdmin){
+          acts='<div class="adm-acts">'+
+            '<select class="adm-sel" id="adm-dur-'+i+'">'+durOpts+'</select>'+
+            (u.mute
+              ?'<button class="adm-btn safe" onclick="admRestrict(\''+em+'\',\'mute\',\'clear\')">解除禁言</button>'
+              :'<button class="adm-btn" onclick="admRestrict(\''+em+'\',\'mute\',\'set\','+i+')">🔇 禁言</button>')+
+            (u.ban
+              ?'<button class="adm-btn safe" onclick="admRestrict(\''+em+'\',\'ban\',\'clear\')">解除封禁</button>'
+              :'<button class="adm-btn danger" onclick="admRestrict(\''+em+'\',\'ban\',\'set\','+i+')">🚫 封禁</button>')+
+            '</div>';
+        }
+        return'<div class="adm-user'+(u.ban?' is-banned':u.mute?' is-muted':'')+'">'+av+
+          '<div class="adm-uinfo"><div class="adm-uname">'+(u.name||'').replace(/</g,'&lt;')+badges+'</div>'+
+          '<div class="adm-uemail">'+em+reg+'</div></div>'+acts+'</div>';
+      }).join('');
+  }catch(e){body.textContent='加载失败: '+e.message;}
+}
+async function admRestrict(email,type,action,selIdx){
+  let minutes=0;
+  const labelT=type==='ban'?'封禁':'禁言';
+  if(action==='set'){
+    const sel=document.getElementById('adm-dur-'+selIdx);
+    minutes=Number(sel?sel.value:0);
+    const durLabel=sel?sel.options[sel.selectedIndex].text:'永久';
+    if(!confirm('确定'+labelT+' '+email+'（'+durLabel+'）？'))return;
+  }else{
+    if(!confirm('确定解除 '+email+' 的'+labelT+'？'))return;
+  }
+  try{
+    const res=await fetch(`${WORKER}/admin/restrict`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_adminToken},body:JSON.stringify({email,type,action,minutes})});
+    const data=await res.json();
+    if(data.success)loadAdminUsers();
+    else alert(data.error||'操作失败');
+  }catch{alert('连接失败');}
 }
 function renderAdminPanel(data){
   const body=document.getElementById('admin-body');
@@ -2264,6 +2482,112 @@ document.getElementById('gallery').addEventListener('click',e=>{
     });
   },{rootMargin:'-30% 0px -55% 0px'});
   secs.forEach(s=>io.observe(s.el));
+})();
+
+/* ════════ v4 银河系背景引擎 ════════ */
+(function(){
+  const cv=document.getElementById('galaxy');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const DPR=Math.min(window.devicePixelRatio||1,1.5);
+  let W,H,GX,GY,stars=[],arms=[];
+  function resize(){
+    W=window.innerWidth;H=window.innerHeight;
+    cv.width=W*DPR;cv.height=H*DPR;
+    cv.style.width=W+'px';cv.style.height=H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    GX=W*.5;GY=H*.42;
+    // 三层视差星野
+    stars=[];
+    const n=Math.min(320,Math.floor(W*H/4200));
+    for(let i=0;i<n;i++){
+      const z=Math.random();
+      stars.push({x:Math.random()*W,y:Math.random()*H,z,r:.4+z*1.3,ph:Math.random()*6.283,sp:.4+Math.random()*1.3,hue:Math.random()});
+    }
+    // 双臂旋涡星系
+    arms=[];
+    const AN=Math.min(520,Math.floor(W*H/2600));
+    const scale=Math.min(W,H)*.115;
+    for(let i=0;i<AN;i++){
+      const t=Math.pow(Math.random(),.75)*3.4+.15;
+      arms.push({t,base:(i%2)*Math.PI,rad:26+t*scale,jit:(Math.random()-.5)*38*(t*.4+.4),sz:Math.random()*1.5+.4,ph:Math.random()*6.283,gold:Math.random()<.3});
+    }
+  }
+  resize();window.addEventListener('resize',resize);
+  let tmx=0,tmy=0,mx=0,my=0;
+  if(finePointer)document.addEventListener('pointermove',e=>{
+    tmx=e.clientX/W*2-1;tmy=e.clientY/H*2-1;
+  },{passive:true});
+  let shoots=[];
+  function frame(now){
+    if(document.body.classList.contains('light')){if(!reduced)requestAnimationFrame(frame);return;}
+    const ts=now/1000;
+    ctx.clearRect(0,0,W,H);
+    mx+=(tmx-mx)*.04;my+=(tmy-my)*.04;
+    const sy=window.scrollY;
+    const gx=GX+mx*26,gy=GY+my*18-sy*.05;
+    // 星云底色
+    let g=ctx.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*.55);
+    g.addColorStop(0,'rgba(96,72,165,.10)');g.addColorStop(.45,'rgba(38,38,92,.055)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    const gx2=gx+W*.3,gy2=gy+H*.25;
+    g=ctx.createRadialGradient(gx2,gy2,0,gx2,gy2,Math.min(W,H)*.4);
+    g.addColorStop(0,'rgba(212,175,55,.05)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // 星野（深度视差 + 呼吸闪烁）
+    for(const s of stars){
+      const px=s.x+mx*14*s.z;
+      const py=(((s.y-sy*s.z*.16)%H)+H)%H+my*10*s.z;
+      const a=(.16+.5*s.z)*(.55+.45*Math.sin(ts*s.sp+s.ph));
+      ctx.beginPath();ctx.arc(px,py,s.r,0,6.283);
+      ctx.fillStyle=s.hue<.16?'rgba(212,175,55,'+a.toFixed(3)+')'
+        :s.hue<.42?'rgba(150,180,255,'+a.toFixed(3)+')'
+        :'rgba(236,240,255,'+a.toFixed(3)+')';
+      ctx.fill();
+    }
+    // 星系核心
+    g=ctx.createRadialGradient(gx,gy,0,gx,gy,95);
+    g.addColorStop(0,'rgba(255,244,210,.5)');g.addColorStop(.25,'rgba(232,200,120,.18)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(gx,gy,95,0,6.283);ctx.fill();
+    // 旋臂（缓慢公转 · 倾斜盘面）
+    const rot=ts*.05;
+    for(const p of arms){
+      const ang=p.base+p.t*2.05+rot;
+      const px=gx+Math.cos(ang)*p.rad+Math.cos(ang+1.5708)*p.jit;
+      const py=gy+(Math.sin(ang)*p.rad+Math.sin(ang+1.5708)*p.jit)*.46;
+      const a=Math.max(0,1-p.t/3.8)*(.13+.38*(.5+.5*Math.sin(ts*1.3+p.ph)));
+      ctx.beginPath();ctx.arc(px,py,p.sz,0,6.283);
+      ctx.fillStyle=p.gold?'rgba(224,192,96,'+a.toFixed(3)+')':'rgba(172,192,255,'+a.toFixed(3)+')';
+      ctx.fill();
+    }
+    // 流星
+    if(shoots.length<2&&Math.random()<.004)
+      shoots.push({x:Math.random()*W,y:Math.random()*H*.45,vx:(Math.random()<.5?-1:1)*(6+Math.random()*4),vy:2.4+Math.random()*2,life:1});
+    for(let i=shoots.length-1;i>=0;i--){
+      const m=shoots[i];m.x+=m.vx;m.y+=m.vy;m.life-=.011;
+      if(m.life<=0||m.y>H+40){shoots.splice(i,1);continue;}
+      const tx=m.x-m.vx*15,ty=m.y-m.vy*15;
+      const lg=ctx.createLinearGradient(m.x,m.y,tx,ty);
+      lg.addColorStop(0,'rgba(240,244,255,'+(.8*m.life).toFixed(3)+')');lg.addColorStop(1,'rgba(150,180,255,0)');
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(tx,ty);
+      ctx.strokeStyle=lg;ctx.lineWidth=1.6;ctx.stroke();
+    }
+    if(!reduced)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ── 全局点击涟漪 ── */
+(function(){
+  if(reduced)return;
+  document.addEventListener('pointerdown',e=>{
+    const d=document.createElement('div');
+    d.className='click-ripple';
+    const sz=90+Math.random()*40;
+    d.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:${sz}px;height:${sz}px`;
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),750);
+  },{passive:true});
 })();
 })();
 </script>
