@@ -875,6 +875,10 @@ body.light #login-modal,body.light #contact-modal,body.light #profile-modal,body
 
 <script>
 const WORKER='https://api.kucha.org';
+/* 子目录路由：论坛 /forum、国王AI /king、后台 /admin */
+const ADMIN_EMAILS=['kuanghaiyang@kucha.org','tester@kucha.org'];
+const PANEL_ROUTES={'/forum':1,'/king':1,'/admin':1};
+let _pendingRoute=null;
 
 const PHOTOS=[
   {file:'0163b65938f7f910287528fb277fad9f.jpg',zh:{title:'策马天涯',quote:'男儿何不带吴钩，收取关山五十州',author:'李贺《南园》',desc:'千里江山，尽在脚下。以一身布衣走遍山河，笑傲苍穹，问这茫茫世间谁主沉浮？',anime:'「本大人偶尔也需要欣赏一下自己的帅气背影，毕竟这种级别的帅不能浪费！」'},en:{title:'Riding to Infinity',quote:'"Why not take a sword and conquer fifty states?" — Li He',desc:'A thousand miles of mountains lie at one\'s feet.',anime:'"The Great Me occasionally needs to admire his own dashing silhouette!"'},fr:{title:'Chevauchée vers l\'Infini',quote:'"Pourquoi ne pas saisir une épée?" — Li He',desc:'Mille lieues de montagnes s\'étendent sous ses pieds.',anime:'"Le Grand Moi a parfois besoin d\'admirer sa propre silhouette!"'},ar:{title:'ركوب نحو اللانهاية',quote:'"لماذا لا تحمل سيفاً؟" — لي هه',desc:'آلاف الأميال من الجبال تمتد تحت القدمين.',anime:'"الشخص العظيم يحتاج أحياناً لتأمل مظهره المهيب!"'}},
@@ -1098,26 +1102,76 @@ function doUnlock(token){
   loadUserPhotos();
   try{
     const payload=JSON.parse(atob(token.split('.')[0]));
-    if(payload.u==='kuanghaiyang@kucha.org'){_isAdmin=true;document.getElementById('nav-admin-link').style.display='inline-block';}
+    if(ADMIN_EMAILS.includes(payload.u)){_isAdmin=true;document.getElementById('nav-admin-link').style.display='inline-block';}
   }catch{}
+  // 登录后应用待跳转的深链 / 当前子目录路由
+  if(_pendingRoute){const r=_pendingRoute;_pendingRoute=null;go(r);}
+  else if(window._entered){renderRoute(currentRoute());}
 }
 
 /* ── 顶栏导航 ── */
 let _adminToken=null;
 function scrollTop(){window.scrollTo({top:0,behavior:'smooth'});}
-function goHome(){
+
+/* ════════ 子目录路由（History API + 404.html 兜底）════════ */
+function currentRoute(){return (location.pathname||'/').replace(/\/+$/,'')||'/';}
+function go(path){
+  const target=path||'/';
+  const clean=(target.replace(/\/+$/,''))||'/';
+  if(currentRoute()!==clean) history.pushState({},'',target);
+  renderRoute(clean);
+}
+function closePanelsSilent(){
   ['gb-modal','chat-modal','profile-modal','upload-modal','contact-modal','login-modal'].forEach(id=>{
     const el=document.getElementById(id); if(el)el.classList.remove('open');
   });
   const ap=document.getElementById('admin-panel'); if(ap)ap.remove();
-  window.scrollTo({top:0,behavior:'smooth'});
 }
+function setNavActive(route){
+  const map={'/forum':'navGuestbook','/king':'navChat','/admin':'navAdmin'};
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('active',a.getAttribute('data-i18n')===map[route]);
+  });
+}
+/* 根据当前路径打开/关闭对应面板（幂等，可被 popstate 反复调用）*/
+function renderRoute(path){
+  const route=(path||'/').replace(/\/+$/,'')||'/';
+  const gb=document.getElementById('gb-modal');
+  const chat=document.getElementById('chat-modal');
+  const ap=document.getElementById('admin-panel');
+  // 论坛 /forum（需登录）
+  if(route==='/forum'){
+    if(_gbToken){ if(!gb.classList.contains('open'))openGuestbook(); }
+    else { history.replaceState({},'','/'); _pendingRoute='/forum'; if(chat)chat.classList.remove('open'); if(ap)ap.remove(); setNavActive('/'); openModal(); return; }
+  } else if(gb){ gb.classList.remove('open'); }
+  // 国王 AI /king（公开）
+  if(route==='/king'){ if(chat&&!chat.classList.contains('open')){chat.classList.add('open');document.getElementById('chat-input')?.focus();} }
+  else if(chat){ chat.classList.remove('open'); }
+  // 后台 /admin（需管理员）
+  if(route==='/admin'){
+    if(_isAdmin&&_adminToken){ openAdminPanel(_adminToken); }
+    else if(!_gbToken){ history.replaceState({},'','/'); _pendingRoute='/admin'; setNavActive('/'); openModal(); return; }
+    else { history.replaceState({},'','/'); if(ap)ap.remove(); setNavActive('/'); return; }
+  } else if(ap){ ap.remove(); }
+  setNavActive(route);
+}
+window.addEventListener('popstate',()=>{ if(window._entered)renderRoute(currentRoute()); });
+/* 深链兜底：404.html 把原路径暂存后跳回首页，此处恢复成对应子目录 */
+(function(){try{
+  const rd=sessionStorage.getItem('kzg_redirect');
+  if(rd){ sessionStorage.removeItem('kzg_redirect');
+    const clean=((rd.split(/[?#]/)[0])||'/').replace(/\/+$/,'')||'/';
+    history.replaceState({},'',PANEL_ROUTES[clean]?clean:'/');
+  }
+}catch(e){}})();
+
+function goHome(){ closePanelsSilent(); go('/'); window.scrollTo({top:0,behavior:'smooth'}); }
 function navTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
-function navGallery(){navTo('gallery-section');}
-function navMembers(){navTo('members-section');}
-function navGuestbook(){if(_gbToken)openGuestbook();else openModal();}
-function navChat(){toggleChat();}
-function openAdminFromNav(){if(_adminToken)openAdminPanel(_adminToken);}
+function navGallery(){ if(currentRoute()!=='/')go('/'); setTimeout(()=>navTo('gallery-section'),60); }
+function navMembers(){ if(currentRoute()!=='/')go('/'); setTimeout(()=>navTo('members-section'),60); }
+function navGuestbook(){ go('/forum'); }
+function navChat(){ toggleChat(); }
+function openAdminFromNav(){ go('/admin'); }
 
 /* ── 成员名册 ── */
 async function loadMembers(){
@@ -1198,7 +1252,7 @@ async function openAdminPanel(token){
     document.body.appendChild(panel);
   }
   panel.innerHTML='<div style="max-width:960px;margin:0 auto;width:100%">'+
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><h2 style="font-weight:700;color:var(--accent);font-size:1.4rem;letter-spacing:4px">王国后台</h2><button onclick="document.getElementById(\'admin-panel\').remove()" style="background:none;border:1px solid var(--text-3);color:var(--accent);padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><h2 style="font-weight:700;color:var(--accent);font-size:1.4rem;letter-spacing:4px">王国后台</h2><button onclick="go(\'/\')" style="background:none;border:1px solid var(--text-3);color:var(--accent);padding:6px 16px;border-radius:100px;cursor:pointer">关闭</button></div>'+
     '<div class="adm-tabs"><button class="adm-tab on" id="adm-tab-logs" onclick="switchAdminTab(\'logs\')">访问统计</button><button class="adm-tab" id="adm-tab-users" onclick="switchAdminTab(\'users\')">成员管理</button></div>'+
     '<div id="admin-body" style="color:var(--text)">加载中...</div></div>';
   switchAdminTab('logs');
@@ -1371,6 +1425,10 @@ async function loadProfile(){
     const res=await fetch(`${WORKER}/profile`,{headers:{Authorization:'Bearer '+_gbToken}});
     if(res.ok){
       _userProfile=await res.json();
+      // 以后端返回的 isAdmin 为准，同步后台入口显隐
+      _isAdmin=!!_userProfile.isAdmin;
+      const adminLink=document.getElementById('nav-admin-link');
+      if(adminLink)adminLink.style.display=_isAdmin?'inline-block':'none';
       const nick=_userProfile.nickname||_userProfile.defaultName||(_userProfile.email||'我').split('@')[0];
       const wrap=document.getElementById('nav-av-wrap');
       if(wrap){
@@ -1586,9 +1644,7 @@ async function openGuestbook(){
   document.getElementById('gb-modal').classList.add('open');
   forumBackToList();
 }
-function closeGuestbook(){
-  document.getElementById('gb-modal').classList.remove('open');
-}
+function closeGuestbook(){ go('/'); }
 function forumBackToList(){
   showForumView('forum-list');
   // 顶部发帖框头像
@@ -1984,9 +2040,8 @@ function askSug(btn){
   sendChat();
 }
 function toggleChat(){
-  const m=document.getElementById('chat-modal');
-  m.classList.toggle('open');
-  if(m.classList.contains('open')) document.getElementById('chat-input').focus();
+  if(document.getElementById('chat-modal').classList.contains('open')) go('/');
+  else go('/king');
 }
 async function sendChat(){
   const inp=document.getElementById('chat-input');
@@ -2051,6 +2106,7 @@ function enterSite(){
   document.getElementById('topnav').classList.add('show');
   const saved=sessionStorage.getItem('kzg_token');
   if(saved&&typeof isTokenAlive==='function'&&isTokenAlive(saved)){doUnlock(saved);}
+  else{renderRoute(currentRoute());}
 }
 function togglePlay(){
   if(bgm.paused){

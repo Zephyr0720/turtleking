@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>龟兹国 · 跳转中</title>
+<style>html,body{margin:0;height:100%;background:#0a0a0b;color:#a4a4ac;font-family:-apple-system,system-ui,"PingFang SC",sans-serif}
+.c{height:100%;display:flex;align-items:center;justify-content:center;letter-spacing:2px;font-size:.85rem}</style>
+<script>
+/* GitHub Pages 单页应用兜底：
+   直接访问 /forum、/king、/admin 等子目录时 Pages 找不到文件会返回本页，
+   这里把原始路径暂存，跳回首页后由 index.html 的前端路由接管打开对应面板。 */
+(function(){
+  try{ sessionStorage.setItem('kzg_redirect', location.pathname + location.search + location.hash); }catch(e){}
+  location.replace('/');
+})();
+</script>
+</head>
+<body><div class="c">正在前往龟兹国…</div></body>
+</html>
