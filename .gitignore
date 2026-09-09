@@ -1,2 +1,12 @@
 *.jpg
 worker.js
+worker.js.bak*
+wrangler.toml
+wrangler.dev.toml
+.dev.vars
+.wrangler/
+.DS_Store
+index.backup-*.html
+deploy.sh
+项目说明.md
+download.png
