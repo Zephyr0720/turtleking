@@ -1,259 +1,167 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-bs-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="robots" content="noindex,nofollow">
 <title>KUCHA QUANT · 量化控制台</title>
+
+<!-- Tabler 1.5.0（MIT）—— 开源仪表盘 UI 套件，自带深色主题 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/css/tabler.min.css">
+<!-- TradingView Lightweight Charts 5.2.1（Apache-2.0）—— 专业金融图表 -->
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
+
 <style>
 :root{
-  --bg:#0b0f14; --panel:#10161d; --panel-2:#0d131a; --raise:#141c25;
-  --line:#1c2733; --line-soft:#151e27;
-  --ink:#e6edf3; --ink-2:#9aa8b6; --ink-3:#5c6b7a;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70;
-  --good:#2ea043; --warn:#bb8009; --bad:#e5484d;
-  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  --r:4px;
+  --kq-s1:#3987e5;        /* 策略序列 */
+  --kq-s2:#d95926;        /* 基准序列 */
+  --kq-grid:#1c2733;
+  --kq-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{
-  background:var(--bg); color:var(--ink);
-  font-family:var(--sans); font-size:14px; line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.lbl{
-  font-family:var(--mono); font-size:10px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--ink-3);
-}
-a{color:var(--s1);text-decoration:none}
-button{font-family:inherit;font-size:inherit;cursor:pointer}
-[hidden]{display:none!important}
+body{background:#0b0f14}
+.page-wrapper,.navbar{background:#0b0f14}
+.card{background:#10161d;border-color:#1c2733}
+.card-header{border-bottom-color:#1a2430}
+.table{--tblr-table-border-color:#1a2430}
+.navbar{border-bottom:1px solid #1c2733}
 
-/* ───── 登录门 ───── */
-#gate{
-  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
-}
-.gate-card{
-  width:100%; max-width:380px; background:var(--panel);
-  border:1px solid var(--line); border-radius:var(--r); padding:34px 30px;
-}
-.gate-mark{
-  font-family:var(--mono); font-size:19px; letter-spacing:.22em; color:var(--ink);
-  text-align:center; margin-bottom:6px;
-}
-.gate-sub{text-align:center;color:var(--ink-3);font-size:12px;margin-bottom:28px;font-family:var(--mono)}
-.field{margin-bottom:14px}
-.field label{display:block;margin-bottom:6px}
-.field input{
-  width:100%; background:var(--bg); border:1px solid var(--line); border-radius:var(--r);
-  color:var(--ink); padding:9px 11px; font-family:var(--mono); font-size:13px; outline:none;
-}
-.field input:focus{border-color:var(--s1)}
-.btn{
-  width:100%; background:var(--s1); color:#fff; border:0; border-radius:var(--r);
-  padding:10px; font-family:var(--mono); font-size:12px; letter-spacing:.1em;
-  text-transform:uppercase; transition:opacity .15s;
-}
-.btn:hover{opacity:.88}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn-ghost{
-  background:transparent; border:1px solid var(--line); color:var(--ink-2);
-  padding:5px 11px; border-radius:var(--r); font-family:var(--mono);
-  font-size:11px; letter-spacing:.06em; width:auto;
-}
-.btn-ghost:hover{border-color:var(--ink-3);color:var(--ink)}
-.btn-ghost[aria-pressed="true"]{border-color:var(--s1);color:var(--ink);background:var(--raise)}
-.err{color:var(--bad);font-size:12px;margin-top:12px;min-height:17px;font-family:var(--mono)}
+/* 所有数字用等宽，列才对得齐 */
+.num,.table td,.table th,.datagrid-content{font-family:var(--kq-mono);font-variant-numeric:tabular-nums}
+.brand-mark{font-family:var(--kq-mono);letter-spacing:.18em;font-size:.95rem;font-weight:600}
+.brand-mark .dot{color:var(--kq-s1)}
+.subheader{font-family:var(--kq-mono);letter-spacing:.1em}
 
-/* ───── 控制台骨架 ───── */
-.top{
-  position:sticky; top:0; z-index:20; background:rgba(11,15,20,.93);
-  backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
-  display:flex; align-items:center; gap:16px; padding:0 20px; height:48px;
-}
-.brand{font-family:var(--mono);font-size:13px;letter-spacing:.2em;color:var(--ink)}
-.brand span{color:var(--s1)}
-.status{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--ink-3);flex:none}
-.dot.live{background:var(--good);box-shadow:0 0 0 3px rgba(46,160,67,.15)}
-.dot.stale{background:var(--warn);box-shadow:0 0 0 3px rgba(187,128,9,.15)}
-.top .spacer{flex:1}
-.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+#chart{height:340px;width:100%}
+.chart-legend{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-family:var(--kq-mono);font-size:.75rem}
+.chart-legend i{width:14px;height:2px;border-radius:1px;display:inline-block}
+.chart-note{font-family:var(--kq-mono);font-size:.75rem}
 
-/* ───── 统计磁贴 ───── */
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
-.tile .v{font-family:var(--mono);font-size:24px;letter-spacing:-.02em;margin-top:7px;line-height:1.15}
-.tile .sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:5px}
-.up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--ink-2)}
+.order{border-left:3px solid var(--tblr-border-color);padding:.75rem .9rem;border-radius:0 4px 4px 0;
+       background:#0d131a;margin-bottom:.6rem}
+.order:last-child{margin-bottom:0}
+.order.buy{border-left-color:var(--tblr-green)}
+.order.sell{border-left-color:var(--tblr-red)}
+.order .sym{font-family:var(--kq-mono);font-weight:700;font-size:1.02rem}
+.order .meta{font-family:var(--kq-mono);font-size:.76rem;line-height:1.75}
 
-/* ───── 面板 ───── */
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:14px}
-.phead{
-  display:flex;align-items:center;gap:12px;padding:11px 16px;
-  border-bottom:1px solid var(--line-soft);
-}
-.phead .lbl{color:var(--ink-2)}
-.phead .spacer{flex:1}
-.pbody{padding:16px}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-
-/* ───── 图表 ───── */
-.chart-wrap{position:relative}
-svg.chart{display:block;width:100%;height:auto;max-height:330px;overflow:visible}
-.legend{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-.lg{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
-.lg i{width:14px;height:2px;border-radius:1px;display:block;flex:none}
-.tip{
-  position:absolute;pointer-events:none;background:var(--raise);border:1px solid var(--line);
-  border-radius:var(--r);padding:8px 10px;font-family:var(--mono);font-size:11px;
-  color:var(--ink);white-space:nowrap;z-index:5;transform:translate(-50%,-115%);
-  box-shadow:0 6px 22px rgba(0,0,0,.55);
-}
-.tip .r{display:flex;justify-content:space-between;gap:14px;line-height:1.7}
-.tip .k{color:var(--ink-3)}
-
-/* ───── 表格 ───── */
-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
-th{
-  text-align:right;padding:7px 10px;color:var(--ink-3);font-weight:400;
-  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  border-bottom:1px solid var(--line-soft);white-space:nowrap;
-}
-th:first-child,td:first-child{text-align:left}
-td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line-soft);color:var(--ink-2);white-space:nowrap}
-tr:last-child td{border-bottom:0}
-td.sym{color:var(--ink);font-weight:600}
-.scroll{overflow-x:auto}
-
-/* ───── 指令卡 ───── */
-.ord{border-left:2px solid var(--line);padding:11px 14px;margin-bottom:9px;background:var(--panel-2);border-radius:0 var(--r) var(--r) 0}
-.ord:last-child{margin-bottom:0}
-.ord.buy{border-left-color:var(--good)}
-.ord.sell{border-left-color:var(--bad)}
-.ord .h{display:flex;align-items:baseline;gap:9px;font-family:var(--mono);font-size:13px}
-.ord .side{font-size:10px;letter-spacing:.12em;padding:2px 6px;border-radius:3px}
-.ord.buy .side{background:rgba(46,160,67,.14);color:var(--good)}
-.ord.sell .side{background:rgba(229,72,77,.14);color:var(--bad)}
-.ord .sym{color:var(--ink);font-weight:600;font-size:14px}
-.ord .meta{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:5px;line-height:1.7}
-.ord .meta b{color:var(--warn);font-weight:600}
-
-/* ───── 额度条 ───── */
-.meter{height:6px;background:var(--line-soft);border-radius:3px;overflow:hidden;margin-top:9px}
-.meter i{display:block;height:100%;background:var(--good);transition:width .4s}
-.meter i.w{background:var(--warn)} .meter i.d{background:var(--bad)}
-
-/* ───── 空状态 ───── */
-.empty{padding:30px 16px;text-align:center;color:var(--ink-3);font-family:var(--mono);font-size:12px;line-height:1.9}
-.empty code{background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:2px 6px;color:var(--ink-2)}
-
-/* ───── 参数网格 ───── */
-.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:1px;background:var(--line-soft)}
-.kv div{background:var(--panel);padding:10px 12px}
-.kv .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.kv .v{font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:3px}
-
-.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line-soft);color:var(--ink-3);font-size:11px;font-family:var(--mono);line-height:1.9}
-
-@media(max-width:880px){
-  .tiles{grid-template-columns:repeat(2,1fr)}
-  .cols{grid-template-columns:1fr}
-  .wrap{padding:16px 14px 44px}
-  .top{padding:0 14px;gap:10px}
-  .brand{font-size:11px;letter-spacing:.14em}
-}
+.empty-sm{padding:1.6rem .75rem;text-align:center;font-family:var(--kq-mono);font-size:.8rem;
+          color:var(--tblr-secondary);line-height:1.9}
+.stop-price{color:var(--tblr-orange)}
+.gate-mark{font-family:var(--kq-mono);letter-spacing:.22em;font-size:1.25rem}
 </style>
 </head>
-<body>
+<body class="antialiased">
 
 <!-- ══════════ 登录 ══════════ -->
-<section id="gate">
-  <form class="gate-card" id="login-form" autocomplete="on">
-    <div class="gate-mark">KUCHA<span style="color:var(--s1)">·</span>QUANT</div>
-    <div class="gate-sub">量化控制台 · 需管理员权限</div>
-    <div class="field">
-      <label class="lbl" for="u">账号</label>
-      <input id="u" name="username" type="email" autocomplete="username" required
-             placeholder="haiyangkwong@gmail.com">
+<div class="page page-center" id="gate">
+  <div class="container container-tight py-4">
+    <div class="text-center mb-4">
+      <div class="gate-mark">KUCHA<span style="color:var(--kq-s1)">·</span>QUANT</div>
+      <div class="text-secondary mt-2" style="font-size:.82rem">量化控制台 · 需管理员权限</div>
     </div>
-    <div class="field">
-      <label class="lbl" for="p">密码</label>
-      <input id="p" name="password" type="password" autocomplete="current-password" required>
-    </div>
-    <button class="btn" id="login-btn" type="submit">进入</button>
-    <div class="err" id="login-err" role="alert"></div>
-  </form>
-</section>
+    <form class="card card-md" id="login-form" autocomplete="on">
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label subheader" for="u">账号</label>
+          <input id="u" name="username" type="email" class="form-control" autocomplete="username"
+                 placeholder="haiyangkwong@gmail.com" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label subheader" for="p">密码</label>
+          <input id="p" name="password" type="password" class="form-control"
+                 autocomplete="current-password" required>
+        </div>
+        <div class="form-footer">
+          <button type="submit" class="btn btn-primary w-100" id="login-btn">进入</button>
+        </div>
+        <div class="text-danger mt-3 text-center" id="login-err" role="alert"
+             style="min-height:1.2rem;font-size:.82rem"></div>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ══════════ 控制台 ══════════ -->
-<div id="console" hidden>
-  <header class="top">
-    <div class="brand">KUCHA<span>·</span>QUANT</div>
-    <div class="status"><span class="dot" id="dot"></span><span id="status-txt">载入中</span></div>
-    <div class="spacer"></div>
-    <button class="btn-ghost" id="refresh">刷新</button>
-    <button class="btn-ghost" id="logout">登出</button>
+<div class="page" id="console" hidden>
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <span class="navbar-brand brand-mark mb-0">KUCHA<span class="dot">·</span>QUANT</span>
+      <span class="badge bg-secondary-lt ms-2" id="status-badge">载入中</span>
+      <div class="ms-auto d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" id="refresh">刷新</button>
+        <button class="btn btn-sm btn-outline-secondary" id="logout">登出</button>
+      </div>
+    </div>
   </header>
 
-  <div class="wrap">
-    <div class="tiles" id="tiles"></div>
+  <div class="page-body">
+    <div class="container-xl">
 
-    <section class="panel">
-      <div class="phead">
-        <span class="lbl">权益曲线</span>
-        <div class="legend" id="legend"></div>
-        <span class="spacer"></span>
-        <button class="btn-ghost" id="btn-live" aria-pressed="true">实盘</button>
-        <button class="btn-ghost" id="btn-bt" aria-pressed="false">回测</button>
-        <span style="width:8px"></span>
-        <button class="btn-ghost" id="btn-chart" aria-pressed="true">图</button>
-        <button class="btn-ghost" id="btn-table" aria-pressed="false">表</button>
+      <div class="row row-cards mb-3" id="tiles"></div>
+
+      <div class="card mb-3">
+        <div class="card-header d-flex align-items-center flex-wrap gap-2">
+          <h3 class="card-title mb-0">权益曲线</h3>
+          <div class="chart-legend ms-3" id="legend"></div>
+          <div class="ms-auto btn-group btn-group-sm" role="group">
+            <button class="btn btn-outline-secondary active" id="btn-live">实盘</button>
+            <button class="btn btn-outline-secondary" id="btn-bt">回测</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="chart"></div>
+          <div id="chart-empty" class="empty-sm" hidden></div>
+        </div>
       </div>
-      <div class="pbody">
-        <div class="chart-wrap" id="chart-wrap"></div>
-        <div id="chart-table" hidden class="scroll"></div>
+
+      <div class="row row-cards mb-3">
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-header">
+              <h3 class="card-title mb-0">明日开盘指令</h3>
+              <span class="card-subtitle ms-auto num" id="ord-date"></span>
+            </div>
+            <div class="card-body" id="orders"></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-header">
+              <h3 class="card-title mb-0">当前持仓</h3>
+              <span class="card-subtitle ms-auto num" id="pos-count"></span>
+            </div>
+            <div id="positions"></div>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <div class="cols">
-      <section class="panel">
-        <div class="phead"><span class="lbl">明日开盘指令</span><span class="spacer"></span>
-          <span class="lbl" id="ord-date"></span></div>
-        <div class="pbody" id="orders"></div>
-      </section>
-      <section class="panel">
-        <div class="phead"><span class="lbl">当前持仓</span><span class="spacer"></span>
-          <span class="lbl" id="pos-count"></span></div>
-        <div class="pbody" id="positions" style="padding:6px 0 0"></div>
-      </section>
-    </div>
+      <div class="row row-cards mb-3">
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-header"><h3 class="card-title mb-0">汇丰 Trade25 月度额度</h3></div>
+            <div class="card-body" id="budget"></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-header"><h3 class="card-title mb-0">止损调整</h3></div>
+            <div id="stops"></div>
+          </div>
+        </div>
+      </div>
 
-    <div class="cols">
-      <section class="panel">
-        <div class="phead"><span class="lbl">汇丰 Trade25 月度额度</span></div>
-        <div class="pbody" id="budget"></div>
-      </section>
-      <section class="panel">
-        <div class="phead"><span class="lbl">止损调整</span></div>
-        <div class="pbody" id="stops" style="padding:6px 0 0"></div>
-      </section>
-    </div>
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title mb-0">策略参数</h3></div>
+        <div class="card-body">
+          <div class="datagrid" id="params"></div>
+        </div>
+      </div>
 
-    <section class="panel">
-      <div class="phead"><span class="lbl">策略参数</span></div>
-      <div class="kv" id="params"></div>
-    </section>
-
-    <div class="foot">
-      信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
-      数据经 api.kucha.org 读取，仅管理员可见。
+      <div class="text-secondary" style="font-size:.75rem;line-height:1.9">
+        信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
+        数据经 api.kucha.org 读取，仅管理员可见。
+      </div>
     </div>
   </div>
 </div>
@@ -262,13 +170,11 @@ td.sym{color:var(--ink);font-weight:600}
 const WORKER = 'https://api.kucha.org';
 const TK = 'kq_token';
 const $ = s => document.querySelector(s);
-const el = (t, c, h) => { const e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; };
 
-/* ───── 格式化 ───── */
 const money = (n, d = 2) => (n == null || isNaN(n)) ? '—'
   : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = n => (n == null || isNaN(n)) ? '—' : (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%';
-const cls = n => n == null || isNaN(n) ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat';
+const tone = n => n == null || isNaN(n) ? 'text-secondary' : n > 0 ? 'text-green' : n < 0 ? 'text-red' : 'text-secondary';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /* ───── 登录 ───── */
@@ -279,7 +185,7 @@ $('#login-form').addEventListener('submit', async e => {
   try {
     const r = await fetch(WORKER + '/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: $('#u').value, password: $('#p').value }),
+      body: JSON.stringify({ username: $('#u').value.trim(), password: $('#p').value }),
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error || '登录失败');
@@ -288,46 +194,38 @@ $('#login-form').addEventListener('submit', async e => {
   } catch (ex) { err.textContent = ex.message; }
   finally { btn.disabled = false; }
 });
-
 $('#logout').onclick = () => { localStorage.removeItem(TK); location.reload(); };
-$('#refresh').onclick = () => boot(true);
+$('#refresh').onclick = () => boot();
 
-/* ───── 载入数据 ───── */
-let DATA = null, MODE = 'live';
+/* ───── 取数 ───── */
+let DATA = null, MODE = 'live', chart = null, series = [];
 
-async function boot(force) {
+async function boot() {
   const token = localStorage.getItem(TK);
   if (!token) { $('#gate').hidden = false; $('#console').hidden = true; return; }
   $('#gate').hidden = true; $('#console').hidden = false;
-  setStatus('', '载入中');
+  setStatus('secondary', '载入中');
   try {
     const r = await fetch(WORKER + '/quant/dashboard', { headers: { Authorization: 'Bearer ' + token } });
     if (r.status === 401) { localStorage.removeItem(TK); location.reload(); return; }
     if (!r.ok) throw new Error('HTTP ' + r.status);
     DATA = await r.json();
     render();
-  } catch (ex) {
-    setStatus('stale', '读取失败 · ' + ex.message);
-  }
+  } catch (ex) { setStatus('orange', '读取失败 · ' + ex.message); }
 }
-
-function setStatus(k, txt) {
-  $('#dot').className = 'dot' + (k ? ' ' + k : '');
-  $('#status-txt').textContent = txt;
+function setStatus(color, txt) {
+  $('#status-badge').className = 'badge bg-' + color + '-lt ms-2';
+  $('#status-badge').textContent = txt;
 }
 
 /* ───── 渲染 ───── */
 function render() {
-  const L = DATA.latest, S = DATA.state, EQ = DATA.equity || [], BT = DATA.backtest;
-  const has = !!L;
-
-  if (has) {
+  const L = DATA.latest, EQ = DATA.equity || [], BT = DATA.backtest;
+  if (L) {
     const age = (Date.now() - (L.sent_at || 0)) / 86400000;
-    setStatus(age < 4 ? 'live' : 'stale',
-      `${L.date} · ${age < 1 ? '今日已更新' : Math.floor(age) + ' 天前更新'}`);
-  } else {
-    setStatus('stale', '尚未收到任何信号');
-  }
+    setStatus(age < 4 ? 'green' : 'orange',
+      `${L.date} · ${age < 1 ? '今日已更新' : Math.floor(age) + ' 天前'}`);
+  } else setStatus('orange', '尚未收到信号');
 
   renderTiles(L, EQ);
   renderChart(EQ, BT);
@@ -338,206 +236,187 @@ function render() {
   renderParams(BT);
 }
 
+function tile(label, value, sub, cls) {
+  return `<div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body">
+    <div class="subheader mb-2">${label}</div>
+    <div class="h1 mb-1 num ${cls || ''}">${value}</div>
+    <div class="text-secondary num" style="font-size:.74rem">${esc(sub)}</div>
+  </div></div></div>`;
+}
+
 function renderTiles(L, EQ) {
-  const eq = L && L.equity ? L.equity : null;
+  const eq = L && L.equity;
   let chg = null;
   if (EQ.length >= 2) chg = EQ[EQ.length - 1].v / EQ[EQ.length - 2].v - 1;
   const holds = L && L.holdings ? L.holdings.length : 0;
   const maxPos = (DATA.backtest && DATA.backtest.params && DATA.backtest.params.max_positions) || 5;
-  const b = L && L.budget ? L.budget : null;
+  const b = L && L.budget;
   const bp = b ? Math.round((b.used_pct || 0) * 100) : null;
-
-  const tiles = [
-    ['账户权益', eq ? money(eq.total) : '—', eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}` : '等待首次信号', ''],
-    ['较上次', chg == null ? '—' : pct(chg), EQ.length ? `已记录 ${EQ.length} 个交易日` : '暂无历史', cls(chg)],
-    ['持仓', holds + ' / ' + maxPos, L ? (L.regime_on ? '大盘上升趋势 · 可开新仓' : '大盘弱势 · 只减不增') : '—', ''],
-    ['汇丰额度', bp == null ? '—' : bp + '%', b ? `${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}` : '暂无', bp == null ? '' : bp >= 85 ? 'down' : bp >= 60 ? 'flat' : ''],
-  ];
-  $('#tiles').innerHTML = tiles.map(([k, v, s, c]) =>
-    `<div class="tile"><div class="lbl">${k}</div><div class="v ${c}">${v}</div><div class="sub">${esc(s)}</div></div>`
-  ).join('');
+  $('#tiles').innerHTML =
+    tile('账户权益', eq ? money(eq.total) : '—',
+         eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}` : '等待首次信号') +
+    tile('较上次', chg == null ? '—' : pct(chg),
+         EQ.length ? `已记录 ${EQ.length} 个交易日` : '暂无历史', tone(chg)) +
+    tile('持仓', holds + ' / ' + maxPos,
+         L ? (L.regime_on ? '大盘上升趋势 · 可开新仓' : '大盘弱势 · 只减不增') : '—') +
+    tile('汇丰额度', bp == null ? '—' : bp + '%',
+         b ? `${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}` : '暂无',
+         bp == null ? '' : bp >= 85 ? 'text-red' : bp >= 60 ? 'text-orange' : '');
 }
 
-/* ───── 权益曲线（单轴，2 序列，十字光标 + 提示） ───── */
+/* ───── 权益曲线（TradingView Lightweight Charts）───── */
 function renderChart(EQ, BT) {
-  const wrap = $('#chart-wrap'), legend = $('#legend');
-  const live = EQ.map(p => ({ d: p.d, v: p.v }));
-  const btc = BT && BT.curve ? BT.curve : [];
+  const box = $('#chart'), empty = $('#chart-empty'), legend = $('#legend');
+  const live = (EQ || []).map(p => ({ time: p.d, value: p.v }));
+  const btc = (BT && BT.curve) || [];
 
-  let series, note;
+  let defs, note = '';
   const wantBt = MODE === 'bt' && btc.length >= 2;
   if (!wantBt && live.length >= 2) {
-    series = [{ name: '实盘权益', color: 'var(--s1)', raw: 'var(--s1)', pts: live }];
-    note = '';
+    defs = [{ name: '实盘权益', color: 'var(--kq-s1)', hex: '#3987e5', data: live }];
   } else if (btc.length >= 2) {
-    series = [
-      { name: '策略（回测）', color: 'var(--s1)', pts: btc.map(p => ({ d: p.d, v: p.v })) },
-      { name: 'QQQ 买入持有', color: 'var(--s2)', pts: btc.filter(p => p.b != null).map(p => ({ d: p.d, v: p.b })) },
-    ].filter(s => s.pts.length >= 2);
-    note = live.length < 2 ? '实盘数据不足，先显示回测曲线' : '';
+    defs = [
+      { name: '策略（回测）', hex: '#3987e5', data: btc.map(p => ({ time: p.d, value: p.v })) },
+      { name: 'QQQ 买入持有', hex: '#d95926',
+        data: btc.filter(p => p.b != null).map(p => ({ time: p.d, value: p.b })) },
+    ].filter(d => d.data.length >= 2);
+    if (live.length < 2) note = '实盘数据不足，先显示回测曲线';
   } else {
-    legend.innerHTML = '';
-    wrap.innerHTML = `<div class="empty">还没有权益数据。<br>
-      系统每天美股收盘后运行一次，跑完第一次就会出现在这里。</div>`;
-    $('#chart-table').innerHTML = '';
+    box.hidden = true; empty.hidden = false; legend.innerHTML = '';
+    empty.innerHTML = '还没有权益数据。<br>系统每天美股收盘后运行一次，跑完第一次就会出现在这里。';
+    syncButtons(live.length, btc.length);
     return;
   }
+  box.hidden = false; empty.hidden = true;
 
-  const showingBt = series.length > 1 || (MODE === 'bt' && btc.length >= 2);
-  $('#btn-live').setAttribute('aria-pressed', !showingBt);
-  $('#btn-bt').setAttribute('aria-pressed', showingBt);
-  $('#btn-live').disabled = live.length < 2;
-  $('#btn-bt').disabled = btc.length < 2;
-  legend.innerHTML = series.map(s =>
-    `<span class="lg"><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')
-    + (note ? `<span class="lg" style="color:var(--ink-3)">${esc(note)}</span>` : '');
+  legend.innerHTML = defs.map(d =>
+    `<span><i style="background:${d.hex}"></i> <span class="text-secondary">${esc(d.name)}</span>
+     <b class="ms-1" id="lg-${d.hex.slice(1)}"></b></span>`).join('')
+    + (note ? `<span class="text-secondary chart-note">${esc(note)}</span>` : '');
 
-  const W = 1000, H = 300, P = { t: 14, r: 62, b: 26, l: 58 };
-  const all = series.flatMap(s => s.pts);
-  const xs = [...new Set(all.map(p => p.d))].sort();
-  const xi = new Map(xs.map((d, i) => [d, i]));
-  const vmin = Math.min(...all.map(p => p.v)), vmax = Math.max(...all.map(p => p.v));
-  const pad = (vmax - vmin) * 0.08 || vmax * 0.05 || 1;
-  const lo = vmin - pad, hi = vmax + pad;
-  const X = d => P.l + (xi.get(d) / Math.max(xs.length - 1, 1)) * (W - P.l - P.r);
-  const Y = v => P.t + (1 - (v - lo) / (hi - lo)) * (H - P.t - P.b);
-
-  const ticks = 4, gy = [];
-  for (let i = 0; i <= ticks; i++) gy.push(lo + (hi - lo) * i / ticks);
-  const yearMarks = [];
-  let lastY = null;
-  xs.forEach(d => { const y = d.slice(0, 4); if (y !== lastY) { yearMarks.push(d); lastY = y; } });
-
-  const paths = series.map(s => {
-    const d = s.pts.map((p, i) => (i ? 'L' : 'M') + X(p.d).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
-    return `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2"
-             stroke-linejoin="round" stroke-linecap="round"/>`;
-  }).join('');
-
-  const endLabels = series.map(s => {
-    const p = s.pts[s.pts.length - 1];
-    return `<text x="${(X(p.d) + 8).toFixed(1)}" y="${(Y(p.v) + 4).toFixed(1)}"
-      fill="${s.color}" font-family="var(--mono)" font-size="11">${money(p.v, 0)}</text>`;
-  }).join('');
-
-  wrap.innerHTML = `
-  <svg class="chart" viewBox="0 0 ${W} ${H}" role="img"
-       aria-label="权益曲线，${series.map(s => s.name).join(' 与 ')}">
-    ${gy.map(v => `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"
-        stroke="var(--line-soft)" stroke-width="1"/>
-      <text x="${P.l - 9}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end"
-        fill="var(--ink-3)" font-family="var(--mono)" font-size="10">${money(v, 0)}</text>`).join('')}
-    ${yearMarks.map(d => `<text x="${X(d).toFixed(1)}" y="${H - 8}" text-anchor="middle"
-        fill="var(--ink-3)" font-family="var(--mono)" font-size="10">${d.slice(0, 4)}</text>`).join('')}
-    <line id="cx" x1="0" x2="0" y1="${P.t}" y2="${H - P.b}" stroke="var(--ink-3)"
-      stroke-width="1" stroke-dasharray="3 3" opacity="0"/>
-    ${paths}${endLabels}
-    <rect id="hit" x="${P.l}" y="${P.t}" width="${W - P.l - P.r}" height="${H - P.t - P.b}" fill="transparent"/>
-  </svg><div class="tip" id="tip" hidden></div>`;
-
-  const svg = wrap.querySelector('svg'), cx = wrap.querySelector('#cx'), tip = wrap.querySelector('#tip');
-  svg.addEventListener('pointermove', ev => {
-    const r = svg.getBoundingClientRect();
-    const vx = (ev.clientX - r.left) / r.width * W;
-    if (vx < P.l || vx > W - P.r) { cx.setAttribute('opacity', '0'); tip.hidden = true; return; }
-    const idx = Math.round((vx - P.l) / (W - P.l - P.r) * (xs.length - 1));
-    const d = xs[Math.max(0, Math.min(xs.length - 1, idx))];
-    cx.setAttribute('x1', X(d)); cx.setAttribute('x2', X(d)); cx.setAttribute('opacity', '1');
-    tip.hidden = false;
-    tip.innerHTML = `<div class="r"><span class="k">${d}</span></div>` + series.map(s => {
-      const p = s.pts.find(q => q.d === d);
-      return p ? `<div class="r"><span class="k" style="color:${s.color}">■</span>
-        <span>${money(p.v, 0)}</span></div>` : '';
-    }).join('');
-    tip.style.left = (X(d) / W * r.width) + 'px';
-    tip.style.top = (P.t / H * r.height) + 'px';
+  if (chart) { chart.remove(); chart = null; series = []; }
+  chart = LightweightCharts.createChart(box, {
+    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+    grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
+    rightPriceScale: { borderColor: '#1c2733', scaleMargins: { top: 0.12, bottom: 0.08 } },
+    timeScale: { borderColor: '#1c2733', fixLeftEdge: true, fixRightEdge: true },
+    crosshair: {
+      mode: LightweightCharts.CrosshairMode.Magnet,
+      vertLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' },
+      horzLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' },
+    },
+    localization: { priceFormatter: v => '$' + Math.round(v).toLocaleString('en-US') },
+    autoSize: true,
   });
-  svg.addEventListener('pointerleave', () => { cx.setAttribute('opacity', '0'); tip.hidden = true; });
 
-  const step = Math.max(1, Math.floor(xs.length / 60));
-  $('#chart-table').innerHTML = `<table><thead><tr><th>日期</th>${series.map(s => `<th>${esc(s.name)}</th>`).join('')}</tr></thead><tbody>` +
-    xs.filter((_, i) => i % step === 0 || i === xs.length - 1).map(d =>
-      `<tr><td>${d}</td>${series.map(s => { const p = s.pts.find(q => q.d === d); return `<td>${p ? money(p.v, 0) : '—'}</td>`; }).join('')}</tr>`
-    ).join('') + '</tbody></table>';
+  series = defs.map(d => {
+    const s = chart.addSeries(LightweightCharts.LineSeries, {
+      color: d.hex, lineWidth: 2, priceLineVisible: false, lastValueVisible: true,
+    });
+    s.setData(d.data);
+    return { def: d, api: s };
+  });
+  chart.timeScale().fitContent();
+
+  chart.subscribeCrosshairMove(param => {
+    series.forEach(({ def, api }) => {
+      const el = document.getElementById('lg-' + def.hex.slice(1));
+      if (!el) return;
+      const pt = param.seriesData && param.seriesData.get(api);
+      const last = def.data[def.data.length - 1];
+      el.textContent = money(pt ? pt.value : last.value, 0);
+    });
+  });
+  series.forEach(({ def }) => {
+    const el = document.getElementById('lg-' + def.hex.slice(1));
+    if (el) el.textContent = money(def.data[def.data.length - 1].value, 0);
+  });
+
+  syncButtons(live.length, btc.length, defs.length > 1 || wantBt);
 }
 
-$('#btn-live').onclick = () => setMode('live');
-$('#btn-bt').onclick = () => setMode('bt');
-function setMode(m) {
-  MODE = m;
-  $('#btn-live').setAttribute('aria-pressed', m === 'live');
-  $('#btn-bt').setAttribute('aria-pressed', m === 'bt');
-  if (DATA) renderChart(DATA.equity || [], DATA.backtest);
+function syncButtons(nLive, nBt, showingBt) {
+  $('#btn-live').disabled = nLive < 2;
+  $('#btn-bt').disabled = nBt < 2;
+  $('#btn-live').classList.toggle('active', !showingBt);
+  $('#btn-bt').classList.toggle('active', !!showingBt);
 }
-
-$('#btn-chart').onclick = () => toggleView(true);
-$('#btn-table').onclick = () => toggleView(false);
-function toggleView(chart) {
-  $('#chart-wrap').hidden = !chart; $('#chart-table').hidden = chart;
-  $('#btn-chart').setAttribute('aria-pressed', chart); $('#btn-table').setAttribute('aria-pressed', !chart);
-}
+$('#btn-live').onclick = () => { MODE = 'live'; if (DATA) renderChart(DATA.equity || [], DATA.backtest); };
+$('#btn-bt').onclick = () => { MODE = 'bt'; if (DATA) renderChart(DATA.equity || [], DATA.backtest); };
 
 function renderOrders(L) {
   const box = $('#orders');
   $('#ord-date').textContent = L ? L.date : '';
-  const acts = L && L.actions ? L.actions : [];
+  const acts = (L && L.actions) || [];
   if (!acts.length) {
-    box.innerHTML = `<div class="empty">${L ? '无买卖指令，持仓照旧。' : '尚未收到信号。'}</div>`;
+    box.innerHTML = `<div class="empty-sm">${L ? '无买卖指令，持仓照旧。' : '尚未收到信号。'}</div>`;
     return;
   }
   box.innerHTML = acts.map(a => `
-    <div class="ord ${a.side === 'buy' ? 'buy' : 'sell'}">
-      <div class="h"><span class="side">${a.side === 'buy' ? '买入' : '卖出'}</span>
+    <div class="order ${a.side === 'buy' ? 'buy' : 'sell'}">
+      <div class="d-flex align-items-baseline gap-2">
+        <span class="badge ${a.side === 'buy' ? 'bg-green-lt' : 'bg-red-lt'}">${a.side === 'buy' ? '买入' : '卖出'}</span>
         <span class="sym">${esc(a.symbol)}</span>
-        <span style="color:var(--ink-2)">${a.shares} 股 @ ${money(a.ref_price)}</span></div>
-      <div class="meta">${a.notional ? '约 ' + money(a.notional, 0) : ''}${a.stop ? ' · 挂止损 <b>' + money(a.stop) + '</b>（GTC）' : ''}
+        <span class="text-secondary num">${a.shares} 股 @ ${money(a.ref_price)}</span>
+      </div>
+      <div class="meta text-secondary">
+        ${a.notional ? '约 ' + money(a.notional, 0) : ''}${a.stop ? ' · 挂止损 <b class="stop-price">' + money(a.stop) + '</b>（GTC）' : ''}
         ${a.reason ? '<br>' + esc(a.reason) : ''}</div>
     </div>`).join('');
 }
 
 function renderPositions(L) {
-  const box = $('#positions');
-  const hs = L && L.holdings ? L.holdings : [];
+  const hs = (L && L.holdings) || [];
   $('#pos-count').textContent = hs.length ? hs.length + ' 只' : '';
-  if (!hs.length) { box.innerHTML = `<div class="empty">当前空仓。</div>`; return; }
-  box.innerHTML = `<div class="scroll"><table><thead><tr>
-    <th>标的</th><th>股数</th><th>成本</th><th>现价</th><th>盈亏</th><th>止损</th><th>持有</th>
-    </tr></thead><tbody>` + hs.map(h => `<tr>
-      <td class="sym">${esc(h.symbol)}</td><td>${h.shares}</td>
-      <td>${money(h.entry_price)}</td><td>${money(h.last_price)}</td>
-      <td class="${cls(h.pnl_pct)}">${pct(h.pnl_pct)}</td>
-      <td style="color:var(--warn)">${money(h.stop)}</td><td>${h.days}d</td>
+  if (!hs.length) { $('#positions').innerHTML = `<div class="empty-sm">当前空仓。</div>`; return; }
+  $('#positions').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
+    <thead><tr><th>标的</th><th class="text-end">股数</th><th class="text-end">成本</th>
+    <th class="text-end">现价</th><th class="text-end">盈亏</th><th class="text-end">止损</th>
+    <th class="text-end">持有</th></tr></thead><tbody>` +
+    hs.map(h => `<tr>
+      <td><strong>${esc(h.symbol)}</strong></td>
+      <td class="text-end">${h.shares}</td>
+      <td class="text-end">${money(h.entry_price)}</td>
+      <td class="text-end">${money(h.last_price)}</td>
+      <td class="text-end ${tone(h.pnl_pct)}"><strong>${pct(h.pnl_pct)}</strong></td>
+      <td class="text-end stop-price">${money(h.stop)}</td>
+      <td class="text-end text-secondary">${h.days}d</td>
     </tr>`).join('') + '</tbody></table></div>';
 }
 
 function renderBudget(L) {
-  const b = L && L.budget ? L.budget : null;
-  if (!b) { $('#budget').innerHTML = `<div class="empty">暂无额度数据。</div>`; return; }
+  const b = L && L.budget;
+  if (!b) { $('#budget').innerHTML = `<div class="empty-sm">暂无额度数据。</div>`; return; }
   const p = Math.min(100, Math.round((b.used_pct || 0) * 100));
-  const k = p >= 85 ? 'd' : p >= 60 ? 'w' : '';
+  const color = p >= 85 ? 'bg-red' : p >= 60 ? 'bg-orange' : 'bg-green';
   $('#budget').innerHTML = `
-    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--ink-2)">
-      <span>本月已成交</span><span class="num">${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}</span></div>
-    <div class="meter"><i class="${k}" style="width:${p}%"></i></div>
-    <div class="lbl" style="margin-top:10px;line-height:1.8;text-transform:none;letter-spacing:0;font-size:11px">
-      上限 HK$250,000（约 ${money(32051, 0)}）。超出后美股按首 1000 股 $18 + 每股 $0.015 收佣。
-      ${p >= 85 ? '<span style="color:var(--bad)">⚠ 额度将尽，本月请克制交易。</span>' : ''}
+    <div class="d-flex justify-content-between mb-2">
+      <span class="text-secondary" style="font-size:.82rem">本月已成交</span>
+      <span class="num">${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}</span></div>
+    <div class="progress progress-sm"><div class="progress-bar ${color}" style="width:${p}%"
+      role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"></div></div>
+    <div class="text-secondary mt-3" style="font-size:.76rem;line-height:1.8">
+      上限 HK$250,000（约 $32,051）。超出后美股按首 1000 股 $18 + 每股 $0.015 收佣。
+      ${p >= 85 ? '<div class="text-red mt-1">额度将尽，本月请克制交易。</div>' : ''}
     </div>`;
 }
 
 function renderStops(L) {
-  const su = L && L.stop_updates ? L.stop_updates : [];
-  if (!su.length) { $('#stops').innerHTML = `<div class="empty">无需调整止损。</div>`; return; }
-  $('#stops').innerHTML = `<div class="scroll"><table><thead><tr>
-    <th>标的</th><th>原止损</th><th>新止损</th><th>上移</th></tr></thead><tbody>` +
-    su.map(s => `<tr><td class="sym">${esc(s.symbol)}</td>
-      <td>${money(s.from)}</td><td style="color:var(--warn)">${money(s.to)}</td>
-      <td class="up">${pct(s.to / s.from - 1)}</td></tr>`).join('') + '</tbody></table></div>';
+  const su = (L && L.stop_updates) || [];
+  if (!su.length) { $('#stops').innerHTML = `<div class="empty-sm">无需调整止损。</div>`; return; }
+  $('#stops').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
+    <thead><tr><th>标的</th><th class="text-end">原止损</th><th class="text-end">新止损</th>
+    <th class="text-end">上移</th></tr></thead><tbody>` +
+    su.map(s => `<tr><td><strong>${esc(s.symbol)}</strong></td>
+      <td class="text-end text-secondary">${money(s.from)}</td>
+      <td class="text-end stop-price"><strong>${money(s.to)}</strong></td>
+      <td class="text-end text-green">${pct(s.to / s.from - 1)}</td></tr>`).join('') +
+    '</tbody></table></div>';
 }
 
 function renderParams(BT) {
-  const p = (BT && BT.params) || {};
-  const st = (BT && BT.stats) || {};
+  const p = (BT && BT.params) || {}, st = (BT && BT.stats) || {};
   const rows = [
     ['策略', p.name || '科技股日线波段'],
     ['标的池', (p.universe_size || '—') + ' 只科技股'],
@@ -553,7 +432,8 @@ function renderParams(BT) {
     ['回测区间', st['起止'] || '—'],
   ];
   $('#params').innerHTML = rows.map(([k, v]) =>
-    `<div><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join('');
+    `<div class="datagrid-item"><div class="datagrid-title">${k}</div>
+     <div class="datagrid-content">${esc(v)}</div></div>`).join('');
 }
 
 boot();
