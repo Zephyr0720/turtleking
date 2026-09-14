@@ -13,6 +13,8 @@
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
 <!-- Tabler JS：只用到弹窗组件 -->
 <script defer src="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/js/tabler.min.js"></script>
+<!-- Fuse.js 7.1.0（Apache-2.0）—— 模糊搜索，拼错也能命中，按相关度排序 -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.min.js"></script>
 
 <style>
 :root{
@@ -103,6 +105,26 @@ body{background:#0b0f14}
     <div class="container-xl">
 
       <div class="row row-cards mb-3" id="tiles"></div>
+
+      <div class="card mb-3">
+        <div class="card-body py-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="subheader" style="white-space:nowrap">标的池</span>
+            <span class="badge bg-blue-lt num" id="pool-count">—</span>
+            <div class="flex-grow-1" style="min-width:240px;position:relative">
+              <input type="search" class="form-control form-control-sm" id="pool-search"
+                     placeholder="搜代码或英文公司名加入标的池，如 SPCX / Space Exploration / Honeywell"
+                     autocomplete="off">
+              <div id="pool-results" class="card" hidden
+                   style="position:absolute;top:100%;left:0;right:0;z-index:30;margin-top:4px;
+                          max-height:320px;overflow:auto;box-shadow:0 8px 28px rgba(0,0,0,.6)"></div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" id="pool-manage"
+                    style="white-space:nowrap">批量管理</button>
+          </div>
+          <div class="text-secondary mt-1" id="pool-msg" style="font-size:.72rem;min-height:1rem"></div>
+        </div>
+      </div>
 
       <div class="card mb-3">
         <div class="card-header d-flex align-items-center flex-wrap gap-2">
@@ -327,6 +349,7 @@ async function boot() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     DATA = await r.json();
     render();
+    poolInit();
   } catch (ex) { setStatus('orange', '读取失败 · ' + ex.message); }
 }
 function setStatus(color, txt) {
@@ -569,6 +592,143 @@ function renderStops(L) {
       <td class="text-end text-green">${pct(s.to / s.from - 1)}</td></tr>`).join('') +
     '</tbody></table></div>';
 }
+
+/* ───── 主页面上的标的池搜索（不用开弹窗就能加股票）───── */
+let POOL_FUSE = null, poolTimer = null, poolRemoteQ = '';
+
+async function poolInit() {
+  try {
+    const r = await fetch(WORKER + '/quant/universe',
+      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+    const d = await r.json();
+    if (!d.success) return;
+    SP500 = d.sp500 || [];
+    SELECTED = new Set(d.selected || []);
+    $('#pool-count').textContent = SELECTED.size + ' 只';
+    // Fuse 做模糊匹配：代码权重高于公司名，拼错一两个字母也能命中
+    if (window.Fuse && SP500.length) {
+      POOL_FUSE = new Fuse(SP500, {
+        keys: [{ name: 's', weight: 0.7 }, { name: 'n', weight: 0.3 }],
+        threshold: 0.35, ignoreLocation: true, minMatchCharLength: 2,
+      });
+    }
+  } catch { /* 取不到就留空，不影响主面板 */ }
+}
+
+function poolRow(x, inPool) {
+  return `<div class="d-flex align-items-center gap-2 px-3 py-2 pool-row"
+      style="border-bottom:1px solid #1a2430">
+    <strong class="num" style="width:72px">${esc(x.s)}</strong>
+    <span class="text-secondary flex-grow-1" style="font-size:.78rem">${esc(x.n || '')}</span>
+    <span class="text-secondary" style="font-size:.7rem;white-space:nowrap">${esc(x.tag || '')}</span>
+    ${inPool
+      ? `<button class="btn btn-sm btn-ghost-danger pool-del" data-s="${esc(x.s)}">移出</button>`
+      : `<button class="btn btn-sm btn-outline-primary pool-add"
+           data-s="${esc(x.s)}" data-n="${esc(x.n || '')}">加入</button>`}
+  </div>`;
+}
+
+function poolRender(local, remote, q) {
+  const box = $('#pool-results');
+  const rows = [];
+  for (const x of local.slice(0, 6)) {
+    rows.push(poolRow({ ...x, tag: x.sec || '' }, SELECTED.has(x.s)));
+  }
+  if (remote === 'loading') {
+    rows.push(`<div class="px-3 py-2 text-secondary" style="font-size:.74rem">全市场搜索中…</div>`);
+  } else if (Array.isArray(remote) && remote.length) {
+    rows.push(`<div class="px-3 pt-2 pb-1 text-secondary" style="font-size:.7rem">
+      标普 500 之外</div>`);
+    for (const x of remote.slice(0, 6)) {
+      rows.push(poolRow({ ...x, tag: `${x.t} ${x.ex || ''}` }, SELECTED.has(x.s)));
+    }
+  } else if (remote === 'empty' && !local.length) {
+    rows.push(`<div class="px-3 py-3 text-secondary" style="font-size:.76rem">
+      没找到。${/[一-龥]/.test(q) ? '数据源只索引英文名，请用代码或英文名搜。' : ''}</div>`);
+  }
+  if (!rows.length) { box.hidden = true; return; }
+  box.innerHTML = rows.join('');
+  box.hidden = false;
+  box.querySelectorAll('.pool-add').forEach(b => { b.onclick = () => poolAdd(b.dataset.s, b.dataset.n); });
+  box.querySelectorAll('.pool-del').forEach(b => { b.onclick = () => poolRemove(b.dataset.s); });
+}
+
+function poolSearch() {
+  const q = $('#pool-search').value.trim();
+  if (q.length < 1) { $('#pool-results').hidden = true; return; }
+  const local = POOL_FUSE ? POOL_FUSE.search(q).map(r => r.item)
+    : SP500.filter(x => x.s.includes(q.toUpperCase()));
+  poolRender(local, 'loading', q);
+  clearTimeout(poolTimer);
+  poolTimer = setTimeout(async () => {
+    if (q === poolRemoteQ) return;
+    poolRemoteQ = q;
+    try {
+      const r = await fetch(`${WORKER}/quant/search?q=${encodeURIComponent(q)}`,
+        { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+      const d = await r.json();
+      const known = new Set(SP500.map(x => x.s));
+      const rem = (d.results || []).filter(x => !known.has(x.s));
+      if ($('#pool-search').value.trim() === q) poolRender(local, rem.length ? rem : 'empty', q);
+    } catch {
+      if ($('#pool-search').value.trim() === q) poolRender(local, 'empty', q);
+    }
+  }, 450);
+}
+
+async function poolSave(msgText) {
+  const r = await fetch(WORKER + '/quant/universe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json',
+               Authorization: 'Bearer ' + localStorage.getItem(TK) },
+    body: JSON.stringify({ symbols: [...SELECTED] }),
+  });
+  const d = await r.json();
+  if (!d.success) throw new Error(d.error || '保存失败');
+  $('#pool-count').textContent = SELECTED.size + ' 只';
+  $('#pool-msg').innerHTML = `<span class="text-green">${esc(msgText)}，下次运行生效</span>`;
+}
+
+async function poolAdd(sym, name) {
+  const msg = $('#pool-msg');
+  msg.textContent = `核对 ${sym} 的行情…`;
+  try {
+    const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
+      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || '查不到行情');
+    const n = (d.bars || []).length;
+    if (n < 2) throw new Error('这个代码没有可用的日线数据');
+    SELECTED.add(sym);
+    CUSTOM_NAMES[sym] = name || '自选';
+    await poolSave(`已加入 ${sym}`);
+    if (n < 120) {
+      msg.innerHTML = `<span class="text-orange">已加入 ${sym}，但只有 ${n} 根日线，
+        不够算 100 日均线，暂时不会产生信号</span>`;
+    }
+    poolSearch();
+  } catch (ex) {
+    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
+  }
+}
+
+async function poolRemove(sym) {
+  if (SELECTED.size <= 5) {
+    $('#pool-msg').innerHTML = '<span class="text-red">标的池至少要留 5 只</span>'; return;
+  }
+  SELECTED.delete(sym);
+  try { await poolSave(`已移出 ${sym}`); poolSearch(); }
+  catch (ex) { SELECTED.add(sym); $('#pool-msg').innerHTML = `<span class="text-red">${esc(ex.message)}</span>`; }
+}
+
+$('#pool-search').oninput = poolSearch;
+$('#pool-search').onfocus = poolSearch;
+$('#pool-manage').onclick = () => $('#open-universe').click();
+document.addEventListener('click', e => {
+  if (!e.target.closest('#pool-search') && !e.target.closest('#pool-results')) {
+    $('#pool-results').hidden = true;
+  }
+});
 
 /* ───── 策略方案 ───── */
 let STG = { presets: {}, active: null, results: {}, spec: {}, queue: null };
@@ -881,11 +1041,21 @@ function uniAll() {
 }
 
 function uniFiltered() {
-  const q = ($('#uni-search').value || '').trim().toUpperCase();
+  const q = ($('#uni-search').value || '').trim();
   const sec = $('#uni-sector').value;
-  return uniAll().filter(x =>
-    (!sec || x.sec === sec) &&
-    (!q || x.s.includes(q) || (x.n || '').toUpperCase().includes(q)));
+  let pool = uniAll();
+  if (sec) pool = pool.filter(x => x.sec === sec);
+  if (!q) return pool;
+  // 用 Fuse 做模糊匹配，拼错一两个字母也能命中，并按相关度排序
+  if (window.Fuse) {
+    const f = new Fuse(pool, {
+      keys: [{ name: 's', weight: 0.7 }, { name: 'n', weight: 0.3 }],
+      threshold: 0.35, ignoreLocation: true, minMatchCharLength: 2,
+    });
+    return f.search(q).map(r => r.item);
+  }
+  const u = q.toUpperCase();
+  return pool.filter(x => x.s.includes(u) || (x.n || '').toUpperCase().includes(u));
 }
 
 let CUSTOM_NAMES = {}, uniSearchTimer = null, uniLastQuery = '';
