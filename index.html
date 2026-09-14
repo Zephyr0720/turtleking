@@ -60,6 +60,9 @@ body{background:var(--kq-bg)}
           font-size:.8rem;color:var(--tblr-secondary);line-height:1.9}
 .stop-price{color:var(--tblr-orange)}
 .gate-mark{font-family:var(--kq-mono);letter-spacing:.22em;font-size:1.25rem}
+.hero h1{letter-spacing:.02em}
+#gate .card{transition:border-color .15s}
+#gate .card:hover{border-color:#2b3a4a}
 
 .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--kq-mono);
       font-size:.78rem;background:#18212b;border:1px solid #263341;border-radius:4px;
@@ -86,32 +89,48 @@ body{background:var(--kq-bg)}
 </head>
 <body class="antialiased">
 
-<!-- ══════════ 登录 ══════════ -->
-<div class="page page-center" id="gate">
-  <div class="container container-tight py-4">
-    <div class="text-center mb-4">
-      <div class="gate-mark">KUCHA<span style="color:var(--kq-s1)">·</span>QUANT</div>
-      <div class="text-secondary mt-2" style="font-size:.82rem">量化控制台 · 需管理员权限</div>
-    </div>
-    <form class="card card-md" id="login-form" autocomplete="on">
-      <div class="card-body">
-        <div class="mb-3">
-          <label class="form-label subheader" for="u">账号</label>
-          <input id="u" name="username" type="email" class="form-control"
-                 autocomplete="username" placeholder="haiyangkwong@gmail.com" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label subheader" for="p">密码</label>
-          <input id="p" name="password" type="password" class="form-control"
-                 autocomplete="current-password" required>
-        </div>
-        <div class="form-footer">
-          <button type="submit" class="btn btn-primary w-100" id="login-btn">进入</button>
-        </div>
-        <div class="text-danger mt-3 text-center" id="login-err" role="alert"
-             style="min-height:1.2rem;font-size:.82rem"></div>
+<!-- ══════════ 首页：个人展示 ══════════ -->
+<div id="gate">
+  <div class="container-xl py-5">
+
+    <header class="hero mb-5">
+      <div class="brand-mark" style="font-size:1.35rem">KUCHA<span class="dot">·</span>ORG</div>
+      <h1 class="mt-3 mb-2" style="font-size:1.9rem;font-weight:600">况海洋</h1>
+      <p class="text-secondary" style="max-width:640px;line-height:1.9;font-size:.95rem">
+        西南大学在读。喜欢把一个具体问题拆到能自动跑起来为止：
+        数据从哪来、规则怎么定、结果怎么验证、跑错了怎么发现。
+        下面是还在维护的几个东西，量化系统和生词本可以在本站登录查看实时数据。
+      </p>
+    </header>
+
+    <div class="row row-cards mb-5" id="project-grid"></div>
+
+    <div class="row">
+      <div class="col-md-6 col-lg-5">
+        <form class="card" id="login-form" autocomplete="on">
+          <div class="card-header"><h3 class="card-title mb-0">进入控制台</h3></div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label subheader" for="u">账号</label>
+              <input id="u" name="username" type="email" class="form-control"
+                     autocomplete="username" placeholder="haiyangkwong@gmail.com" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label subheader" for="p">密码</label>
+              <input id="p" name="password" type="password" class="form-control"
+                     autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" id="login-btn">登录</button>
+            <div class="text-danger mt-3 text-center" id="login-err" role="alert"
+                 style="min-height:1.2rem;font-size:.82rem"></div>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
+
+    <div class="text-secondary mt-5" style="font-size:.74rem;line-height:1.9">
+      kucha.org · 前端托管在 GitHub Pages，接口跑在 Cloudflare Workers。
+    </div>
   </div>
 </div>
 
@@ -137,6 +156,8 @@ body{background:var(--kq-bg)}
         <li class="nav-item"><a class="nav-link" data-tab="strategy" href="#strategy">策略
           <span class="badge bg-secondary-lt ms-1" id="tab-stg-name">—</span></a></li>
         <li class="nav-item"><a class="nav-link" data-tab="records" href="#records">记录</a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="words" href="#words">单词本
+          <span class="badge bg-secondary-lt ms-1" id="tab-words-count">—</span></a></li>
       </ul>
     </div>
   </div>
@@ -311,6 +332,40 @@ body{background:var(--kq-bg)}
         </div>
       </section>
 
+      <!-- ─────── 单词本 ─────── -->
+      <section id="tab-words" hidden>
+        <div class="row row-cards mb-3" id="w-tiles"></div>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            <h3 class="card-title mb-0">每日新增</h3>
+            <span class="card-subtitle ms-auto num" id="w-chart-sub"></span>
+          </div>
+          <div class="card-body"><div id="w-chart" style="height:180px"></div></div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header d-flex flex-wrap gap-2 align-items-center">
+            <h3 class="card-title mb-0">词表</h3>
+            <input type="search" class="form-control form-control-sm ms-auto" id="w-search"
+                   placeholder="搜单词或释义" style="max-width:200px">
+            <select class="form-select form-select-sm" id="w-filter" style="max-width:150px">
+              <option value="">全部</option>
+              <option value="new">未掌握</option>
+              <option value="mastered">已掌握</option>
+              <option value="recent">最近 7 天</option>
+            </select>
+            <select class="form-select form-select-sm" id="w-sort" style="max-width:140px">
+              <option value="new">最新收录</option>
+              <option value="old">最早收录</option>
+              <option value="az">字母顺序</option>
+              <option value="review">复习次数</option>
+            </select>
+          </div>
+          <div id="w-list"></div>
+        </div>
+      </section>
+
       <div class="text-secondary mb-4" style="font-size:.75rem;line-height:1.9">
         信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
         数据经 api.kucha.org 读取，仅管理员可见。
@@ -349,13 +404,58 @@ const tone = n => n == null || isNaN(n) ? 'text-secondary' : n > 0 ? 'text-green
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const auth = () => ({ Authorization: 'Bearer ' + localStorage.getItem(TK) });
 
+/* ───── 首页项目卡 ───── */
+const PROJECTS = [
+  { name: 'KUCHA QUANT', tag: '本站可看', state: 'live',
+    desc: '美股日线波段量化系统。每天收盘后自动选股、算仓位、发邮件给出次日开盘指令，'
+        + '盘中每小时刷新持仓报价并在跌破止损时提醒。参数和标的池都能在网页上改，改完能直接回测。',
+    tech: 'Python · Cloudflare Workers · Twelve Data · Finnhub' },
+  { name: 'Word Scanner', tag: '本站可看', state: 'live',
+    desc: '雅思外刊阅读用的划词生词本 Chrome 插件。内置 3.9 万条离线词典，断网可用，'
+        + '同一个词在不同文章里的语境会累积保存，配 Leitner 间隔复习。词库同步到本站实时查看。',
+    tech: 'Chrome MV3 · IndexedDB · ECDICT' },
+  { name: 'newsdig', state: 'code',
+    desc: '输入一个公司名，产出它在经济学人、彭博、华尔街日报等六家媒体的报道索引，'
+        + '外加所在领域的相关报道。发现层走 Google News RSS，无需任何 key。',
+    tech: 'Python · SQLite · Playwright' },
+  { name: '中转延误概率系统', state: 'code',
+    desc: '给定中转航班组合，估算赶上下一程的概率。延误分布用对数正态而不是正态拟合，'
+        + '因为真实延误的右尾远比正态厚。航班时刻数据自建爬虫采集。',
+    tech: 'Python · 蒙特卡洛 · 尾部标定' },
+  { name: '航班数据采集', state: 'code',
+    desc: '飞常准航线图与携程六城航班时刻两套爬虫。前者破解了 RSA 加 AES 的接口签名，'
+        + '后者用 Playwright 拦截批量查询请求绕过风控。',
+    tech: 'Python · Playwright · 逆向' },
+  { name: '豆豆桌宠', state: 'code',
+    desc: 'macOS 桌面宠物。透明浮层窗口，用 Vision 框架做照片抠图，让自家狗在桌面上跑。',
+    tech: 'PyObjC · Vision' },
+];
+
+function renderProjects() {
+  const badge = { live: 'bg-green-lt', code: 'bg-secondary-lt' };
+  $('#project-grid').innerHTML = PROJECTS.map(p => `
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <h3 class="card-title mb-0" style="font-size:.95rem">${esc(p.name)}</h3>
+            ${p.tag ? `<span class="badge ${badge[p.state] || 'bg-secondary-lt'} ms-2">${esc(p.tag)}</span>` : ''}
+          </div>
+          <p class="text-secondary mb-3" style="font-size:.82rem;line-height:1.8">${esc(p.desc)}</p>
+          <div class="subheader" style="font-size:.68rem;color:var(--kq-s1)">${esc(p.tech)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
 /* ───── 标签页 ───── */
-const TABS = ['overview', 'pool', 'strategy', 'records'];
+const TABS = ['overview', 'pool', 'strategy', 'records', 'words'];
 function showTab(name) {
   if (!TABS.includes(name)) name = 'overview';
   TABS.forEach(t => { $('#tab-' + t).hidden = t !== name; });
   $$('.tabbar .nav-link').forEach(a => a.classList.toggle('active', a.dataset.tab === name));
   if (name === 'overview' && DATA) renderChart(DATA.equity || [], DATA.backtest);
+  if (name === 'words') { if (!WORDS) wordsLoad(); else wordsChart(); }
 }
 $$('.tabbar .nav-link').forEach(a => {
   a.onclick = e => { e.preventDefault(); location.hash = a.dataset.tab; showTab(a.dataset.tab); };
@@ -387,7 +487,11 @@ let DATA = null, MODE = 'live', chart = null, series = [];
 
 async function boot() {
   const token = localStorage.getItem(TK);
-  if (!token) { $('#gate').hidden = false; $('#app').hidden = true; return; }
+  if (!token) {
+    $('#gate').hidden = false; $('#app').hidden = true;
+    renderProjects();
+    return;
+  }
   $('#gate').hidden = true; $('#app').hidden = false;
   showTab((location.hash || '#overview').slice(1));
   setStatus('secondary', '载入中');
@@ -901,6 +1005,142 @@ document.addEventListener('click', e => {
     $('#pool-results').hidden = true;
   }
 });
+
+/* ══════════ 单词本 ══════════
+   数据由 Word Scanner 插件推到 KV，这里只读展示。
+   字段被插件压缩过：w 单词 / p 音标 / d 英释 / t 中释 / s 例句 / src 出处
+   / a 收录时间 / b Leitner 盒号 / r 复习次数 / m 已掌握 / tag 考试标签 */
+let WORDS = null, WMETA = null, wChart = null;
+
+async function wordsLoad() {
+  $('#w-list').innerHTML = '<div class="empty-sm">载入中…</div>';
+  try {
+    const d = await (await fetch(WORKER + '/words', { headers: auth() })).json();
+    if (!d.success) throw new Error(d.error || '读取失败');
+    WORDS = d.words || [];
+    WMETA = d.meta || null;
+    $('#tab-words-count').textContent = WORDS.length || '—';
+    wordsTiles(); wordsChart(); wordsList();
+  } catch (ex) {
+    $('#w-list').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
+  }
+}
+
+function wordsTiles() {
+  if (!WORDS) return;
+  const now = Date.now(), DAY = 86400000;
+  const total = WORDS.length;
+  const mastered = WORDS.filter(w => w.m).length;
+  const week = WORDS.filter(w => w.a && now - w.a < 7 * DAY).length;
+  const today = WORDS.filter(w => w.a && now - w.a < DAY).length;
+  // 连续天数：从今天往回数，有收录就继续
+  const days = new Set(WORDS.filter(w => w.a).map(w => new Date(w.a).toISOString().slice(0, 10)));
+  let streak = 0;
+  for (let i = 0; i < 400; i++) {
+    const d = new Date(now - i * DAY).toISOString().slice(0, 10);
+    if (days.has(d)) streak++;
+    else if (i > 0) break;
+  }
+  const pushed = WMETA && WMETA.pushed_at
+    ? new Date(WMETA.pushed_at).toLocaleString('zh-CN') : '未知';
+  $('#w-tiles').innerHTML =
+    tile('累计收词', total.toLocaleString(), `最近同步 ${pushed}`) +
+    tile('已掌握', mastered.toLocaleString(),
+         total ? `占 ${(mastered / total * 100).toFixed(0)}%` : '—', mastered ? 'text-green' : '') +
+    tile('最近 7 天', '+' + week, `今天 +${today}`, week ? 'text-green' : '') +
+    tile('连续收录', streak + ' 天', streak >= 3 ? '保持住' : '今天还没收词的话趁早');
+}
+
+function wordsChart() {
+  if (!WORDS || $('#tab-words').hidden) return;
+  const DAY = 86400000, N = 60;
+  const counts = new Map();
+  for (const w of WORDS) {
+    if (!w.a) continue;
+    const d = new Date(w.a).toISOString().slice(0, 10);
+    counts.set(d, (counts.get(d) || 0) + 1);
+  }
+  const data = [];
+  for (let i = N - 1; i >= 0; i--) {
+    const d = new Date(Date.now() - i * DAY).toISOString().slice(0, 10);
+    data.push({ time: d, value: counts.get(d) || 0 });
+  }
+  const sum = data.reduce((a, x) => a + x.value, 0);
+  $('#w-chart-sub').textContent = `近 ${N} 天共 ${sum} 个`;
+  if (wChart) { wChart.remove(); wChart = null; }
+  wChart = LightweightCharts.createChart($('#w-chart'), {
+    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+    grid: { vertLines: { visible: false }, horzLines: { color: '#161f28' } },
+    rightPriceScale: { borderColor: '#1c2733' },
+    timeScale: { borderColor: '#1c2733', fixLeftEdge: true, fixRightEdge: true },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
+    localization: { priceFormatter: v => Math.round(v) + ' 个' },
+    autoSize: true,
+  });
+  const s = wChart.addSeries(LightweightCharts.HistogramSeries, { color: '#199e70' });
+  s.setData(data);
+  wChart.timeScale().fitContent();
+}
+
+function wordsList() {
+  if (!WORDS) return;
+  const q = ($('#w-search').value || '').trim().toLowerCase();
+  const f = $('#w-filter').value, sort = $('#w-sort').value;
+  const now = Date.now();
+  let rows = WORDS.filter(w => {
+    if (f === 'new' && w.m) return false;
+    if (f === 'mastered' && !w.m) return false;
+    if (f === 'recent' && !(w.a && now - w.a < 7 * 86400000)) return false;
+    if (!q) return true;
+    return (w.w || '').toLowerCase().includes(q)
+        || (w.t || '').toLowerCase().includes(q)
+        || (w.d || '').toLowerCase().includes(q);
+  });
+  rows.sort((a, b) =>
+    sort === 'old' ? (a.a || 0) - (b.a || 0)
+    : sort === 'az' ? (a.w || '').localeCompare(b.w || '')
+    : sort === 'review' ? (b.r || 0) - (a.r || 0)
+    : (b.a || 0) - (a.a || 0));
+
+  if (!rows.length) {
+    $('#w-list').innerHTML = WORDS.length
+      ? '<div class="empty-sm">没有匹配的词。</div>'
+      : `<div class="empty-sm">还没有同步过词库。<br>
+         在 Word Scanner 插件的设置页填上同步密钥，点「立即同步」。</div>`;
+    return;
+  }
+  const shown = rows.slice(0, 300);
+  $('#w-list').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
+    <thead><tr><th>单词</th><th>释义</th><th>例句</th>
+    <th class="text-end">盒</th><th class="text-end">复习</th><th class="text-end">收录</th>
+    </tr></thead><tbody>` + shown.map(w => `<tr>
+      <td style="min-width:130px">
+        <strong class="num">${esc(w.w)}</strong>
+        ${w.m ? '<span class="badge bg-green-lt ms-1">已掌握</span>' : ''}
+        ${w.p ? `<div class="text-secondary num" style="font-size:.7rem">/${esc(w.p)}/</div>` : ''}
+        ${w.tag ? `<div class="text-secondary" style="font-size:.66rem">${esc(w.tag)}</div>` : ''}
+      </td>
+      <td style="font-size:.8rem;white-space:normal;max-width:260px">
+        ${w.t ? esc(w.t) : ''}${w.t && w.d ? '<br>' : ''}
+        ${w.d ? `<span class="text-secondary" style="font-size:.74rem">${esc(w.d)}</span>` : ''}
+      </td>
+      <td class="text-secondary" style="font-size:.74rem;white-space:normal;max-width:300px">
+        ${w.s ? esc(w.s) : ''}${w.src ? `<div style="font-size:.68rem;opacity:.7">${esc(w.src)}</div>` : ''}
+      </td>
+      <td class="text-end">${w.b || 1}</td>
+      <td class="text-end">${w.r || 0}</td>
+      <td class="text-end text-secondary" style="font-size:.72rem">
+        ${w.a ? new Date(w.a).toISOString().slice(0, 10) : '—'}</td>
+    </tr>`).join('') + `</tbody></table></div>`
+    + (rows.length > shown.length
+       ? `<div class="text-secondary px-3 py-2" style="font-size:.74rem">
+          还有 ${rows.length - shown.length} 个没显示，用搜索或筛选缩小范围。</div>` : '');
+}
+
+$('#w-search').oninput = wordsList;
+$('#w-filter').onchange = wordsList;
+$('#w-sort').onchange = wordsList;
 
 /* ══════════ 策略 ══════════ */
 let STG = { presets: {}, active: null, results: {}, spec: {} }, stgCur = null, stgPoll = null;
