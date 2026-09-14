@@ -20,23 +20,22 @@
 <body>
 
 <!-- ══════════ 登录 ══════════ -->
-<div class="login-wrap" id="gate">
-  <form class="login-card" id="login-form" autocomplete="on">
-    <div class="login-mark">KUCHA</div>
-    <div class="login-sub">单词本 · 量化</div>
-    <div class="field">
-      <label for="u">账号</label>
-      <input id="u" name="username" type="email" class="inp" autocomplete="username"
-             placeholder="haiyangkwong@gmail.com" required>
+<div id="gate">
+  <div class="crt"></div>
+  <form id="login-form" autocomplete="on">
+    <div class="gline">
+      <span class="pfx">&gt;</span>
+      <input id="u" name="username" type="email" autocomplete="username"
+             spellcheck="false" autocapitalize="off" required aria-label="账号"
+             placeholder="user">
     </div>
-    <div class="field">
-      <label for="p">密码</label>
-      <input id="p" name="password" type="password" class="inp"
-             autocomplete="current-password" required>
+    <div class="gline">
+      <span class="pfx">&gt;</span>
+      <input id="p" name="password" type="password" autocomplete="current-password"
+             required aria-label="密码" placeholder="passwd">
     </div>
-    <button type="submit" class="btn btn-primary" id="login-btn"
-            style="width:100%;padding:10px">登录</button>
-    <div class="login-err" id="login-err" role="alert"></div>
+    <button type="submit" id="login-btn" aria-label="登录"></button>
+    <div id="login-err" role="alert"></div>
   </form>
 </div>
 
@@ -308,8 +307,8 @@ window.addEventListener('hashchange', applyHash);
 /* ───── 登录 ───── */
 $('#login-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const btn = $('#login-btn'), err = $('#login-err');
-  btn.disabled = true; err.textContent = '';
+  const btn = $('#login-btn'), err = $('#login-err'), gate = $('#gate');
+  btn.disabled = true; err.textContent = ''; gate.classList.add('busy');
   try {
     const r = await fetch(WORKER + '/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -320,7 +319,7 @@ $('#login-form').addEventListener('submit', async e => {
     localStorage.setItem(TK, d.token);
     start();
   } catch (ex) { err.textContent = ex.message; }
-  finally { btn.disabled = false; }
+  finally { btn.disabled = false; gate.classList.remove('busy'); }
 });
 $('#logout').onclick = () => { localStorage.removeItem(TK); location.reload(); };
 $('#refresh').onclick = () => { WORDS = null; DATA = null; SP500 = []; boot(); wordsLoad(); };

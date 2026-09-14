@@ -326,37 +326,128 @@
 }
 .legend i { width: 14px; height: 2px; border-radius: 1px; display: inline-block; }
 
-/* ---------- 登录 ---------- */
+/* ---------- 登录：终端风 ----------
+   和站内其余部分刻意不同。登录页不属于任何模块，它是门。
+   页面上只有两行输入，没有标题、没有标签、没有按钮 ——
+   回车提交，出错时才多一行红字。 */
 
-.login-wrap {
-  min-height: 100vh;
+/* display:flex 会盖掉 hidden 属性自带的 display:none，必须显式处理 */
+#gate[hidden] { display: none !important; }
+
+#gate {
+  position: fixed;
+  inset: 0;
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-}
-.login-card {
-  width: 100%;
-  max-width: 360px;
-  background: var(--bg-subtle);
-  border: 1px solid var(--hairline);
-  border-radius: 14px;
-  padding: 32px 28px;
-}
-.login-mark {
-  text-align: center;
+  z-index: 100;
   font-family: var(--mono);
-  font-size: 19px;
-  letter-spacing: 0.2em;
-  margin-bottom: 6px;
 }
-.login-sub {
-  text-align: center;
+
+/* 极淡的扫描线，靠近看才察觉得到，远看只是让黑底有点质感 */
+#gate .crt {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 140, 0.028) 0px,
+    rgba(0, 255, 140, 0.028) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: gateFlicker 7s infinite;
+}
+@keyframes gateFlicker {
+  0%, 96%, 100% { opacity: 1; }
+  97% { opacity: 0.72; }
+  98% { opacity: 1; }
+  99% { opacity: 0.86; }
+}
+
+#gate form {
+  position: relative;
+  width: min(420px, 84vw);
+}
+
+#gate .gline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(0, 255, 140, 0.16);
+  padding: 12px 2px;
+  transition: border-color 0.2s;
+}
+#gate .gline:focus-within { border-bottom-color: rgba(0, 255, 140, 0.55); }
+
+#gate .pfx {
+  color: #00ff8c;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.5;
+  animation: gateBlink 1.15s step-end infinite;
+}
+#gate .gline:focus-within .pfx { opacity: 1; }
+@keyframes gateBlink { 50% { opacity: 0.12; } }
+
+#gate input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #00ff8c;
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  caret-color: #00ff8c;
+  padding: 0;
+  text-shadow: 0 0 9px rgba(0, 255, 140, 0.42);
+}
+#gate input::placeholder {
+  color: rgba(0, 255, 140, 0.22);
+  letter-spacing: 0.14em;
+  text-shadow: none;
+}
+/* 密码圆点在等宽下太挤，拉开一点 */
+#gate input[type="password"] { letter-spacing: 0.22em; }
+
+/* Chrome 自动填充会强行套上蓝底白字，这里改回终端配色 */
+#gate input:-webkit-autofill,
+#gate input:-webkit-autofill:hover,
+#gate input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #00ff8c;
+  -webkit-box-shadow: 0 0 0 60px #000 inset;
+  caret-color: #00ff8c;
+}
+
+/* 回车提交，页面上看不到按钮 */
+#gate button[type="submit"] {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+#gate #login-err {
+  color: #ff4d4d;
   font-size: 12.5px;
-  color: var(--text-secondary);
-  margin-bottom: 26px;
+  letter-spacing: 0.06em;
+  min-height: 17px;
+  margin-top: 16px;
+  text-shadow: 0 0 8px rgba(255, 77, 77, 0.35);
 }
-.login-err { color: var(--danger); font-size: 12.5px; text-align: center; min-height: 18px; margin-top: 12px; }
+#gate #login-err:not(:empty)::before { content: "! "; }
+
+#gate.busy input { opacity: 0.45; }
+
+@media (prefers-reduced-motion: reduce) {
+  #gate .crt, #gate .pfx { animation: none; }
+}
 
 :root { --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
