@@ -273,7 +273,17 @@ function tile(label, value, sub, cls) {
 }
 
 function renderTiles(L, EQ) {
-  const eq = L && L.equity;
+  let eq = L && L.equity;
+  // 有盘中报价时，用实时价重算持仓市值与权益
+  if (eq && L && L.holdings && DATA.quotes && DATA.quotes.prices) {
+    let mv = 0, any = false;
+    for (const h of L.holdings) {
+      const live = quoteOf(h.symbol);
+      if (live != null) any = true;
+      mv += h.shares * (live != null ? live : h.last_price);
+    }
+    if (any) eq = { total: eq.cash + mv, cash: eq.cash, market_value: mv, live: true };
+  }
   let chg = null;
   if (EQ.length >= 2) chg = EQ[EQ.length - 1].v / EQ[EQ.length - 2].v - 1;
   const holds = L && L.holdings ? L.holdings.length : 0;
@@ -282,7 +292,8 @@ function renderTiles(L, EQ) {
   const bp = b ? Math.round((b.used_pct || 0) * 100) : null;
   $('#tiles').innerHTML =
     tile('账户权益', eq ? money(eq.total) : '—',
-         eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}` : '等待首次信号') +
+         eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}`
+              + (eq.live ? ' · 实时' : '') : '等待首次信号') +
     tile('较上次', chg == null ? '—' : pct(chg),
          EQ.length ? `已记录 ${EQ.length} 个交易日` : '暂无历史', tone(chg)) +
     tile('持仓', holds + ' / ' + maxPos,
@@ -394,23 +405,49 @@ function renderOrders(L) {
     </div>`).join('');
 }
 
+/* 盘中报价：Worker 每小时刷新一次，有就用它覆盖收盘价 */
+function quoteOf(sym) {
+  const q = DATA && DATA.quotes;
+  const p = q && q.prices && q.prices[sym];
+  return typeof p === 'number' ? p : null;
+}
+function quoteAge() {
+  const q = DATA && DATA.quotes;
+  if (!q || !q.t) return null;
+  const mins = (Date.now() - q.t) / 60000;
+  if (mins < 90) return `报价 ${new Date(q.t).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`;
+  if (mins < 60 * 30) return `报价 ${Math.round(mins / 60)} 小时前`;
+  return null;
+}
+
 function renderPositions(L) {
   const hs = (L && L.holdings) || [];
-  $('#pos-count').textContent = hs.length ? hs.length + ' 只' : '';
+  const age = quoteAge();
+  $('#pos-count').innerHTML = hs.length
+    ? `${hs.length} 只${age ? ` <span class="text-secondary">· ${age}</span>` : ''}` : '';
   if (!hs.length) { $('#positions').innerHTML = `<div class="empty-sm">当前空仓。</div>`; return; }
+  const alerts = new Map(((DATA.quotes && DATA.quotes.alerts) || []).map(a => [a.symbol, a.level]));
   $('#positions').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
     <thead><tr><th>标的</th><th class="text-end">股数</th><th class="text-end">成本</th>
     <th class="text-end">现价</th><th class="text-end">盈亏</th><th class="text-end">止损</th>
     <th class="text-end">持有</th></tr></thead><tbody>` +
-    hs.map(h => `<tr class="sym-row" data-sym="${esc(h.symbol)}" style="cursor:pointer">
-      <td><strong>${esc(h.symbol)}</strong></td>
-      <td class="text-end">${h.shares}</td>
-      <td class="text-end">${money(h.entry_price)}</td>
-      <td class="text-end">${money(h.last_price)}</td>
-      <td class="text-end ${tone(h.pnl_pct)}"><strong>${pct(h.pnl_pct)}</strong></td>
-      <td class="text-end stop-price">${money(h.stop)}</td>
-      <td class="text-end text-secondary">${h.days}d</td>
-    </tr>`).join('') + '</tbody></table></div>';
+    hs.map(h => {
+      const live = quoteOf(h.symbol);
+      const px = live != null ? live : h.last_price;
+      const pl = h.entry_price ? px / h.entry_price - 1 : h.pnl_pct;
+      const lv = alerts.get(h.symbol);
+      const badge = lv === 'hit' ? ' <span class="badge bg-red-lt">已破止损</span>'
+                  : lv === 'near' ? ' <span class="badge bg-orange-lt">逼近止损</span>' : '';
+      return `<tr class="sym-row" data-sym="${esc(h.symbol)}" style="cursor:pointer">
+        <td><strong>${esc(h.symbol)}</strong>${badge}</td>
+        <td class="text-end">${h.shares}</td>
+        <td class="text-end">${money(h.entry_price)}</td>
+        <td class="text-end">${money(px)}${live != null ? '<span class="text-secondary" style="font-size:.68rem">·实时</span>' : ''}</td>
+        <td class="text-end ${tone(pl)}"><strong>${pct(pl)}</strong></td>
+        <td class="text-end stop-price">${money(h.stop)}</td>
+        <td class="text-end text-secondary">${h.days}d</td>
+      </tr>`;
+    }).join('') + '</tbody></table></div>';
   wireSymbolRows();
 }
 
