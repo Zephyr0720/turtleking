@@ -374,6 +374,7 @@
 #gate .gline {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   border-bottom: 1px solid rgba(0, 255, 140, 0.16);
   padding: 12px 2px;
@@ -381,7 +382,10 @@
 }
 #gate .gline:focus-within { border-bottom-color: rgba(0, 255, 140, 0.55); }
 
+#gate .gline { position: relative; }
 #gate .pfx {
+  position: absolute;
+  left: 2px;
   color: #00ff8c;
   font-size: 15px;
   line-height: 1;
@@ -392,7 +396,9 @@
 @keyframes gateBlink { 50% { opacity: 0.12; } }
 
 #gate input {
-  flex: 1;
+  flex: 0 1 auto;
+  width: 100%;
+  text-align: center;
   background: transparent;
   border: 0;
   outline: 0;
@@ -434,6 +440,7 @@
 }
 
 #gate #login-err {
+  text-align: center;
   color: #ff4d4d;
   font-size: 12.5px;
   letter-spacing: 0.06em;

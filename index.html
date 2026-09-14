@@ -248,7 +248,9 @@
       </section>
 
       <div class="panel-note" style="margin:26px 0 0;font-size:12px;line-height:1.9">
-        信号按既定规则自动生成，不构成投资建议。回测收益不代表未来收益。
+        信号按既定规则自动生成，不构成投资建议。回测收益不代表未来收益。<br>
+        图表由 <a href="https://www.tradingview.com/lightweight-charts/"
+        target="_blank" rel="noopener">TradingView Lightweight Charts</a> 提供。
       </div>
     </div>
   </div>
@@ -412,7 +414,8 @@ function wordsChart() {
   const dark = matchMedia('(prefers-color-scheme: dark)').matches;
   wChart = LightweightCharts.createChart($('#w-chart'), {
     layout: { background: { color: 'transparent' }, textColor: dark ? '#98989d' : '#86868b',
-              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11,
+              attributionLogo: false },
     grid: { vertLines: { visible: false }, horzLines: { color: dark ? '#2c2c2e' : '#f0f0f2' } },
     rightPriceScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7' },
     timeScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7', fixLeftEdge: true, fixRightEdge: true },
@@ -595,7 +598,8 @@ function renderChart(EQ, BT) {
   if (chart) { chart.remove(); chart = null; series = []; }
   chart = LightweightCharts.createChart(box, {
     layout: { background: { color: 'transparent' }, textColor: dark ? '#98989d' : '#86868b',
-              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11,
+              attributionLogo: false },
     grid: { vertLines: { color: dark ? '#2c2c2e' : '#f2f2f4' },
             horzLines: { color: dark ? '#2c2c2e' : '#f2f2f4' } },
     rightPriceScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7',
