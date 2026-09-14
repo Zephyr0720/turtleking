@@ -91,6 +91,7 @@ body{background:#0b0f14}
       <span class="navbar-brand brand-mark mb-0">KUCHA<span class="dot">·</span>QUANT</span>
       <span class="badge bg-secondary-lt ms-2" id="status-badge">载入中</span>
       <div class="ms-auto d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" id="open-strategy">策略</button>
         <button class="btn btn-sm btn-outline-secondary" id="open-universe">标的池</button>
         <button class="btn btn-sm btn-outline-secondary" id="refresh">刷新</button>
         <button class="btn btn-sm btn-outline-secondary" id="logout">登出</button>
@@ -172,6 +173,55 @@ body{background:#0b0f14}
       <div class="text-secondary" style="font-size:.75rem;line-height:1.9">
         信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
         数据经 api.kucha.org 读取，仅管理员可见。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 策略方案 ══════════ -->
+<div class="modal modal-blur fade" id="stg-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">策略方案</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-3 border-end">
+            <div class="d-flex align-items-center mb-2">
+              <span class="subheader">已存方案</span>
+              <button class="btn btn-sm btn-outline-secondary ms-auto" id="stg-new">新建</button>
+            </div>
+            <div id="stg-list"></div>
+            <div class="text-secondary mt-3" style="font-size:.72rem;line-height:1.7">
+              标「生效中」的那套决定每日实盘信号。其余只是存档，改了不影响实盘，
+              直到你点「设为生效」。
+            </div>
+          </div>
+          <div class="col-md-9">
+            <div class="row g-2 mb-3">
+              <div class="col-sm-5">
+                <label class="form-label subheader">方案名</label>
+                <input class="form-control form-control-sm" id="stg-name" maxlength="24">
+              </div>
+              <div class="col-sm-7">
+                <label class="form-label subheader">备注</label>
+                <input class="form-control form-control-sm" id="stg-note" maxlength="80"
+                       placeholder="这套想验证什么">
+              </div>
+            </div>
+            <div id="stg-form"></div>
+            <div id="stg-result" class="mt-3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span class="me-auto" id="stg-msg" style="font-size:.78rem"></span>
+        <button class="btn btn-outline-danger" id="stg-del">删除</button>
+        <button class="btn btn-outline-secondary" id="stg-bt">回测这套</button>
+        <button class="btn btn-outline-primary" id="stg-activate">设为生效</button>
+        <button class="btn btn-primary" id="stg-save">保存</button>
       </div>
     </div>
   </div>
@@ -515,6 +565,268 @@ function renderStops(L) {
       <td class="text-end stop-price"><strong>${money(s.to)}</strong></td>
       <td class="text-end text-green">${pct(s.to / s.from - 1)}</td></tr>`).join('') +
     '</tbody></table></div>';
+}
+
+/* ───── 策略方案 ───── */
+let STG = { presets: {}, active: null, results: {}, spec: {}, queue: null };
+let stgModal = null, stgCur = null, stgPoll = null;
+
+async function stgApi(method, body) {
+  const r = await fetch(WORKER + '/quant/strategies', {
+    method,
+    headers: { 'Content-Type': 'application/json',
+               Authorization: 'Bearer ' + localStorage.getItem(TK) },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const d = await r.json();
+  if (!d.success) throw new Error(d.error || '请求失败');
+  return d;
+}
+
+$('#open-strategy').onclick = async () => {
+  if (!stgModal) stgModal = new bootstrap.Modal($('#stg-modal'));
+  $('#stg-msg').textContent = '';
+  $('#stg-form').innerHTML = '<div class="empty-sm">载入中…</div>';
+  $('#stg-list').innerHTML = '';
+  $('#stg-result').innerHTML = '';
+  stgModal.show();
+  await stgReload();
+};
+
+async function stgReload(keepName) {
+  try {
+    STG = await stgApi('GET');
+    const names = Object.keys(STG.presets || {});
+    if (!names.length) {
+      // 第一次打开：用控制台上显示的参数种一套「默认」
+      stgCur = null;
+      $('#stg-list').innerHTML = `<div class="empty-sm">还没有方案。<br>点「新建」开始。</div>`;
+      stgNew();
+      return;
+    }
+    stgDrawList();
+    const pick = keepName && STG.presets[keepName] ? keepName
+               : (stgCur && STG.presets[stgCur] ? stgCur : (STG.active || names[0]));
+    stgLoad(pick);
+  } catch (ex) {
+    $('#stg-form').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
+  }
+}
+
+function stgDrawList() {
+  const names = Object.keys(STG.presets).sort();
+  $('#stg-list').innerHTML = names.map(n => {
+    const on = n === STG.active;
+    const r = STG.results[n];
+    const sub = r && r.stats ? `${pct(r.stats['年化收益'])} · 夏普 ${(r.stats['夏普'] || 0).toFixed(2)}`
+              : r && r.error ? '回测失败' : '未回测';
+    return `<div class="stg-item p-2 mb-1 rounded" data-n="${esc(n)}"
+      style="cursor:pointer;background:${n === stgCur ? '#18212b' : 'transparent'};
+      border:1px solid ${n === stgCur ? '#2b3a4a' : 'transparent'}">
+      <div class="d-flex align-items-center">
+        <strong style="font-size:.85rem">${esc(n)}</strong>
+        ${on ? '<span class="badge bg-green-lt ms-2">生效中</span>' : ''}
+      </div>
+      <div class="text-secondary num" style="font-size:.7rem">${esc(sub)}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.stg-item').forEach(el => {
+    el.onclick = () => stgLoad(el.dataset.n);
+  });
+}
+
+function stgNew() {
+  stgCur = null;
+  $('#stg-name').value = '';
+  $('#stg-note').value = '';
+  const vals = {};
+  for (const [k, sp] of Object.entries(STG.spec || {})) vals[k] = sp.def;
+  stgDrawForm(vals);
+  $('#stg-result').innerHTML = '';
+  stgDrawList();
+}
+$('#stg-new').onclick = stgNew;
+
+function stgLoad(name) {
+  const p = STG.presets[name];
+  if (!p) return;
+  stgCur = name;
+  $('#stg-name').value = p.name || name;
+  $('#stg-note').value = p.note || '';
+  stgDrawForm(p.params || {});
+  stgDrawList();
+  stgDrawResult(STG.results[name]);
+}
+
+function stgDrawForm(vals) {
+  const spec = STG.spec || {};
+  const groups = {};
+  for (const [k, sp] of Object.entries(spec)) (groups[sp.group] ||= []).push([k, sp]);
+  $('#stg-form').innerHTML = Object.entries(groups).map(([g, items]) => `
+    <div class="mb-3">
+      <div class="subheader mb-2" style="color:var(--kq-s1)">${esc(g)}</div>
+      <div class="row g-2">
+        ${items.map(([k, sp]) => {
+          const v = vals[k] !== undefined ? vals[k] : sp.def;
+          let input;
+          if (sp.type === 'bool') {
+            input = `<label class="form-check form-switch mb-0 mt-1">
+              <input class="form-check-input stg-f" type="checkbox" data-k="${k}"${v ? ' checked' : ''}>
+              <span class="form-check-label text-secondary" style="font-size:.76rem">
+                ${v ? '开启' : '关闭'}</span></label>`;
+          } else if (sp.type === 'enum') {
+            input = `<select class="form-select form-select-sm stg-f" data-k="${k}">
+              ${sp.options.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}
+              </select>`;
+          } else {
+            input = `<div class="input-group input-group-sm">
+              <input class="form-control stg-f" type="number" data-k="${k}" value="${v}"
+                min="${sp.min}" max="${sp.max}" step="${sp.step || 1}">
+              ${sp.unit ? `<span class="input-group-text">${esc(sp.unit)}</span>` : ''}
+            </div>`;
+          }
+          return `<div class="col-sm-6 col-lg-4">
+            <label class="form-label subheader mb-1" title="${esc(sp.hint)}">${esc(sp.label)}</label>
+            ${input}
+            <div class="text-secondary mt-1" style="font-size:.68rem;line-height:1.5">
+              ${esc(sp.hint)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.stg-f[type="checkbox"]').forEach(cb => {
+    cb.onchange = () => {
+      const lbl = cb.parentElement.querySelector('.form-check-label');
+      if (lbl) lbl.textContent = cb.checked ? '开启' : '关闭';
+    };
+  });
+}
+
+function stgCollect() {
+  const p = {};
+  document.querySelectorAll('.stg-f').forEach(el => {
+    const k = el.dataset.k, sp = STG.spec[k];
+    if (!sp) return;
+    if (sp.type === 'bool') p[k] = el.checked;
+    else if (sp.type === 'enum') p[k] = el.value;
+    else p[k] = Number(el.value);
+  });
+  return p;
+}
+
+function stgDrawResult(r) {
+  const box = $('#stg-result');
+  if (!r) { box.innerHTML = ''; return; }
+  if (r.error) {
+    box.innerHTML = `<div class="alert alert-danger py-2" style="font-size:.8rem">
+      回测失败：${esc(r.error)}</div>`;
+    return;
+  }
+  const s = r.stats || {}, bm = r.benchmark || {};
+  const segs = (r.segments || []).map(x =>
+    `<td class="text-end">${x.sharpe == null ? '—' : x.sharpe.toFixed(2)}</td>`).join('');
+  const segHead = (r.segments || []).map(x =>
+    `<th class="text-end">${esc(x.period)}</th>`).join('');
+  box.innerHTML = `
+    <div class="subheader mb-2" style="color:var(--kq-s1)">回测结果
+      <span class="text-secondary ms-2">${new Date(r.ran_at).toLocaleString('zh-CN')}
+      · ${r.universe_size} 只标的</span></div>
+    <div class="table-responsive"><table class="table table-sm table-vcenter mb-2">
+      <thead><tr><th></th><th class="text-end">年化</th><th class="text-end">夏普</th>
+      <th class="text-end">最大回撤</th><th class="text-end">交易笔数</th>
+      <th class="text-end">胜率</th></tr></thead>
+      <tbody>
+        <tr><td><strong>这套策略</strong></td>
+          <td class="text-end ${tone(s['年化收益'])}"><strong>${pct(s['年化收益'])}</strong></td>
+          <td class="text-end"><strong>${(s['夏普'] || 0).toFixed(2)}</strong></td>
+          <td class="text-end text-red">${pct(s['最大回撤'])}</td>
+          <td class="text-end">${s['交易笔数'] ?? '—'}</td>
+          <td class="text-end">${s['胜率'] != null ? (s['胜率'] * 100).toFixed(0) + '%' : '—'}</td></tr>
+        <tr class="text-secondary"><td>QQQ 买入持有</td>
+          <td class="text-end">${pct(bm['年化收益'])}</td>
+          <td class="text-end">${(bm['夏普'] || 0).toFixed(2)}</td>
+          <td class="text-end">${pct(bm['最大回撤'])}</td>
+          <td class="text-end">—</td><td class="text-end">—</td></tr>
+      </tbody></table></div>
+    <div class="table-responsive"><table class="table table-sm table-vcenter mb-2">
+      <thead><tr><th>分段夏普</th>${segHead}</tr></thead>
+      <tbody><tr><td class="text-secondary" style="font-size:.76rem">越均匀越稳</td>${segs}</tr></tbody>
+    </table></div>
+    <div class="text-secondary" style="font-size:.72rem;line-height:1.7">
+      三段夏普差距大说明这组参数只在某段行情里好看，换个时期可能就不灵。
+      判断一个改动值不值得采用，看它是不是每段都不比原来差，而不是看总收益。
+    </div>`;
+}
+
+$('#stg-save').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!name) { stgMsg('方案名不能为空', true); return; }
+  try {
+    await stgApi('POST', { name, note: $('#stg-note').value.trim(), params: stgCollect() });
+    stgMsg(`已保存「${name}」`);
+    await stgReload(name);
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+
+$('#stg-activate').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!STG.presets[name]) { stgMsg('先保存这套方案', true); return; }
+  try {
+    await stgApi('POST', { op: 'activate', name });
+    stgMsg(`「${name}」已设为生效，下次运行采用`);
+    await stgReload(name);
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+
+$('#stg-del').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!STG.presets[name]) { stgMsg('这套还没保存过', true); return; }
+  try {
+    await stgApi('POST', { op: 'delete', name });
+    stgCur = null;
+    stgMsg(`已删除「${name}」`);
+    await stgReload();
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+
+$('#stg-bt').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!STG.presets[name]) { stgMsg('先保存再回测', true); return; }
+  try {
+    await fetch(WORKER + '/quant/backtest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json',
+                 Authorization: 'Bearer ' + localStorage.getItem(TK) },
+      body: JSON.stringify({ name }),
+    }).then(async r => { const d = await r.json(); if (!d.success) throw new Error(d.error); });
+    stgMsg('已排队。回测在你本机执行，需要 bin/bt_worker.py --watch 守着。');
+    stgWatch(name);
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+
+function stgWatch(name) {
+  clearInterval(stgPoll);
+  let n = 0;
+  stgPoll = setInterval(async () => {
+    n++;
+    try {
+      const d = await stgApi('GET');
+      STG = d;
+      const q = d.queue;
+      if (q && q.status === 'running') stgMsg('正在计算…');
+      if (d.results[name] && (!q || q.status === 'done' || q.status === 'error')) {
+        clearInterval(stgPoll);
+        stgDrawResult(d.results[name]);
+        stgDrawList();
+        stgMsg(d.results[name].error ? '回测失败' : '回测完成');
+      }
+    } catch { /* 轮询失败忽略 */ }
+    if (n > 60) { clearInterval(stgPoll); stgMsg('等太久了，检查 bt_worker.py 是否在运行', true); }
+  }, 5000);
+}
+
+function stgMsg(t, bad) {
+  $('#stg-msg').innerHTML = `<span class="${bad ? 'text-red' : 'text-green'}">${esc(t)}</span>`;
 }
 
 /* ───── 标的池自选 ───── */
