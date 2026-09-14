@@ -238,12 +238,19 @@ body{background:#0b0f14}
       <div class="modal-body">
         <div class="mb-2 d-flex gap-2 flex-wrap align-items-center">
           <input type="search" class="form-control form-control-sm" id="uni-search"
-                 placeholder="搜代码或公司名" style="max-width:220px">
-          <select class="form-select form-select-sm" id="uni-sector" style="max-width:150px">
+                 placeholder="搜代码或公司名" style="max-width:200px">
+          <select class="form-select form-select-sm" id="uni-sector" style="max-width:140px">
             <option value="">全部行业</option>
           </select>
           <button class="btn btn-sm btn-outline-secondary" id="uni-all">全选当前筛选</button>
           <button class="btn btn-sm btn-outline-secondary" id="uni-none">清空当前筛选</button>
+        </div>
+        <div class="mb-2 d-flex gap-2 align-items-center">
+          <input class="form-control form-control-sm" id="uni-custom" maxlength="10"
+                 placeholder="标普 500 之外的代码，如 SPCX" style="max-width:200px"
+                 autocapitalize="characters">
+          <button class="btn btn-sm btn-outline-primary" id="uni-add">添加</button>
+          <span class="text-secondary" id="uni-add-msg" style="font-size:.74rem"></span>
         </div>
         <div class="text-secondary mb-2" style="font-size:.74rem;line-height:1.7">
           选中的标的会成为每日选股的候选池，下次运行生效。系统仍会按流动性和价格再筛一道，
@@ -849,9 +856,14 @@ $('#open-universe').onclick = async () => {
         在本机跑一次 bin/upload_sp500.py 即可。</div>`;
       return;
     }
-    const secs = [...new Set(SP500.map(x => x.sec))].sort();
+    CUSTOM_NAMES = {};
+    const secs = ['自选', ...new Set(SP500.map(x => x.sec))].sort();
     $('#uni-sector').innerHTML = '<option value="">全部行业</option>'
-      + secs.map(s => `<option value="${esc(s)}">${esc(s)}（${SP500.filter(x => x.sec === s).length}）</option>`).join('');
+      + secs.map(s => {
+          const n = s === '自选' ? [...SELECTED].filter(x => !SP500.some(y => y.s === x)).length
+                                 : SP500.filter(x => x.sec === s).length;
+          return n ? `<option value="${esc(s)}">${esc(s)}（${n}）</option>` : '';
+        }).join('');
     if (d.updated) {
       $('#uni-msg').textContent = '上次修改 ' + new Date(d.updated).toLocaleString('zh-CN');
     }
@@ -861,17 +873,62 @@ $('#open-universe').onclick = async () => {
   }
 };
 
+/* 标普 500 之外手工加进来的代码，和成分股一起参与勾选 */
+function uniAll() {
+  const known = new Set(SP500.map(x => x.s));
+  const extra = [...SELECTED].filter(s => !known.has(s))
+    .map(s => ({ s, n: CUSTOM_NAMES[s] || '自选（非标普 500）', sec: '自选' }));
+  return [...extra.sort((a, b) => a.s < b.s ? -1 : 1), ...SP500];
+}
+
 function uniFiltered() {
   const q = ($('#uni-search').value || '').trim().toUpperCase();
   const sec = $('#uni-sector').value;
-  return SP500.filter(x =>
+  return uniAll().filter(x =>
     (!sec || x.sec === sec) &&
     (!q || x.s.includes(q) || (x.n || '').toUpperCase().includes(q)));
 }
 
+let CUSTOM_NAMES = {};
+
+$('#uni-add').onclick = async () => {
+  const inp = $('#uni-custom'), msg = $('#uni-add-msg');
+  const sym = (inp.value || '').trim().toUpperCase();
+  if (!/^[A-Z][A-Z0-9.\-]{0,9}$/.test(sym)) {
+    msg.innerHTML = '<span class="text-red">代码格式不对</span>'; return;
+  }
+  if (SELECTED.has(sym)) { msg.innerHTML = '<span class="text-secondary">已经在池子里了</span>'; return; }
+  msg.textContent = '核对中…';
+  try {
+    // 用行情接口验一下这个代码真的存在，免得把拼错的代码存进去
+    const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
+      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || '查不到这个代码');
+    const bars = d.bars || [];
+    if (bars.length < 2) throw new Error('查不到行情数据');
+    SELECTED.add(sym);
+    CUSTOM_NAMES[sym] = `自选 · ${bars.length} 根日线`;
+    inp.value = '';
+    const warn = bars.length < 120
+      ? `，但只有 ${bars.length} 根日线，不够算 100 日均线，暂时不会产生信号`
+      : '';
+    msg.innerHTML = `<span class="${warn ? 'text-orange' : 'text-green'}">已加入 ${sym}${warn}</span>`;
+    $('#uni-sector').value = '';
+    $('#uni-search').value = '';
+    drawUniverse();
+  } catch (ex) {
+    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
+  }
+};
+$('#uni-custom').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('#uni-add').click(); } };
+
 function drawUniverse() {
   const rows = uniFiltered();
-  $('#uni-count').textContent = `已选 ${SELECTED.size} / ${SP500.length}`;
+  const known = new Set(SP500.map(x => x.s));
+  const nExtra = [...SELECTED].filter(s => !known.has(s)).length;
+  $('#uni-count').textContent =
+    `已选 ${SELECTED.size} / ${SP500.length}` + (nExtra ? ` （含 ${nExtra} 只自选）` : '');
   if (!rows.length) { $('#uni-list').innerHTML = '<div class="empty-sm">没有匹配的标的。</div>'; return; }
   $('#uni-list').innerHTML = `<table class="table table-sm table-vcenter"><tbody>` +
     rows.map(x => `<tr>
@@ -884,7 +941,7 @@ function drawUniverse() {
   document.querySelectorAll('.uni-cb').forEach(cb => {
     cb.onchange = () => {
       cb.checked ? SELECTED.add(cb.dataset.s) : SELECTED.delete(cb.dataset.s);
-      $('#uni-count').textContent = `已选 ${SELECTED.size} / ${SP500.length}`;
+      drawUniverse();
     };
   });
 }
