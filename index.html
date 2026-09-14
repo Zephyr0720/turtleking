@@ -1,313 +1,232 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-bs-theme="dark">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex,nofollow">
-<title>KUCHA QUANT · 量化控制台</title>
+<title>KUCHA</title>
 
-<!-- Tabler 1.5.0（MIT）—— 开源仪表盘 UI 套件，深色主题 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/css/tabler.min.css">
+<!-- 单词本的样式直接来自 Word Scanner 插件，所以网页上的词表和插件里逐像素一致 -->
+<link rel="stylesheet" href="wordbook.css">
+<!-- 量化模块的组件，配色变量沿用上面那一套 -->
+<link rel="stylesheet" href="app.css">
+
 <!-- TradingView Lightweight Charts 5.2.1（Apache-2.0）—— 金融图表 -->
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
-<!-- Tabler JS：弹窗组件 -->
-<script defer src="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/js/tabler.min.js"></script>
 <!-- Fuse.js 7.1.0（Apache-2.0）—— 模糊搜索，拼错也能命中 -->
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.min.js"></script>
-
-<style>
-:root{
-  --kq-s1:#3987e5; --kq-s2:#d95926;
-  --kq-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
-  --kq-bg:#0b0f14; --kq-card:#10161d; --kq-line:#1c2733; --kq-line2:#1a2430;
-}
-body{background:var(--kq-bg)}
-.page-wrapper,.navbar{background:var(--kq-bg)}
-.card{background:var(--kq-card);border-color:var(--kq-line)}
-.card-header{border-bottom-color:var(--kq-line2)}
-.table{--tblr-table-border-color:var(--kq-line2)}
-
-.num,.table td,.table th,.datagrid-content{font-family:var(--kq-mono);font-variant-numeric:tabular-nums}
-.brand-mark{font-family:var(--kq-mono);letter-spacing:.18em;font-size:.95rem;font-weight:600}
-.brand-mark .dot{color:var(--kq-s1)}
-.subheader{font-family:var(--kq-mono);letter-spacing:.1em}
-
-.topbar{border-bottom:1px solid var(--kq-line);position:sticky;top:0;z-index:1020;
-        background:rgba(11,15,20,.94);backdrop-filter:blur(8px)}
-.tabbar{border-bottom:1px solid var(--kq-line);background:var(--kq-bg);
-        position:sticky;top:56px;z-index:1010}
-.tabbar .nav-link{font-family:var(--kq-mono);font-size:.82rem;letter-spacing:.06em;
-                  padding:.7rem 1.1rem;border:0;border-bottom:2px solid transparent;color:#8b9aa8}
-.tabbar .nav-link.active{color:#e6edf3;border-bottom-color:var(--kq-s1);background:transparent}
-.tabbar .nav-link:hover{color:#e6edf3}
-.tabbar .badge{font-family:var(--kq-mono)}
-
-#chart{height:330px;width:100%}
-.chart-legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;
-              font-family:var(--kq-mono);font-size:.75rem}
-.chart-legend i{width:14px;height:2px;border-radius:1px;display:inline-block}
-
-.order{border-left:3px solid var(--tblr-border-color);padding:.75rem .9rem;
-       border-radius:0 4px 4px 0;background:#0d131a;margin-bottom:.6rem}
-.order:last-child{margin-bottom:0}
-.order.buy{border-left-color:var(--tblr-green)}
-.order.sell{border-left-color:var(--tblr-red)}
-.order .sym{font-family:var(--kq-mono);font-weight:700;font-size:1.02rem}
-.order .meta{font-family:var(--kq-mono);font-size:.76rem;line-height:1.75}
-
-.empty-sm{padding:1.6rem .75rem;text-align:center;font-family:var(--kq-mono);
-          font-size:.8rem;color:var(--tblr-secondary);line-height:1.9}
-.stop-price{color:var(--tblr-orange)}
-.gate-mark{font-family:var(--kq-mono);letter-spacing:.22em;font-size:1.25rem}
-.hero h1{letter-spacing:.02em}
-#gate .card{transition:border-color .15s}
-#gate .card:hover{border-color:#2b3a4a}
-
-.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--kq-mono);
-      font-size:.78rem;background:#18212b;border:1px solid #263341;border-radius:4px;
-      padding:3px 6px 3px 9px;margin:0 5px 5px 0}
-.chip .x{cursor:pointer;color:#6b7d8f;font-size:.95rem;line-height:1;padding:0 2px}
-.chip .x:hover{color:var(--tblr-red)}
-.chip.custom{border-color:#3a4d2f}
-#pool-results{position:absolute;top:100%;left:0;right:0;z-index:30;margin-top:4px;
-              max-height:340px;overflow:auto;box-shadow:0 10px 34px rgba(0,0,0,.65)}
-.pool-row{border-bottom:1px solid var(--kq-line2)}
-.pool-row:last-child{border-bottom:0}
-.savebar{position:sticky;bottom:0;background:rgba(11,15,20,.95);backdrop-filter:blur(8px);
-         border-top:1px solid var(--kq-line);padding:.6rem 0;z-index:20}
-
-.stg-item{cursor:pointer;border:1px solid transparent;border-radius:4px}
-.stg-item:hover{background:#141c25}
-.stg-item.on{background:#18212b;border-color:#2b3a4a}
-
-@media(max-width:768px){
-  .tabbar{top:52px}
-  .tabbar .nav-link{padding:.6rem .7rem;font-size:.76rem}
-}
-</style>
 </head>
-<body class="antialiased">
+<body>
 
-<!-- ══════════ 首页：个人展示 ══════════ -->
-<div id="gate">
-  <div class="container-xl py-5">
-
-    <header class="hero mb-5">
-      <div class="brand-mark" style="font-size:1.35rem">KUCHA<span class="dot">·</span>ORG</div>
-      <h1 class="mt-3 mb-2" style="font-size:1.9rem;font-weight:600">况海洋</h1>
-      <p class="text-secondary" style="max-width:640px;line-height:1.9;font-size:.95rem">
-        西南大学在读。喜欢把一个具体问题拆到能自动跑起来为止：
-        数据从哪来、规则怎么定、结果怎么验证、跑错了怎么发现。
-        下面是还在维护的几个东西，量化系统和生词本可以在本站登录查看实时数据。
-      </p>
-    </header>
-
-    <div class="row row-cards mb-5" id="project-grid"></div>
-
-    <div class="row">
-      <div class="col-md-6 col-lg-5">
-        <form class="card" id="login-form" autocomplete="on">
-          <div class="card-header"><h3 class="card-title mb-0">进入控制台</h3></div>
-          <div class="card-body">
-            <div class="mb-3">
-              <label class="form-label subheader" for="u">账号</label>
-              <input id="u" name="username" type="email" class="form-control"
-                     autocomplete="username" placeholder="haiyangkwong@gmail.com" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label subheader" for="p">密码</label>
-              <input id="p" name="password" type="password" class="form-control"
-                     autocomplete="current-password" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100" id="login-btn">登录</button>
-            <div class="text-danger mt-3 text-center" id="login-err" role="alert"
-                 style="min-height:1.2rem;font-size:.82rem"></div>
-          </div>
-        </form>
-      </div>
+<!-- ══════════ 登录 ══════════ -->
+<div class="login-wrap" id="gate">
+  <form class="login-card" id="login-form" autocomplete="on">
+    <div class="login-mark">KUCHA</div>
+    <div class="login-sub">单词本 · 量化</div>
+    <div class="field">
+      <label for="u">账号</label>
+      <input id="u" name="username" type="email" class="inp" autocomplete="username"
+             placeholder="haiyangkwong@gmail.com" required>
     </div>
-
-    <div class="text-secondary mt-5" style="font-size:.74rem;line-height:1.9">
-      kucha.org · 前端托管在 GitHub Pages，接口跑在 Cloudflare Workers。
+    <div class="field">
+      <label for="p">密码</label>
+      <input id="p" name="password" type="password" class="inp"
+             autocomplete="current-password" required>
     </div>
-  </div>
+    <button type="submit" class="btn btn-primary" id="login-btn"
+            style="width:100%;padding:10px">登录</button>
+    <div class="login-err" id="login-err" role="alert"></div>
+  </form>
 </div>
 
-<!-- ══════════ 控制台 ══════════ -->
+<!-- ══════════ 主体 ══════════ -->
 <div id="app" hidden>
-  <header class="navbar navbar-expand-md topbar">
-    <div class="container-xl">
-      <span class="navbar-brand brand-mark mb-0">KUCHA<span class="dot">·</span>QUANT</span>
-      <span class="badge bg-secondary-lt ms-2" id="status-badge">载入中</span>
-      <div class="ms-auto d-flex gap-2">
-        <button class="btn btn-sm btn-outline-secondary" id="refresh">刷新</button>
-        <button class="btn btn-sm btn-outline-secondary" id="logout">登出</button>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <span class="wordmark">KUCHA</span>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-mod="words">单词本</button>
+        <button class="tab" data-mod="quant">量化</button>
+      </div>
+      <div class="topnav-right">
+        <span class="badge" id="status-badge">载入中</span>
+        <button class="btn btn-sm" id="refresh">刷新</button>
+        <button class="btn btn-sm" id="logout">登出</button>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <div class="tabbar">
-    <div class="container-xl">
-      <ul class="nav" role="tablist">
-        <li class="nav-item"><a class="nav-link active" data-tab="overview" href="#overview">总览</a></li>
-        <li class="nav-item"><a class="nav-link" data-tab="pool" href="#pool">标的池
-          <span class="badge bg-blue-lt ms-1" id="tab-pool-count">—</span></a></li>
-        <li class="nav-item"><a class="nav-link" data-tab="strategy" href="#strategy">策略
-          <span class="badge bg-secondary-lt ms-1" id="tab-stg-name">—</span></a></li>
-        <li class="nav-item"><a class="nav-link" data-tab="records" href="#records">记录</a></li>
-        <li class="nav-item"><a class="nav-link" data-tab="words" href="#words">单词本
-          <span class="badge bg-secondary-lt ms-1" id="tab-words-count">—</span></a></li>
-      </ul>
+  <!-- ─────────── 模块一：单词本 ─────────── -->
+  <div id="mod-words">
+    <div class="page">
+      <header class="hero">
+        <h1>我的词库</h1>
+        <p class="hero-sub" id="w-sub">载入中…</p>
+      </header>
+
+      <div class="stats-section" id="w-stats"></div>
+
+      <div class="card" style="margin-top:22px">
+        <div class="card-head">
+          <h2>每日新增</h2>
+          <span class="sub" id="w-chart-sub"></span>
+        </div>
+        <div class="card-body">
+          <div id="w-chart" style="height:170px"></div>
+        </div>
+      </div>
+
+      <div class="list-toolbar" style="margin-top:22px">
+        <input type="search" class="inp" id="w-search" placeholder="搜单词或释义"
+               style="max-width:210px">
+        <div class="seg" id="w-filter-seg" role="group">
+          <button class="seg-btn active" data-f="">全部</button>
+          <button class="seg-btn" data-f="new">未掌握</button>
+          <button class="seg-btn" data-f="mastered">已掌握</button>
+          <button class="seg-btn" data-f="recent">近 7 天</button>
+        </div>
+        <select class="inp" id="w-sort" style="max-width:130px">
+          <option value="new">最新收录</option>
+          <option value="old">最早收录</option>
+          <option value="az">字母顺序</option>
+          <option value="review">复习次数</option>
+        </select>
+      </div>
+
+      <div class="result-meta" id="w-meta"></div>
+      <div class="entry-list" id="w-list"></div>
     </div>
   </div>
 
-  <div class="page-body">
-    <div class="container-xl">
+  <!-- ─────────── 模块二：量化 ─────────── -->
+  <div id="mod-quant" hidden>
+    <div class="page-wide">
+      <div class="tabs" style="margin:18px 0 22px" role="tablist">
+        <button class="tab active" data-tab="overview">总览</button>
+        <button class="tab" data-tab="pool">标的池 <span class="badge" id="tab-pool-count">—</span></button>
+        <button class="tab" data-tab="strategy">策略 <span class="badge" id="tab-stg-name">—</span></button>
+        <button class="tab" data-tab="records">记录</button>
+      </div>
 
-      <!-- ─────── 总览 ─────── -->
+      <!-- 总览 -->
       <section id="tab-overview">
-        <div class="row row-cards mb-3" id="tiles"></div>
+        <div class="grid grid-4" id="tiles"></div>
 
-        <div class="card mb-3">
-          <div class="card-header d-flex align-items-center flex-wrap gap-2">
-            <h3 class="card-title mb-0">权益曲线</h3>
-            <div class="chart-legend ms-3" id="legend"></div>
-            <div class="ms-auto btn-group btn-group-sm" role="group">
-              <button class="btn btn-outline-secondary active" id="btn-live">实盘</button>
-              <button class="btn btn-outline-secondary" id="btn-bt">回测</button>
+        <div class="card">
+          <div class="card-head">
+            <h2>权益曲线</h2>
+            <div class="legend" id="legend" style="margin-left:14px"></div>
+            <div class="seg" style="margin-left:auto">
+              <button class="seg-btn active" id="btn-live">实盘</button>
+              <button class="seg-btn" id="btn-bt">回测</button>
             </div>
           </div>
           <div class="card-body">
-            <div id="chart"></div>
-            <div id="chart-empty" class="empty-sm" hidden></div>
+            <div id="chart" class="chart-box" style="height:320px"></div>
+            <div id="chart-empty" class="empty-state" hidden></div>
           </div>
         </div>
 
-        <div class="row row-cards mb-3">
-          <div class="col-lg-6">
-            <div class="card h-100">
-              <div class="card-header">
-                <h3 class="card-title mb-0">明日开盘指令</h3>
-                <span class="card-subtitle ms-auto num" id="ord-date"></span>
-              </div>
-              <div class="card-body" id="orders"></div>
-            </div>
+        <div class="grid grid-2">
+          <div class="card" style="margin:0">
+            <div class="card-head"><h2>明日开盘指令</h2><span class="sub" id="ord-date"></span></div>
+            <div class="card-body" id="orders"></div>
           </div>
-          <div class="col-lg-6">
-            <div class="card h-100">
-              <div class="card-header">
-                <h3 class="card-title mb-0">当前持仓</h3>
-                <span class="card-subtitle ms-auto num" id="pos-count"></span>
-              </div>
-              <div id="positions"></div>
-            </div>
+          <div class="card" style="margin:0">
+            <div class="card-head"><h2>当前持仓</h2><span class="sub" id="pos-count"></span></div>
+            <div class="card-body tight scroll-x" id="positions"></div>
           </div>
         </div>
 
-        <div class="row row-cards mb-3">
-          <div class="col-lg-6">
-            <div class="card h-100">
-              <div class="card-header"><h3 class="card-title mb-0">汇丰 Trade25 月度额度</h3></div>
-              <div class="card-body" id="budget"></div>
-            </div>
+        <div class="grid grid-2">
+          <div class="card" style="margin:0">
+            <div class="card-head"><h2>汇丰 Trade25 月度额度</h2></div>
+            <div class="card-body" id="budget"></div>
           </div>
-          <div class="col-lg-6">
-            <div class="card h-100">
-              <div class="card-header"><h3 class="card-title mb-0">止损调整</h3></div>
-              <div id="stops"></div>
-            </div>
+          <div class="card" style="margin:0">
+            <div class="card-head"><h2>止损调整</h2></div>
+            <div class="card-body tight scroll-x" id="stops"></div>
           </div>
         </div>
       </section>
 
-      <!-- ─────── 标的池 ─────── -->
+      <!-- 标的池 -->
       <section id="tab-pool" hidden>
-        <div class="card mb-3">
+        <div class="card">
           <div class="card-body">
-            <label class="form-label subheader">添加标的</label>
-            <div style="position:relative">
-              <input type="search" class="form-control" id="pool-search" autocomplete="off"
-                     placeholder="输入代码或英文公司名，如 SPCX / Space Exploration / nvdia（拼错也能搜到）">
-              <div id="pool-results" class="card" hidden></div>
-            </div>
-            <div class="text-secondary mt-2" id="pool-msg" style="font-size:.76rem;min-height:1.1rem">
-              标普 500 的 503 只加上全市场搜索，搜到什么都能加。数据源只索引英文名，中文搜不到。
+            <div class="field" style="margin:0">
+              <label>添加标的</label>
+              <div style="position:relative">
+                <input type="search" class="inp" id="pool-search" autocomplete="off"
+                       placeholder="代码或英文公司名，如 SPCX / Space Exploration / nvdia（拼错也能搜到）">
+                <div id="pool-results" class="search-pop" hidden></div>
+              </div>
+              <div class="hint" id="pool-msg">
+                标普 500 的 503 只加上全市场搜索。数据源只索引英文名，中文搜不到。
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="card mb-3">
-          <div class="card-header">
-            <h3 class="card-title mb-0">当前标的池</h3>
-            <span class="card-subtitle ms-auto num" id="pool-count">—</span>
-          </div>
-          <div class="card-body" id="pool-chips">
-            <div class="empty-sm">载入中…</div>
-          </div>
+        <div class="card">
+          <div class="card-head"><h2>当前标的池</h2><span class="sub" id="pool-count">—</span></div>
+          <div class="card-body" id="pool-chips"><div class="empty-state">载入中…</div></div>
         </div>
 
-        <div class="card mb-3">
-          <div class="card-header d-flex flex-wrap gap-2 align-items-center">
-            <h3 class="card-title mb-0">浏览标普 500</h3>
-            <select class="form-select form-select-sm ms-auto" id="uni-sector" style="max-width:160px">
+        <div class="card">
+          <div class="card-head">
+            <h2>浏览标普 500</h2>
+            <select class="inp" id="uni-sector" style="max-width:150px;margin-left:auto">
               <option value="">全部行业</option>
             </select>
-            <input type="search" class="form-control form-control-sm" id="uni-filter"
-                   placeholder="在名单内筛选" style="max-width:180px">
-            <button class="btn btn-sm btn-outline-secondary" id="uni-all">全选筛选结果</button>
-            <button class="btn btn-sm btn-outline-secondary" id="uni-none">清空筛选结果</button>
+            <input type="search" class="inp" id="uni-filter" placeholder="在名单内筛选"
+                   style="max-width:160px">
+            <button class="btn btn-sm" id="uni-all">全选筛选结果</button>
+            <button class="btn btn-sm" id="uni-none">清空筛选结果</button>
           </div>
-          <div id="uni-list" style="max-height:52vh;overflow:auto"></div>
+          <div class="card-body tight" id="uni-list" style="max-height:52vh;overflow:auto"></div>
         </div>
 
         <div class="savebar">
-          <div class="d-flex align-items-center gap-3 flex-wrap">
-            <span class="num" id="pool-state">—</span>
-            <span class="text-secondary" style="font-size:.76rem">改动要点保存才会在下次运行生效</span>
-            <button class="btn btn-primary btn-sm ms-auto" id="pool-save" disabled>保存标的池</button>
-          </div>
+          <span class="mono" id="pool-state">—</span>
+          <span class="sec" style="font-size:12px">改动要点保存才会在下次运行生效</span>
+          <button class="btn btn-primary btn-sm" id="pool-save" style="margin-left:auto" disabled>
+            保存标的池</button>
         </div>
       </section>
 
-      <!-- ─────── 策略 ─────── -->
+      <!-- 策略 -->
       <section id="tab-strategy" hidden>
-        <div class="row">
-          <div class="col-lg-3 mb-3">
-            <div class="card h-100">
-              <div class="card-header">
-                <h3 class="card-title mb-0">方案</h3>
-                <button class="btn btn-sm btn-outline-secondary ms-auto" id="stg-new">新建</button>
-              </div>
-              <div class="card-body" id="stg-list"></div>
-              <div class="card-footer text-secondary" style="font-size:.72rem;line-height:1.7">
-                标「生效中」的那套决定每日实盘信号。其余只是存档，改了不影响实盘，
-                直到点「设为生效」。
-              </div>
+        <div style="display:grid;grid-template-columns:250px 1fr;gap:16px" id="stg-layout">
+          <div class="card" style="margin:0">
+            <div class="card-head">
+              <h2>方案</h2>
+              <button class="btn btn-sm" id="stg-new" style="margin-left:auto">新建</button>
             </div>
+            <div class="card-body" id="stg-list"></div>
           </div>
-          <div class="col-lg-9">
-            <div class="card mb-3">
+          <div>
+            <div class="card">
               <div class="card-body">
-                <div class="row g-2 mb-3">
-                  <div class="col-sm-5">
-                    <label class="form-label subheader">方案名</label>
-                    <input class="form-control form-control-sm" id="stg-name" maxlength="24">
+                <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-bottom:16px">
+                  <div class="field" style="margin:0">
+                    <label>方案名</label>
+                    <input class="inp" id="stg-name" maxlength="24">
                   </div>
-                  <div class="col-sm-7">
-                    <label class="form-label subheader">备注</label>
-                    <input class="form-control form-control-sm" id="stg-note" maxlength="80"
-                           placeholder="这套想验证什么">
+                  <div class="field" style="margin:0">
+                    <label>备注</label>
+                    <input class="inp" id="stg-note" maxlength="80" placeholder="这套想验证什么">
                   </div>
                 </div>
                 <div id="stg-form"></div>
               </div>
-              <div class="card-footer d-flex flex-wrap gap-2 align-items-center">
-                <span id="stg-msg" style="font-size:.78rem"></span>
-                <div class="ms-auto d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-danger" id="stg-del">删除</button>
-                  <button class="btn btn-sm btn-outline-secondary" id="stg-bt">回测这套</button>
-                  <button class="btn btn-sm btn-outline-primary" id="stg-activate">设为生效</button>
+              <div class="card-head" style="border-bottom:0;border-top:1px solid var(--hairline)">
+                <span id="stg-msg" style="font-size:12.5px"></span>
+                <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+                  <button class="btn btn-sm btn-danger" id="stg-del">删除</button>
+                  <button class="btn btn-sm" id="stg-bt">回测这套</button>
+                  <button class="btn btn-sm" id="stg-activate">设为生效</button>
                   <button class="btn btn-sm btn-primary" id="stg-save">保存</button>
                 </div>
               </div>
@@ -317,75 +236,20 @@ body{background:var(--kq-bg)}
         </div>
       </section>
 
-      <!-- ─────── 记录 ─────── -->
+      <!-- 记录 -->
       <section id="tab-records" hidden>
-        <div class="card mb-3">
-          <div class="card-header">
-            <h3 class="card-title mb-0">成交记录</h3>
-            <span class="card-subtitle ms-auto num" id="trade-summary"></span>
-          </div>
-          <div id="trades"></div>
+        <div class="card">
+          <div class="card-head"><h2>成交记录</h2><span class="sub" id="trade-summary"></span></div>
+          <div class="card-body tight scroll-x" id="trades"></div>
         </div>
-        <div class="card mb-3">
-          <div class="card-header"><h3 class="card-title mb-0">生效策略参数</h3></div>
-          <div class="card-body"><div class="datagrid" id="params"></div></div>
+        <div class="card">
+          <div class="card-head"><h2>生效策略参数</h2></div>
+          <div class="card-body" id="params"></div>
         </div>
       </section>
 
-      <!-- ─────── 单词本 ─────── -->
-      <section id="tab-words" hidden>
-        <div class="row row-cards mb-3" id="w-tiles"></div>
-
-        <div class="card mb-3">
-          <div class="card-header">
-            <h3 class="card-title mb-0">每日新增</h3>
-            <span class="card-subtitle ms-auto num" id="w-chart-sub"></span>
-          </div>
-          <div class="card-body"><div id="w-chart" style="height:180px"></div></div>
-        </div>
-
-        <div class="card mb-3">
-          <div class="card-header d-flex flex-wrap gap-2 align-items-center">
-            <h3 class="card-title mb-0">词表</h3>
-            <input type="search" class="form-control form-control-sm ms-auto" id="w-search"
-                   placeholder="搜单词或释义" style="max-width:200px">
-            <select class="form-select form-select-sm" id="w-filter" style="max-width:150px">
-              <option value="">全部</option>
-              <option value="new">未掌握</option>
-              <option value="mastered">已掌握</option>
-              <option value="recent">最近 7 天</option>
-            </select>
-            <select class="form-select form-select-sm" id="w-sort" style="max-width:140px">
-              <option value="new">最新收录</option>
-              <option value="old">最早收录</option>
-              <option value="az">字母顺序</option>
-              <option value="review">复习次数</option>
-            </select>
-          </div>
-          <div id="w-list"></div>
-        </div>
-      </section>
-
-      <div class="text-secondary mb-4" style="font-size:.75rem;line-height:1.9">
-        信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
-        数据经 api.kucha.org 读取，仅管理员可见。
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ 个股详情 ══════════ -->
-<div class="modal modal-blur fade" id="sym-modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title num" id="sym-title">—</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
-      </div>
-      <div class="modal-body">
-        <div class="chart-legend mb-2" id="sym-legend"></div>
-        <div id="sym-chart" style="height:320px"></div>
-        <div id="sym-note" class="text-secondary mt-2" style="font-size:.76rem"></div>
+      <div class="panel-note" style="margin:26px 0 0;font-size:12px;line-height:1.9">
+        信号按既定规则自动生成，不构成投资建议。回测收益不代表未来收益。
       </div>
     </div>
   </div>
@@ -400,67 +264,46 @@ const $$ = s => [...document.querySelectorAll(s)];
 const money = (n, d = 2) => (n == null || isNaN(n)) ? '—'
   : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = n => (n == null || isNaN(n)) ? '—' : (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%';
-const tone = n => n == null || isNaN(n) ? 'text-secondary' : n > 0 ? 'text-green' : n < 0 ? 'text-red' : 'text-secondary';
+const tone = n => n == null || isNaN(n) ? 'sec' : n > 0 ? 'up' : n < 0 ? 'down' : 'sec';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const auth = () => ({ Authorization: 'Bearer ' + localStorage.getItem(TK) });
+const ymd = t => new Date(t).toISOString().slice(0, 10);
 
-/* ───── 首页项目卡 ───── */
-const PROJECTS = [
-  { name: 'KUCHA QUANT', tag: '本站可看', state: 'live',
-    desc: '美股日线波段量化系统。每天收盘后自动选股、算仓位、发邮件给出次日开盘指令，'
-        + '盘中每小时刷新持仓报价并在跌破止损时提醒。参数和标的池都能在网页上改，改完能直接回测。',
-    tech: 'Python · Cloudflare Workers · Twelve Data · Finnhub' },
-  { name: 'Word Scanner', tag: '本站可看', state: 'live',
-    desc: '雅思外刊阅读用的划词生词本 Chrome 插件。内置 3.9 万条离线词典，断网可用，'
-        + '同一个词在不同文章里的语境会累积保存，配 Leitner 间隔复习。词库同步到本站实时查看。',
-    tech: 'Chrome MV3 · IndexedDB · ECDICT' },
-  { name: 'newsdig', state: 'code',
-    desc: '输入一个公司名，产出它在经济学人、彭博、华尔街日报等六家媒体的报道索引，'
-        + '外加所在领域的相关报道。发现层走 Google News RSS，无需任何 key。',
-    tech: 'Python · SQLite · Playwright' },
-  { name: '中转延误概率系统', state: 'code',
-    desc: '给定中转航班组合，估算赶上下一程的概率。延误分布用对数正态而不是正态拟合，'
-        + '因为真实延误的右尾远比正态厚。航班时刻数据自建爬虫采集。',
-    tech: 'Python · 蒙特卡洛 · 尾部标定' },
-  { name: '航班数据采集', state: 'code',
-    desc: '飞常准航线图与携程六城航班时刻两套爬虫。前者破解了 RSA 加 AES 的接口签名，'
-        + '后者用 Playwright 拦截批量查询请求绕过风控。',
-    tech: 'Python · Playwright · 逆向' },
-  { name: '豆豆桌宠', state: 'code',
-    desc: 'macOS 桌面宠物。透明浮层窗口，用 Vision 框架做照片抠图，让自家狗在桌面上跑。',
-    tech: 'PyObjC · Vision' },
-];
-
-function renderProjects() {
-  const badge = { live: 'bg-green-lt', code: 'bg-secondary-lt' };
-  $('#project-grid').innerHTML = PROJECTS.map(p => `
-    <div class="col-md-6 col-xl-4">
-      <div class="card h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <h3 class="card-title mb-0" style="font-size:.95rem">${esc(p.name)}</h3>
-            ${p.tag ? `<span class="badge ${badge[p.state] || 'bg-secondary-lt'} ms-2">${esc(p.tag)}</span>` : ''}
-          </div>
-          <p class="text-secondary mb-3" style="font-size:.82rem;line-height:1.8">${esc(p.desc)}</p>
-          <div class="subheader" style="font-size:.68rem;color:var(--kq-s1)">${esc(p.tech)}</div>
-        </div>
-      </div>
-    </div>`).join('');
+/* ───── 模块切换 ───── */
+function showMod(name) {
+  const m = name === 'quant' ? 'quant' : 'words';
+  $('#mod-words').hidden = m !== 'words';
+  $('#mod-quant').hidden = m !== 'quant';
+  $$('.topnav .tab').forEach(b => b.classList.toggle('active', b.dataset.mod === m));
+  location.hash = m === 'quant' ? (qTab === 'overview' ? 'quant' : 'quant/' + qTab) : 'words';
+  if (m === 'words') { if (!WORDS) wordsLoad(); else wordsChart(); }
+  else { if (!DATA) boot(); else if (qTab === 'overview') renderChart(DATA.equity || [], DATA.backtest); }
 }
+$$('.topnav .tab').forEach(b => { b.onclick = () => showMod(b.dataset.mod); });
 
-/* ───── 标签页 ───── */
-const TABS = ['overview', 'pool', 'strategy', 'records', 'words'];
-function showTab(name) {
-  if (!TABS.includes(name)) name = 'overview';
-  TABS.forEach(t => { $('#tab-' + t).hidden = t !== name; });
-  $$('.tabbar .nav-link').forEach(a => a.classList.toggle('active', a.dataset.tab === name));
-  if (name === 'overview' && DATA) renderChart(DATA.equity || [], DATA.backtest);
-  if (name === 'words') { if (!WORDS) wordsLoad(); else wordsChart(); }
+/* ───── 量化子标签 ───── */
+const QTABS = ['overview', 'pool', 'strategy', 'records'];
+let qTab = 'overview';
+function showQTab(name) {
+  qTab = QTABS.includes(name) ? name : 'overview';
+  QTABS.forEach(t => { $('#tab-' + t).hidden = t !== qTab; });
+  $$('#mod-quant .tabs .tab').forEach(a => a.classList.toggle('active', a.dataset.tab === qTab));
+  location.hash = qTab === 'overview' ? 'quant' : 'quant/' + qTab;
+  if (qTab === 'overview' && DATA) renderChart(DATA.equity || [], DATA.backtest);
+  if (qTab === 'pool' && !SP500.length) poolLoad();
+  if (qTab === 'strategy' && !Object.keys(STG.presets || {}).length) stgReload();
 }
-$$('.tabbar .nav-link').forEach(a => {
-  a.onclick = e => { e.preventDefault(); location.hash = a.dataset.tab; showTab(a.dataset.tab); };
-});
-window.addEventListener('hashchange', () => showTab((location.hash || '#overview').slice(1)));
+$$('#mod-quant .tabs .tab').forEach(a => { a.onclick = () => showQTab(a.dataset.tab); });
+
+function applyHash() {
+  const h = (location.hash || '#words').slice(1);
+  if (h.startsWith('quant')) {
+    const sub = h.split('/')[1];
+    if (sub) qTab = QTABS.includes(sub) ? sub : 'overview';
+    showMod('quant'); showQTab(qTab);
+  } else showMod('words');
+}
+window.addEventListener('hashchange', applyHash);
 
 /* ───── 登录 ───── */
 $('#login-form').addEventListener('submit', async e => {
@@ -475,60 +318,208 @@ $('#login-form').addEventListener('submit', async e => {
     const d = await r.json();
     if (!d.success) throw new Error(d.error || '登录失败');
     localStorage.setItem(TK, d.token);
-    boot();
+    start();
   } catch (ex) { err.textContent = ex.message; }
   finally { btn.disabled = false; }
 });
 $('#logout').onclick = () => { localStorage.removeItem(TK); location.reload(); };
-$('#refresh').onclick = () => boot();
+$('#refresh').onclick = () => { WORDS = null; DATA = null; SP500 = []; boot(); wordsLoad(); };
 
-/* ───── 载入 ───── */
+function start() {
+  if (!localStorage.getItem(TK)) { $('#gate').hidden = false; $('#app').hidden = true; return; }
+  $('#gate').hidden = true; $('#app').hidden = false;
+  applyHash();
+  boot();
+}
+function setStatus(kind, txt) {
+  $('#status-badge').className = 'badge' + (kind ? ' ' + kind : '');
+  $('#status-badge').textContent = txt;
+}
+
+/* ══════════ 单词本 ══════════
+   字段被插件压缩过：w 单词 / p 音标 / d 英释 / t 中释 / s 例句 / src 出处
+   / a 收录时间 / b Leitner 盒号 / r 复习次数 / m 已掌握 / tag 考试标签 */
+let WORDS = null, WMETA = null, wChart = null, wFilter = '';
+
+async function wordsLoad() {
+  if (!localStorage.getItem(TK)) return;
+  $('#w-list').innerHTML = '<div class="loading-state">载入中…</div>';
+  try {
+    const d = await (await fetch(WORKER + '/words', { headers: auth() })).json();
+    if (!d.success) throw new Error(d.error || '读取失败');
+    WORDS = d.words || []; WMETA = d.meta || null;
+    wordsStats(); wordsChart(); wordsList();
+  } catch (ex) {
+    $('#w-list').innerHTML = `<div class="empty-state">读取失败：${esc(ex.message)}</div>`;
+    $('#w-sub').textContent = '';
+  }
+}
+
+function wordsStats() {
+  const now = Date.now(), DAY = 86400000;
+  const total = WORDS.length;
+  const mastered = WORDS.filter(w => w.m).length;
+  const week = WORDS.filter(w => w.a && now - w.a < 7 * DAY).length;
+  const today = WORDS.filter(w => w.a && now - w.a < DAY).length;
+  const days = new Set(WORDS.filter(w => w.a).map(w => ymd(w.a)));
+  let streak = 0;
+  for (let i = 0; i < 400; i++) {
+    const d = ymd(now - i * DAY);
+    if (days.has(d)) streak++; else if (i > 0) break;
+  }
+  const pushed = WMETA && WMETA.pushed_at ? new Date(WMETA.pushed_at).toLocaleString('zh-CN') : '从未';
+  $('#w-sub').textContent = total
+    ? `${total.toLocaleString()} 个词 · 最近同步 ${pushed}`
+    : '还没有同步过词库';
+
+  const boxes = {};
+  for (const w of WORDS) if (!w.m) boxes[w.b || 1] = (boxes[w.b || 1] || 0) + 1;
+  const maxBox = Math.max(1, ...Object.values(boxes));
+  $('#w-stats').innerHTML = `
+    <div class="grid grid-4" style="margin-bottom:18px">
+      <div class="metric"><div class="k">累计收词</div><div class="v">${total.toLocaleString()}</div>
+        <div class="s">已掌握 ${mastered}</div></div>
+      <div class="metric"><div class="k">掌握率</div>
+        <div class="v ${mastered ? 'up' : ''}">${total ? (mastered / total * 100).toFixed(0) + '%' : '—'}</div>
+        <div class="s">${total - mastered} 个还在复习</div></div>
+      <div class="metric"><div class="k">最近 7 天</div>
+        <div class="v ${week ? 'up' : ''}">+${week}</div><div class="s">今天 +${today}</div></div>
+      <div class="metric"><div class="k">连续收录</div><div class="v">${streak} 天</div>
+        <div class="s">${streak >= 3 ? '保持住' : '今天还没收词的话趁早'}</div></div>
+    </div>
+    <div class="stats-title">复习进度（Leitner 盒）</div>
+    <div class="stats-sub">盒号越大间隔越长，第 5 盒之后就算掌握</div>
+    ${[1, 2, 3, 4, 5].map(b => `
+      <div class="stat-row">
+        <span class="stat-label">第 ${b} 盒</span>
+        <span class="stat-bar-track"><span class="stat-bar-fill"
+          style="width:${((boxes[b] || 0) / maxBox * 100).toFixed(1)}%"></span></span>
+        <span class="stat-value">${boxes[b] || 0}</span>
+      </div>`).join('')}`;
+}
+
+function wordsChart() {
+  if (!WORDS || $('#mod-words').hidden) return;
+  const DAY = 86400000, N = 60;
+  const counts = new Map();
+  for (const w of WORDS) if (w.a) counts.set(ymd(w.a), (counts.get(ymd(w.a)) || 0) + 1);
+  const data = [];
+  for (let i = N - 1; i >= 0; i--) {
+    const d = ymd(Date.now() - i * DAY);
+    data.push({ time: d, value: counts.get(d) || 0 });
+  }
+  $('#w-chart-sub').textContent = `近 ${N} 天共 ${data.reduce((a, x) => a + x.value, 0)} 个`;
+  if (wChart) { wChart.remove(); wChart = null; }
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  wChart = LightweightCharts.createChart($('#w-chart'), {
+    layout: { background: { color: 'transparent' }, textColor: dark ? '#98989d' : '#86868b',
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+    grid: { vertLines: { visible: false }, horzLines: { color: dark ? '#2c2c2e' : '#f0f0f2' } },
+    rightPriceScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7' },
+    timeScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7', fixLeftEdge: true, fixRightEdge: true },
+    localization: { priceFormatter: v => Math.round(v) + ' 个' },
+    autoSize: true,
+  });
+  wChart.addSeries(LightweightCharts.HistogramSeries, { color: dark ? '#0a84ff' : '#0071e3' })
+    .setData(data);
+  wChart.timeScale().fitContent();
+}
+
+$$('#w-filter-seg .seg-btn').forEach(b => {
+  b.onclick = () => {
+    wFilter = b.dataset.f;
+    $$('#w-filter-seg .seg-btn').forEach(x => x.classList.toggle('active', x === b));
+    wordsList();
+  };
+});
+
+function wordsList() {
+  if (!WORDS) return;
+  const q = ($('#w-search').value || '').trim().toLowerCase();
+  const sort = $('#w-sort').value, now = Date.now();
+  let rows = WORDS.filter(w => {
+    if (wFilter === 'new' && w.m) return false;
+    if (wFilter === 'mastered' && !w.m) return false;
+    if (wFilter === 'recent' && !(w.a && now - w.a < 7 * 86400000)) return false;
+    if (!q) return true;
+    return (w.w || '').toLowerCase().includes(q) || (w.t || '').toLowerCase().includes(q)
+        || (w.d || '').toLowerCase().includes(q);
+  });
+  rows.sort((a, b) =>
+    sort === 'old' ? (a.a || 0) - (b.a || 0)
+    : sort === 'az' ? (a.w || '').localeCompare(b.w || '')
+    : sort === 'review' ? (b.r || 0) - (a.r || 0)
+    : (b.a || 0) - (a.a || 0));
+
+  if (!rows.length) {
+    $('#w-meta').textContent = '';
+    $('#w-list').innerHTML = WORDS.length
+      ? '<div class="empty-state">没有匹配的词。</div>'
+      : `<div class="empty-state">还没有同步过词库。<br><br>
+         打开 Word Scanner 插件的词典页，进「设置 → 同步到 kucha.org」，
+         填上同步密钥后点「立即同步」。</div>`;
+    return;
+  }
+  const shown = rows.slice(0, 400);
+  $('#w-meta').textContent = rows.length > shown.length
+    ? `${rows.length} 个词，先显示前 ${shown.length} 个` : `${rows.length} 个词`;
+
+  // 这段结构和插件的「我的词库」完全一致，所以两边看起来是同一个东西
+  $('#w-list').innerHTML = shown.map(w => {
+    const tags = [
+      ...(w.tag ? String(w.tag).split(',').filter(Boolean) : []),
+      ...(w.m ? ['已掌握'] : []),
+    ].map(t => `<span class="entry-tag${t === '已掌握' ? ' mastered' : ''}">${esc(t)}</span>`).join('');
+    return `<div class="entry-row">
+      <div class="entry-main">
+        <div class="entry-head">
+          <span class="entry-word">${esc(w.w)}</span>
+          ${w.p ? `<span class="entry-phon">/${esc(w.p)}/</span>` : ''}
+          <span class="entry-tags">${tags}</span>
+        </div>
+        <div class="entry-trans">${esc(w.t || w.d || '释义待补充')}</div>
+        ${w.s ? `<div class="entry-sentence">${esc(w.s)}${
+          w.src ? `<span class="entry-sentence-tag">${esc(w.src)}</span>` : ''}</div>` : ''}
+        <div class="entry-meta-line">${w.a ? ymd(w.a) : '—'} · ${
+          w.m ? '已掌握，不再复习' : `第 ${w.b || 1} 盒`} · 复习 ${w.r || 0} 次</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+$('#w-search').oninput = wordsList;
+$('#w-sort').onchange = wordsList;
+
+/* ══════════ 量化 ══════════ */
 let DATA = null, MODE = 'live', chart = null, series = [];
 
 async function boot() {
-  const token = localStorage.getItem(TK);
-  if (!token) {
-    $('#gate').hidden = false; $('#app').hidden = true;
-    renderProjects();
-    return;
-  }
-  $('#gate').hidden = true; $('#app').hidden = false;
-  showTab((location.hash || '#overview').slice(1));
-  setStatus('secondary', '载入中');
+  if (!localStorage.getItem(TK)) return;
+  setStatus('', '载入中');
   try {
     const r = await fetch(WORKER + '/quant/dashboard', { headers: auth() });
     if (r.status === 401) { localStorage.removeItem(TK); location.reload(); return; }
     if (!r.ok) throw new Error('HTTP ' + r.status);
     DATA = await r.json();
     render();
-  } catch (ex) { setStatus('orange', '读取失败 · ' + ex.message); }
-  poolLoad();
-  stgReload();
-}
-function setStatus(color, txt) {
-  $('#status-badge').className = 'badge bg-' + color + '-lt ms-2';
-  $('#status-badge').textContent = txt;
+  } catch (ex) { setStatus('bad', '读取失败'); }
+  poolLoad(); stgReload();
 }
 
 function render() {
   const L = DATA.latest, EQ = DATA.equity || [], BT = DATA.backtest;
   if (L) {
     const age = (Date.now() - (L.sent_at || 0)) / 86400000;
-    setStatus(age < 4 ? 'green' : 'orange',
+    setStatus(age < 4 ? 'ok' : 'hot',
       `${L.date} · ${age < 1 ? '今日已更新' : Math.floor(age) + ' 天前'}`);
-  } else setStatus('orange', '尚未收到信号');
+  } else setStatus('hot', '尚未收到信号');
   renderTiles(L, EQ); renderChart(EQ, BT); renderOrders(L);
   renderPositions(L); renderBudget(L); renderStops(L);
   renderTrades(DATA.trades || []); renderParams(BT);
 }
 
-function tile(label, value, sub, cls) {
-  return `<div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body">
-    <div class="subheader mb-2">${label}</div>
-    <div class="h1 mb-1 num ${cls || ''}">${value}</div>
-    <div class="text-secondary num" style="font-size:.74rem">${esc(sub)}</div>
-  </div></div></div>`;
-}
+const metric = (k, v, s, cls) =>
+  `<div class="metric"><div class="k">${k}</div><div class="v ${cls || ''}">${v}</div>
+   <div class="s">${esc(s)}</div></div>`;
 
 function quoteOf(sym) {
   const p = DATA && DATA.quotes && DATA.quotes.prices && DATA.quotes.prices[sym];
@@ -561,81 +552,76 @@ function renderTiles(L, EQ) {
   const b = L && L.budget;
   const bp = b ? Math.round((b.used_pct || 0) * 100) : null;
   $('#tiles').innerHTML =
-    tile('账户权益', eq ? money(eq.total) : '—',
-         eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}${eq.live ? ' · 实时' : ''}`
-            : '等待首次信号') +
-    tile('较上次', chg == null ? '—' : pct(chg),
-         EQ.length ? `已记录 ${EQ.length} 个交易日` : '暂无历史', tone(chg)) +
-    tile('持仓', holds + ' / ' + maxPos,
-         L ? (L.regime_on ? '大盘上升趋势 · 可开新仓' : '大盘弱势 · 只减不增') : '—') +
-    tile('汇丰额度', bp == null ? '—' : bp + '%',
-         b ? `${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}` : '暂无',
-         bp == null ? '' : bp >= 85 ? 'text-red' : bp >= 60 ? 'text-orange' : '');
+    metric('账户权益', eq ? money(eq.total) : '—',
+      eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}${eq.live ? ' · 实时' : ''}`
+         : '等待首次信号') +
+    metric('较上次', chg == null ? '—' : pct(chg),
+      EQ.length ? `已记录 ${EQ.length} 个交易日` : '暂无历史', tone(chg)) +
+    metric('持仓', holds + ' / ' + maxPos,
+      L ? (L.regime_on ? '大盘上升趋势 · 可开新仓' : '大盘弱势 · 只减不增') : '—') +
+    metric('汇丰额度', bp == null ? '—' : bp + '%',
+      b ? `${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}` : '暂无',
+      bp == null ? '' : bp >= 85 ? 'down' : bp >= 60 ? 'warn' : '');
 }
 
-/* ───── 权益曲线 ───── */
 function renderChart(EQ, BT) {
   const box = $('#chart'), empty = $('#chart-empty'), legend = $('#legend');
-  if (!box || $('#tab-overview').hidden) return;
+  if (!box || $('#mod-quant').hidden || $('#tab-overview').hidden) return;
   const live = (EQ || []).map(p => ({ time: p.d, value: p.v }));
   const btc = (BT && BT.curve) || [];
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const C1 = dark ? '#0a84ff' : '#0071e3', C2 = dark ? '#ff9f0a' : '#d95926';
   let defs, note = '';
   const wantBt = MODE === 'bt' && btc.length >= 2;
   if (!wantBt && live.length >= 2) {
-    defs = [{ name: '实盘权益', hex: '#3987e5', data: live }];
+    defs = [{ name: '实盘权益', hex: C1, data: live }];
   } else if (btc.length >= 2) {
     defs = [
-      { name: '策略（回测）', hex: '#3987e5', data: btc.map(p => ({ time: p.d, value: p.v })) },
-      { name: 'QQQ 买入持有', hex: '#d95926',
+      { name: '策略（回测）', hex: C1, data: btc.map(p => ({ time: p.d, value: p.v })) },
+      { name: 'QQQ 买入持有', hex: C2,
         data: btc.filter(p => p.b != null).map(p => ({ time: p.d, value: p.b })) },
     ].filter(d => d.data.length >= 2);
     if (live.length < 2) note = '实盘数据不足，先显示回测曲线';
   } else {
     box.hidden = true; empty.hidden = false; legend.innerHTML = '';
-    empty.innerHTML = '还没有权益数据。<br>系统每天美股收盘后运行一次，跑完第一次就会出现在这里。';
-    syncChartBtns(live.length, btc.length); return;
+    empty.textContent = '还没有权益数据。系统每天美股收盘后运行一次，跑完第一次就会出现在这里。';
+    return;
   }
   box.hidden = false; empty.hidden = true;
-  legend.innerHTML = defs.map(d =>
-    `<span><i style="background:${d.hex}"></i>
-      <span class="text-secondary">${esc(d.name)}</span>
-      <b class="ms-1" id="lg-${d.hex.slice(1)}"></b></span>`).join('')
-    + (note ? `<span class="text-secondary">${esc(note)}</span>` : '');
+  legend.innerHTML = defs.map((d, i) =>
+    `<span><i style="background:${d.hex}"></i> ${esc(d.name)}
+     <b class="mono" id="lg${i}"></b></span>`).join('')
+    + (note ? `<span>${esc(note)}</span>` : '');
 
   if (chart) { chart.remove(); chart = null; series = []; }
   chart = LightweightCharts.createChart(box, {
-    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
+    layout: { background: { color: 'transparent' }, textColor: dark ? '#98989d' : '#86868b',
               fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
-    grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
-    rightPriceScale: { borderColor: '#1c2733', scaleMargins: { top: .12, bottom: .08 } },
-    timeScale: { borderColor: '#1c2733', fixLeftEdge: true, fixRightEdge: true },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet,
-      vertLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' },
-      horzLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' } },
+    grid: { vertLines: { color: dark ? '#2c2c2e' : '#f2f2f4' },
+            horzLines: { color: dark ? '#2c2c2e' : '#f2f2f4' } },
+    rightPriceScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7',
+                       scaleMargins: { top: .12, bottom: .08 } },
+    timeScale: { borderColor: dark ? '#3a3a3c' : '#d2d2d7', fixLeftEdge: true, fixRightEdge: true },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
     localization: { priceFormatter: v => '$' + Math.round(v).toLocaleString('en-US') },
     autoSize: true,
   });
-  series = defs.map(d => {
+  series = defs.map((d, i) => {
     const s = chart.addSeries(LightweightCharts.LineSeries,
       { color: d.hex, lineWidth: 2, priceLineVisible: false });
     s.setData(d.data);
-    return { def: d, api: s };
+    return { def: d, api: s, i };
   });
   chart.timeScale().fitContent();
-  const paint = param => series.forEach(({ def, api }) => {
-    const el = document.getElementById('lg-' + def.hex.slice(1));
+  const paint = param => series.forEach(({ def, api, i }) => {
+    const el = document.getElementById('lg' + i);
     if (!el) return;
     const pt = param && param.seriesData && param.seriesData.get(api);
     el.textContent = money(pt ? pt.value : def.data[def.data.length - 1].value, 0);
   });
   chart.subscribeCrosshairMove(paint); paint(null);
-  syncChartBtns(live.length, btc.length, defs.length > 1 || wantBt);
-}
-function syncChartBtns(nLive, nBt, showingBt) {
-  $('#btn-live').disabled = nLive < 2;
-  $('#btn-bt').disabled = nBt < 2;
-  $('#btn-live').classList.toggle('active', !showingBt);
-  $('#btn-bt').classList.toggle('active', !!showingBt);
+  $('#btn-live').classList.toggle('active', !(defs.length > 1 || wantBt));
+  $('#btn-bt').classList.toggle('active', defs.length > 1 || wantBt);
 }
 $('#btn-live').onclick = () => { MODE = 'live'; if (DATA) renderChart(DATA.equity || [], DATA.backtest); };
 $('#btn-bt').onclick = () => { MODE = 'bt'; if (DATA) renderChart(DATA.equity || [], DATA.backtest); };
@@ -644,18 +630,18 @@ function renderOrders(L) {
   $('#ord-date').textContent = L ? L.date : '';
   const acts = (L && L.actions) || [];
   if (!acts.length) {
-    $('#orders').innerHTML = `<div class="empty-sm">${L ? '无买卖指令，持仓照旧。' : '尚未收到信号。'}</div>`;
+    $('#orders').innerHTML = `<div class="empty-state">${L ? '无买卖指令，持仓照旧。' : '尚未收到信号。'}</div>`;
     return;
   }
   $('#orders').innerHTML = acts.map(a => `
     <div class="order ${a.side === 'buy' ? 'buy' : 'sell'}">
-      <div class="d-flex align-items-baseline gap-2">
-        <span class="badge ${a.side === 'buy' ? 'bg-green-lt' : 'bg-red-lt'}">${a.side === 'buy' ? '买入' : '卖出'}</span>
+      <div class="h">
+        <span class="badge ${a.side === 'buy' ? 'ok' : 'bad'}">${a.side === 'buy' ? '买入' : '卖出'}</span>
         <span class="sym">${esc(a.symbol)}</span>
-        <span class="text-secondary num">${a.shares} 股 @ ${money(a.ref_price)}</span>
+        <span class="sec mono" style="font-size:13px">${a.shares} 股 @ ${money(a.ref_price)}</span>
       </div>
-      <div class="meta text-secondary">
-        ${a.notional ? '约 ' + money(a.notional, 0) : ''}${a.stop ? ' · 挂止损 <b class="stop-price">' + money(a.stop) + '</b>（GTC）' : ''}
+      <div class="meta">${a.notional ? '约 ' + money(a.notional, 0) : ''}${
+        a.stop ? ' · 挂止损 <b class="warn">' + money(a.stop) + '</b>（GTC）' : ''}
         ${a.reason ? '<br>' + esc(a.reason) : ''}</div>
     </div>`).join('');
 }
@@ -663,97 +649,79 @@ function renderOrders(L) {
 function renderPositions(L) {
   const hs = (L && L.holdings) || [];
   const age = quoteAge();
-  $('#pos-count').innerHTML = hs.length
-    ? `${hs.length} 只${age ? ` <span class="text-secondary">· ${age}</span>` : ''}` : '';
-  if (!hs.length) { $('#positions').innerHTML = `<div class="empty-sm">当前空仓。</div>`; return; }
+  $('#pos-count').textContent = hs.length ? `${hs.length} 只${age ? ' · ' + age : ''}` : '';
+  if (!hs.length) { $('#positions').innerHTML = '<div class="empty-state">当前空仓。</div>'; return; }
   const alerts = new Map(((DATA.quotes && DATA.quotes.alerts) || []).map(a => [a.symbol, a.level]));
-  $('#positions').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
-    <thead><tr><th>标的</th><th class="text-end">股数</th><th class="text-end">成本</th>
-    <th class="text-end">现价</th><th class="text-end">盈亏</th><th class="text-end">止损</th>
-    <th class="text-end">持有</th></tr></thead><tbody>` +
-    hs.map(h => {
+  $('#positions').innerHTML = `<table class="tbl"><thead><tr>
+    <th>标的</th><th>股数</th><th>成本</th><th>现价</th><th>盈亏</th><th>止损</th><th>持有</th>
+    </tr></thead><tbody>` + hs.map(h => {
       const live = quoteOf(h.symbol), px = live != null ? live : h.last_price;
       const pl = h.entry_price ? px / h.entry_price - 1 : h.pnl_pct;
       const lv = alerts.get(h.symbol);
-      const badge = lv === 'hit' ? ' <span class="badge bg-red-lt">已破止损</span>'
-                  : lv === 'near' ? ' <span class="badge bg-orange-lt">逼近止损</span>' : '';
-      return `<tr class="sym-row" data-sym="${esc(h.symbol)}" style="cursor:pointer">
-        <td><strong>${esc(h.symbol)}</strong>${badge}</td>
-        <td class="text-end">${h.shares}</td>
-        <td class="text-end">${money(h.entry_price)}</td>
-        <td class="text-end">${money(px)}${live != null ? '<span class="text-secondary" style="font-size:.68rem">·实时</span>' : ''}</td>
-        <td class="text-end ${tone(pl)}"><strong>${pct(pl)}</strong></td>
-        <td class="text-end stop-price">${money(h.stop)}</td>
-        <td class="text-end text-secondary">${h.days}d</td></tr>`;
-    }).join('') + '</tbody></table></div>';
-  wireSymbolRows();
+      const badge = lv === 'hit' ? ' <span class="badge bad">已破止损</span>'
+                  : lv === 'near' ? ' <span class="badge hot">逼近止损</span>' : '';
+      return `<tr><td><b>${esc(h.symbol)}</b>${badge}</td>
+        <td>${h.shares}</td><td>${money(h.entry_price)}</td>
+        <td>${money(px)}${live != null ? '<span class="sec" style="font-size:10px">·实时</span>' : ''}</td>
+        <td class="${tone(pl)}"><b>${pct(pl)}</b></td>
+        <td class="warn">${money(h.stop)}</td>
+        <td class="muted">${h.days}d</td></tr>`;
+    }).join('') + '</tbody></table>';
 }
 
 function renderBudget(L) {
   const b = L && L.budget;
-  if (!b) { $('#budget').innerHTML = `<div class="empty-sm">暂无额度数据。</div>`; return; }
+  if (!b) { $('#budget').innerHTML = '<div class="empty-state">暂无额度数据。</div>'; return; }
   const p = Math.min(100, Math.round((b.used_pct || 0) * 100));
-  const color = p >= 85 ? 'bg-red' : p >= 60 ? 'bg-orange' : 'bg-green';
+  const cls = p >= 85 ? 'bad' : p >= 60 ? 'hot' : '';
   $('#budget').innerHTML = `
-    <div class="d-flex justify-content-between mb-2">
-      <span class="text-secondary" style="font-size:.82rem">本月已成交</span>
-      <span class="num">${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}</span></div>
-    <div class="progress progress-sm"><div class="progress-bar ${color}" style="width:${p}%"
-      role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"></div></div>
-    <div class="text-secondary mt-3" style="font-size:.76rem;line-height:1.8">
+    <div style="display:flex;justify-content:space-between;margin-bottom:9px;font-size:13px">
+      <span class="sec">本月已成交</span>
+      <span class="mono">${money(b.used_usd, 0)} / ${money(b.cap_usd, 0)}</span></div>
+    <div class="bar"><i class="${cls}" style="width:${p}%"></i></div>
+    <div class="hint" style="margin-top:12px">
       上限 HK$250,000（约 $32,051）。超出后美股按首 1000 股 $18 + 每股 $0.015 收佣。
-      ${p >= 85 ? '<div class="text-red mt-1">额度将尽，本月请克制交易。</div>' : ''}</div>`;
+      ${p >= 85 ? '<br><span class="down">额度将尽，本月请克制交易。</span>' : ''}</div>`;
 }
 
 function renderStops(L) {
   const su = (L && L.stop_updates) || [];
-  if (!su.length) { $('#stops').innerHTML = `<div class="empty-sm">无需调整止损。</div>`; return; }
-  $('#stops').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
-    <thead><tr><th>标的</th><th class="text-end">原止损</th><th class="text-end">新止损</th>
-    <th class="text-end">上移</th></tr></thead><tbody>` +
-    su.map(s => `<tr><td><strong>${esc(s.symbol)}</strong></td>
-      <td class="text-end text-secondary">${money(s.from)}</td>
-      <td class="text-end stop-price"><strong>${money(s.to)}</strong></td>
-      <td class="text-end text-green">${pct(s.to / s.from - 1)}</td></tr>`).join('') +
-    '</tbody></table></div>';
+  if (!su.length) { $('#stops').innerHTML = '<div class="empty-state">无需调整止损。</div>'; return; }
+  $('#stops').innerHTML = `<table class="tbl"><thead><tr>
+    <th>标的</th><th>原止损</th><th>新止损</th><th>上移</th></tr></thead><tbody>` +
+    su.map(s => `<tr><td><b>${esc(s.symbol)}</b></td>
+      <td class="muted">${money(s.from)}</td><td class="warn"><b>${money(s.to)}</b></td>
+      <td class="up">${pct(s.to / s.from - 1)}</td></tr>`).join('') + '</tbody></table>';
 }
 
 function renderTrades(ts) {
-  const box = $('#trades'), sum = $('#trade-summary');
   if (!ts.length) {
-    sum.textContent = '';
-    box.innerHTML = `<div class="empty-sm">还没有已了结的交易。<br>
+    $('#trade-summary').textContent = '';
+    $('#trades').innerHTML = `<div class="empty-state">还没有已了结的交易。<br>
       系统每完成一次卖出，就会在这里留下一条流水。</div>`;
     return;
   }
   const wins = ts.filter(t => t.pnl > 0).length;
   const net = ts.reduce((a, t) => a + (t.pnl || 0), 0);
-  sum.innerHTML = `${ts.length} 笔 · 胜率 ${(wins / ts.length * 100).toFixed(0)}% ·
+  $('#trade-summary').innerHTML = `${ts.length} 笔 · 胜率 ${(wins / ts.length * 100).toFixed(0)}% ·
     净盈亏 <span class="${tone(net)}">${money(net)}</span>`;
-  box.innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
-    <thead><tr><th>标的</th><th>入场</th><th>离场</th><th class="text-end">股数</th>
-    <th class="text-end">成本</th><th class="text-end">卖出</th><th class="text-end">盈亏</th>
-    <th class="text-end">持有</th><th>原因</th></tr></thead><tbody>` +
-    ts.slice(0, 60).map(t => `<tr class="sym-row" data-sym="${esc(t.symbol)}" style="cursor:pointer">
-      <td><strong>${esc(t.symbol)}</strong></td>
-      <td class="text-secondary">${esc(t.entry_date || '—')}</td>
-      <td class="text-secondary">${esc(t.date)}</td>
-      <td class="text-end">${t.shares}</td>
-      <td class="text-end">${money(t.entry_price)}</td>
-      <td class="text-end">${money(t.exit_price)}</td>
-      <td class="text-end ${tone(t.pnl)}"><strong>${money(t.pnl)}</strong>
-        <span class="text-secondary ms-1" style="font-size:.72rem">${pct(t.pnl_pct)}</span></td>
-      <td class="text-end text-secondary">${t.hold_days}d</td>
-      <td class="text-secondary" style="font-size:.72rem;white-space:normal;max-width:230px">
-        ${esc(t.reason || '')}</td></tr>`).join('') + '</tbody></table></div>';
-  wireSymbolRows();
+  $('#trades').innerHTML = `<table class="tbl"><thead><tr>
+    <th>标的</th><th>入场</th><th>离场</th><th>股数</th><th>成本</th><th>卖出</th>
+    <th>盈亏</th><th>持有</th><th>原因</th></tr></thead><tbody>` +
+    ts.slice(0, 60).map(t => `<tr><td><b>${esc(t.symbol)}</b></td>
+      <td class="muted">${esc(t.entry_date || '—')}</td><td class="muted">${esc(t.date)}</td>
+      <td>${t.shares}</td><td>${money(t.entry_price)}</td><td>${money(t.exit_price)}</td>
+      <td class="${tone(t.pnl)}"><b>${money(t.pnl)}</b>
+        <span class="muted" style="font-size:11px">${pct(t.pnl_pct)}</span></td>
+      <td class="muted">${t.hold_days}d</td>
+      <td class="muted wrap" style="max-width:220px;font-size:11.5px">${esc(t.reason || '')}</td>
+    </tr>`).join('') + '</tbody></table>';
 }
 
 function renderParams(BT) {
   const p = (BT && BT.params) || {}, st = (BT && BT.stats) || {};
   const rows = [
-    ['策略', p.name || '科技股日线波段'],
-    ['标的池', (p.universe_size || '—') + ' 只'],
+    ['策略', p.name || '—'], ['标的池', (p.universe_size || '—') + ' 只'],
     ['最大持仓', (p.max_positions ?? '—') + ' 只'],
     ['每笔风险', p.risk_per_trade_pct != null ? (p.risk_per_trade_pct * 100).toFixed(1) + '%' : '—'],
     ['入场', p.breakout_lookback ? `突破 ${p.breakout_lookback} 日新高` : '—'],
@@ -765,68 +733,10 @@ function renderParams(BT) {
     ['回测最大回撤', st['最大回撤'] != null ? pct(st['最大回撤']) : '—'],
     ['回测区间', st['起止'] || '—'],
   ];
-  $('#params').innerHTML = rows.map(([k, v]) =>
-    `<div class="datagrid-item"><div class="datagrid-title">${k}</div>
-     <div class="datagrid-content">${esc(v)}</div></div>`).join('');
-}
-
-/* ───── 个股详情 ───── */
-let symChart = null;
-function wireSymbolRows() {
-  $$('.sym-row').forEach(tr => { tr.onclick = () => openSymbol(tr.dataset.sym); });
-}
-async function openSymbol(sym) {
-  const holding = ((DATA.latest && DATA.latest.holdings) || []).find(h => h.symbol === sym);
-  const last = (DATA.trades || []).find(t => t.symbol === sym);
-  $('#sym-title').textContent = sym;
-  $('#sym-legend').innerHTML = '<span class="text-secondary">载入中…</span>';
-  $('#sym-note').textContent = '';
-  new bootstrap.Modal($('#sym-modal')).show();
-  let bars = [];
-  try {
-    const d = await (await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
-      { headers: auth() })).json();
-    if (!d.success) throw new Error(d.error || '读取失败');
-    bars = d.bars || [];
-  } catch (ex) {
-    $('#sym-legend').innerHTML = `<span class="text-red">行情读取失败：${esc(ex.message)}</span>`; return;
-  }
-  if (bars.length < 2) { $('#sym-legend').innerHTML = '<span class="text-secondary">没有足够的行情数据</span>'; return; }
-  if (symChart) { symChart.remove(); symChart = null; }
-  symChart = LightweightCharts.createChart($('#sym-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
-              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
-    grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
-    rightPriceScale: { borderColor: '#1c2733' }, timeScale: { borderColor: '#1c2733' },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
-    localization: { priceFormatter: v => '$' + v.toFixed(2) }, autoSize: true,
-  });
-  const s = symChart.addSeries(LightweightCharts.CandlestickSeries, {
-    upColor: '#2ea043', downColor: '#e5484d', borderUpColor: '#2ea043',
-    borderDownColor: '#e5484d', wickUpColor: '#2ea043', wickDownColor: '#e5484d' });
-  s.setData(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
-  const lg = [`<span><i style="background:#7d8b99"></i>
-    <span class="text-secondary">收盘</span> <b>${money(bars[bars.length - 1].c)}</b></span>`];
-  let note;
-  if (holding) {
-    s.createPriceLine({ price: holding.entry_price, color: '#4c9aff', lineWidth: 1,
-      lineStyle: 2, axisLabelVisible: true, title: '成本' });
-    s.createPriceLine({ price: holding.stop, color: '#bb8009', lineWidth: 1,
-      lineStyle: 2, axisLabelVisible: true, title: '止损' });
-    lg.push(`<span><i style="background:#4c9aff"></i><span class="text-secondary">成本</span>
-      <b>${money(holding.entry_price)}</b></span>`);
-    lg.push(`<span><i style="background:#bb8009"></i><span class="text-secondary">止损</span>
-      <b>${money(holding.stop)}</b></span>`);
-    note = `持有 ${holding.days} 天，浮动盈亏 ${pct(holding.pnl_pct)}，`
-         + `现价距止损还有 ${pct((holding.last_price - holding.stop) / holding.last_price)} 的空间。`;
-  } else if (last) {
-    note = `已于 ${last.date} 离场，${last.pnl >= 0 ? '盈利' : '亏损'} `
-         + `${money(Math.abs(last.pnl))}（${pct(last.pnl_pct)}），持有 ${last.hold_days} 天。`
-         + `离场原因：${last.reason || '—'}`;
-  } else note = '当前未持有该标的。';
-  $('#sym-legend').innerHTML = lg.join('');
-  $('#sym-note').textContent = note;
-  symChart.timeScale().fitContent();
+  $('#params').innerHTML = `<div class="grid grid-4" style="margin:0">` + rows.map(([k, v]) =>
+    `<div><div class="k" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+      color:var(--text-secondary);font-family:var(--mono)">${k}</div>
+     <div class="mono" style="font-size:13.5px;margin-top:4px">${esc(v)}</div></div>`).join('') + '</div>';
 }
 
 /* ══════════ 标的池 ══════════ */
@@ -834,12 +744,11 @@ let SP500 = [], SELECTED = new Set(), SAVED = new Set(),
     CUSTOM = {}, FUSE = null, poolTimer = null, poolRemoteQ = '';
 
 async function poolLoad() {
+  if (!localStorage.getItem(TK)) return;
   try {
     const d = await (await fetch(WORKER + '/quant/universe', { headers: auth() })).json();
     if (!d.success) throw new Error(d.error || '读取失败');
-    SP500 = d.sp500 || [];
-    SELECTED = new Set(d.selected || []);
-    SAVED = new Set(d.selected || []);
+    SP500 = d.sp500 || []; SELECTED = new Set(d.selected || []); SAVED = new Set(d.selected || []);
     if (window.Fuse && SP500.length) {
       FUSE = new Fuse(SP500, { keys: [{ name: 's', weight: .7 }, { name: 'n', weight: .3 }],
         threshold: .35, ignoreLocation: true, minMatchCharLength: 2 });
@@ -849,15 +758,11 @@ async function poolLoad() {
       + secs.map(s => `<option value="${esc(s)}">${esc(s)}（${SP500.filter(x => x.sec === s).length}）</option>`).join('');
     poolPaint();
   } catch (ex) {
-    $('#pool-chips').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
+    $('#pool-chips').innerHTML = `<div class="empty-state">${esc(ex.message)}</div>`;
   }
 }
 
-function poolDirty() {
-  if (SELECTED.size !== SAVED.size) return true;
-  for (const s of SELECTED) if (!SAVED.has(s)) return true;
-  return false;
-}
+const poolDirty = () => SELECTED.size !== SAVED.size || [...SELECTED].some(s => !SAVED.has(s));
 
 function poolPaint() {
   const n = SELECTED.size;
@@ -866,9 +771,8 @@ function poolPaint() {
   const dirty = poolDirty();
   $('#pool-save').disabled = !dirty;
   $('#pool-state').innerHTML = dirty
-    ? `已选 ${n} 只 <span class="text-orange">· 有未保存改动</span>`
-    : `已选 ${n} 只 <span class="text-green">· 已保存</span>`;
-
+    ? `已选 ${n} 只 <span class="warn">· 有未保存改动</span>`
+    : `已选 ${n} 只 <span class="up">· 已保存</span>`;
   const known = new Map(SP500.map(x => [x.s, x]));
   const list = [...SELECTED].sort();
   $('#pool-chips').innerHTML = list.length
@@ -877,16 +781,14 @@ function poolPaint() {
         return `<span class="chip${x ? '' : ' custom'}" title="${esc(x ? x.n : (CUSTOM[s] || '自选'))}">
           ${esc(s)}<span class="x" data-s="${esc(s)}">×</span></span>`;
       }).join('')
-    : '<div class="empty-sm">标的池是空的。用上面的搜索框加几只。</div>';
+    : '<div class="empty-state">标的池是空的。用上面的搜索框加几只。</div>';
   $$('#pool-chips .x').forEach(el => { el.onclick = () => { SELECTED.delete(el.dataset.s); poolPaint(); }; });
   uniPaint();
 }
 
 function uniRows() {
-  const q = ($('#uni-filter').value || '').trim();
-  const sec = $('#uni-sector').value;
-  let pool = SP500;
-  if (sec) pool = pool.filter(x => x.sec === sec);
+  const q = ($('#uni-filter').value || '').trim(), sec = $('#uni-sector').value;
+  let pool = sec ? SP500.filter(x => x.sec === sec) : SP500;
   if (!q) return pool;
   if (window.Fuse) {
     return new Fuse(pool, { keys: [{ name: 's', weight: .7 }, { name: 'n', weight: .3 }],
@@ -898,15 +800,13 @@ function uniRows() {
 
 function uniPaint() {
   const rows = uniRows();
-  if (!rows.length) { $('#uni-list').innerHTML = '<div class="empty-sm">没有匹配的标的。</div>'; return; }
-  $('#uni-list').innerHTML = `<table class="table table-sm table-vcenter mb-0"><tbody>` +
-    rows.map(x => `<tr>
-      <td style="width:38px"><input class="form-check-input m-0 uni-cb" type="checkbox"
-        data-s="${esc(x.s)}"${SELECTED.has(x.s) ? ' checked' : ''}></td>
-      <td style="width:84px"><strong class="num">${esc(x.s)}</strong></td>
-      <td class="text-secondary" style="font-size:.8rem">${esc(x.n)}</td>
-      <td class="text-secondary text-end" style="font-size:.74rem;width:86px">${esc(x.sec)}</td>
-    </tr>`).join('') + '</tbody></table>';
+  if (!rows.length) { $('#uni-list').innerHTML = '<div class="empty-state">没有匹配的标的。</div>'; return; }
+  $('#uni-list').innerHTML = `<table class="tbl"><tbody>` + rows.map(x => `<tr>
+    <td style="width:40px"><input class="uni-cb" type="checkbox" data-s="${esc(x.s)}"${
+      SELECTED.has(x.s) ? ' checked' : ''}></td>
+    <td style="width:86px"><b>${esc(x.s)}</b></td>
+    <td class="muted wrap" style="text-align:left">${esc(x.n)}</td>
+    <td class="muted" style="width:90px">${esc(x.sec)}</td></tr>`).join('') + '</tbody></table>';
   $$('.uni-cb').forEach(cb => {
     cb.onchange = () => { cb.checked ? SELECTED.add(cb.dataset.s) : SELECTED.delete(cb.dataset.s); poolPaint(); };
   });
@@ -917,42 +817,37 @@ $('#uni-all').onclick = () => { uniRows().forEach(x => SELECTED.add(x.s)); poolP
 $('#uni-none').onclick = () => { uniRows().forEach(x => SELECTED.delete(x.s)); poolPaint(); };
 
 $('#pool-save').onclick = async () => {
-  const btn = $('#pool-save'), msg = $('#pool-msg');
-  if (SELECTED.size < 5) { msg.innerHTML = '<span class="text-red">标的池至少要有 5 只</span>'; return; }
-  btn.disabled = true; msg.textContent = '保存中…';
+  const msg = $('#pool-msg');
+  if (SELECTED.size < 5) { msg.innerHTML = '<span class="down">标的池至少要有 5 只</span>'; return; }
+  $('#pool-save').disabled = true; msg.textContent = '保存中…';
   try {
     const d = await (await fetch(WORKER + '/quant/universe', {
       method: 'POST', headers: { 'Content-Type': 'application/json', ...auth() },
       body: JSON.stringify({ symbols: [...SELECTED] }) })).json();
     if (!d.success) throw new Error(d.error || '保存失败');
     SAVED = new Set(SELECTED);
-    msg.innerHTML = `<span class="text-green">已保存 ${d.count} 只，下次运行生效</span>`;
-  } catch (ex) {
-    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
-  } finally { poolPaint(); }
+    msg.innerHTML = `<span class="up">已保存 ${d.count} 只，下次运行生效</span>`;
+  } catch (ex) { msg.innerHTML = `<span class="down">${esc(ex.message)}</span>`; }
+  finally { poolPaint(); }
 };
 
-function poolRow(x, inPool, tag) {
-  return `<div class="d-flex align-items-center gap-2 px-3 py-2 pool-row">
-    <strong class="num" style="width:76px">${esc(x.s)}</strong>
-    <span class="text-secondary flex-grow-1" style="font-size:.8rem">${esc(x.n || '')}</span>
-    <span class="text-secondary" style="font-size:.7rem;white-space:nowrap">${esc(tag || '')}</span>
-    ${inPool ? '<span class="badge bg-green-lt">已在池</span>'
-      : `<button class="btn btn-sm btn-outline-primary pool-add"
-           data-s="${esc(x.s)}" data-n="${esc(x.n || '')}">加入</button>`}</div>`;
-}
+const hitRow = (x, inPool, tag) => `<div class="hit">
+  <span class="s">${esc(x.s)}</span><span class="n">${esc(x.n || '')}</span>
+  <span class="t">${esc(tag || '')}</span>
+  ${inPool ? '<span class="badge ok">已在池</span>'
+    : `<button class="btn btn-sm pool-add" data-s="${esc(x.s)}" data-n="${esc(x.n || '')}">加入</button>`}
+</div>`;
 
 function poolShow(local, remote, q) {
   const box = $('#pool-results');
-  const out = local.slice(0, 7).map(x => poolRow(x, SELECTED.has(x.s), x.sec));
-  if (remote === 'loading') {
-    out.push('<div class="px-3 py-2 text-secondary" style="font-size:.74rem">全市场搜索中…</div>');
-  } else if (Array.isArray(remote) && remote.length) {
-    out.push('<div class="px-3 pt-2 pb-1 text-secondary" style="font-size:.7rem">标普 500 之外</div>');
-    out.push(...remote.slice(0, 7).map(x => poolRow(x, SELECTED.has(x.s), `${x.t} ${x.ex || ''}`)));
+  const out = local.slice(0, 7).map(x => hitRow(x, SELECTED.has(x.s), x.sec));
+  if (remote === 'loading') out.push('<div class="hit"><span class="n">全市场搜索中…</span></div>');
+  else if (Array.isArray(remote) && remote.length) {
+    out.push('<div class="hit"><span class="t">标普 500 之外</span></div>');
+    out.push(...remote.slice(0, 7).map(x => hitRow(x, SELECTED.has(x.s), `${x.t} ${x.ex || ''}`)));
   } else if (remote === 'empty' && !local.length) {
-    out.push(`<div class="px-3 py-3 text-secondary" style="font-size:.78rem">没找到。${
-      /[一-龥]/.test(q) ? '数据源只索引英文名，请用代码或英文名搜。' : ''}</div>`);
+    out.push(`<div class="hit"><span class="n">没找到。${
+      /[一-龥]/.test(q) ? '数据源只索引英文名，请用代码或英文名搜。' : ''}</span></div>`);
   }
   if (!out.length) { box.hidden = true; return; }
   box.innerHTML = out.join(''); box.hidden = false;
@@ -962,8 +857,7 @@ function poolShow(local, remote, q) {
 function poolSearch() {
   const q = $('#pool-search').value.trim();
   if (!q) { $('#pool-results').hidden = true; return; }
-  const local = FUSE ? FUSE.search(q).map(r => r.item)
-    : SP500.filter(x => x.s.includes(q.toUpperCase()));
+  const local = FUSE ? FUSE.search(q).map(r => r.item) : SP500.filter(x => x.s.includes(q.toUpperCase()));
   poolShow(local, 'loading', q);
   clearTimeout(poolTimer);
   poolTimer = setTimeout(async () => {
@@ -975,9 +869,7 @@ function poolSearch() {
       const known = new Set(SP500.map(x => x.s));
       const rem = (d.results || []).filter(x => !known.has(x.s));
       if ($('#pool-search').value.trim() === q) poolShow(local, rem.length ? rem : 'empty', q);
-    } catch {
-      if ($('#pool-search').value.trim() === q) poolShow(local, 'empty', q);
-    }
+    } catch { if ($('#pool-search').value.trim() === q) poolShow(local, 'empty', q); }
   }, 450);
 }
 
@@ -992,12 +884,11 @@ async function poolAdd(sym, name) {
     if (n < 2) throw new Error('这个代码没有可用的日线数据');
     SELECTED.add(sym); CUSTOM[sym] = name || '自选';
     msg.innerHTML = n < 120
-      ? `<span class="text-orange">已加入 ${sym}，但只有 ${n} 根日线，不够算 100 日均线，暂时不会产生信号。记得点下方保存。</span>`
-      : `<span class="text-green">已加入 ${sym}（${n} 根日线可用）。记得点下方保存。</span>`;
+      ? `<span class="warn">已加入 ${sym}，但只有 ${n} 根日线，不够算 100 日均线，暂时不会产生信号。记得点保存。</span>`
+      : `<span class="up">已加入 ${sym}（${n} 根日线可用）。记得点下方保存。</span>`;
     poolPaint(); poolSearch();
-  } catch (ex) { msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`; }
+  } catch (ex) { msg.innerHTML = `<span class="down">${esc(ex.message)}</span>`; }
 }
-
 $('#pool-search').oninput = poolSearch;
 $('#pool-search').onfocus = poolSearch;
 document.addEventListener('click', e => {
@@ -1005,142 +896,6 @@ document.addEventListener('click', e => {
     $('#pool-results').hidden = true;
   }
 });
-
-/* ══════════ 单词本 ══════════
-   数据由 Word Scanner 插件推到 KV，这里只读展示。
-   字段被插件压缩过：w 单词 / p 音标 / d 英释 / t 中释 / s 例句 / src 出处
-   / a 收录时间 / b Leitner 盒号 / r 复习次数 / m 已掌握 / tag 考试标签 */
-let WORDS = null, WMETA = null, wChart = null;
-
-async function wordsLoad() {
-  $('#w-list').innerHTML = '<div class="empty-sm">载入中…</div>';
-  try {
-    const d = await (await fetch(WORKER + '/words', { headers: auth() })).json();
-    if (!d.success) throw new Error(d.error || '读取失败');
-    WORDS = d.words || [];
-    WMETA = d.meta || null;
-    $('#tab-words-count').textContent = WORDS.length || '—';
-    wordsTiles(); wordsChart(); wordsList();
-  } catch (ex) {
-    $('#w-list').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
-  }
-}
-
-function wordsTiles() {
-  if (!WORDS) return;
-  const now = Date.now(), DAY = 86400000;
-  const total = WORDS.length;
-  const mastered = WORDS.filter(w => w.m).length;
-  const week = WORDS.filter(w => w.a && now - w.a < 7 * DAY).length;
-  const today = WORDS.filter(w => w.a && now - w.a < DAY).length;
-  // 连续天数：从今天往回数，有收录就继续
-  const days = new Set(WORDS.filter(w => w.a).map(w => new Date(w.a).toISOString().slice(0, 10)));
-  let streak = 0;
-  for (let i = 0; i < 400; i++) {
-    const d = new Date(now - i * DAY).toISOString().slice(0, 10);
-    if (days.has(d)) streak++;
-    else if (i > 0) break;
-  }
-  const pushed = WMETA && WMETA.pushed_at
-    ? new Date(WMETA.pushed_at).toLocaleString('zh-CN') : '未知';
-  $('#w-tiles').innerHTML =
-    tile('累计收词', total.toLocaleString(), `最近同步 ${pushed}`) +
-    tile('已掌握', mastered.toLocaleString(),
-         total ? `占 ${(mastered / total * 100).toFixed(0)}%` : '—', mastered ? 'text-green' : '') +
-    tile('最近 7 天', '+' + week, `今天 +${today}`, week ? 'text-green' : '') +
-    tile('连续收录', streak + ' 天', streak >= 3 ? '保持住' : '今天还没收词的话趁早');
-}
-
-function wordsChart() {
-  if (!WORDS || $('#tab-words').hidden) return;
-  const DAY = 86400000, N = 60;
-  const counts = new Map();
-  for (const w of WORDS) {
-    if (!w.a) continue;
-    const d = new Date(w.a).toISOString().slice(0, 10);
-    counts.set(d, (counts.get(d) || 0) + 1);
-  }
-  const data = [];
-  for (let i = N - 1; i >= 0; i--) {
-    const d = new Date(Date.now() - i * DAY).toISOString().slice(0, 10);
-    data.push({ time: d, value: counts.get(d) || 0 });
-  }
-  const sum = data.reduce((a, x) => a + x.value, 0);
-  $('#w-chart-sub').textContent = `近 ${N} 天共 ${sum} 个`;
-  if (wChart) { wChart.remove(); wChart = null; }
-  wChart = LightweightCharts.createChart($('#w-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
-              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
-    grid: { vertLines: { visible: false }, horzLines: { color: '#161f28' } },
-    rightPriceScale: { borderColor: '#1c2733' },
-    timeScale: { borderColor: '#1c2733', fixLeftEdge: true, fixRightEdge: true },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
-    localization: { priceFormatter: v => Math.round(v) + ' 个' },
-    autoSize: true,
-  });
-  const s = wChart.addSeries(LightweightCharts.HistogramSeries, { color: '#199e70' });
-  s.setData(data);
-  wChart.timeScale().fitContent();
-}
-
-function wordsList() {
-  if (!WORDS) return;
-  const q = ($('#w-search').value || '').trim().toLowerCase();
-  const f = $('#w-filter').value, sort = $('#w-sort').value;
-  const now = Date.now();
-  let rows = WORDS.filter(w => {
-    if (f === 'new' && w.m) return false;
-    if (f === 'mastered' && !w.m) return false;
-    if (f === 'recent' && !(w.a && now - w.a < 7 * 86400000)) return false;
-    if (!q) return true;
-    return (w.w || '').toLowerCase().includes(q)
-        || (w.t || '').toLowerCase().includes(q)
-        || (w.d || '').toLowerCase().includes(q);
-  });
-  rows.sort((a, b) =>
-    sort === 'old' ? (a.a || 0) - (b.a || 0)
-    : sort === 'az' ? (a.w || '').localeCompare(b.w || '')
-    : sort === 'review' ? (b.r || 0) - (a.r || 0)
-    : (b.a || 0) - (a.a || 0));
-
-  if (!rows.length) {
-    $('#w-list').innerHTML = WORDS.length
-      ? '<div class="empty-sm">没有匹配的词。</div>'
-      : `<div class="empty-sm">还没有同步过词库。<br>
-         在 Word Scanner 插件的设置页填上同步密钥，点「立即同步」。</div>`;
-    return;
-  }
-  const shown = rows.slice(0, 300);
-  $('#w-list').innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
-    <thead><tr><th>单词</th><th>释义</th><th>例句</th>
-    <th class="text-end">盒</th><th class="text-end">复习</th><th class="text-end">收录</th>
-    </tr></thead><tbody>` + shown.map(w => `<tr>
-      <td style="min-width:130px">
-        <strong class="num">${esc(w.w)}</strong>
-        ${w.m ? '<span class="badge bg-green-lt ms-1">已掌握</span>' : ''}
-        ${w.p ? `<div class="text-secondary num" style="font-size:.7rem">/${esc(w.p)}/</div>` : ''}
-        ${w.tag ? `<div class="text-secondary" style="font-size:.66rem">${esc(w.tag)}</div>` : ''}
-      </td>
-      <td style="font-size:.8rem;white-space:normal;max-width:260px">
-        ${w.t ? esc(w.t) : ''}${w.t && w.d ? '<br>' : ''}
-        ${w.d ? `<span class="text-secondary" style="font-size:.74rem">${esc(w.d)}</span>` : ''}
-      </td>
-      <td class="text-secondary" style="font-size:.74rem;white-space:normal;max-width:300px">
-        ${w.s ? esc(w.s) : ''}${w.src ? `<div style="font-size:.68rem;opacity:.7">${esc(w.src)}</div>` : ''}
-      </td>
-      <td class="text-end">${w.b || 1}</td>
-      <td class="text-end">${w.r || 0}</td>
-      <td class="text-end text-secondary" style="font-size:.72rem">
-        ${w.a ? new Date(w.a).toISOString().slice(0, 10) : '—'}</td>
-    </tr>`).join('') + `</tbody></table></div>`
-    + (rows.length > shown.length
-       ? `<div class="text-secondary px-3 py-2" style="font-size:.74rem">
-          还有 ${rows.length - shown.length} 个没显示，用搜索或筛选缩小范围。</div>` : '');
-}
-
-$('#w-search').oninput = wordsList;
-$('#w-filter').onchange = wordsList;
-$('#w-sort').onchange = wordsList;
 
 /* ══════════ 策略 ══════════ */
 let STG = { presets: {}, active: null, results: {}, spec: {} }, stgCur = null, stgPoll = null;
@@ -1155,21 +910,20 @@ async function stgApi(method, body) {
 }
 
 async function stgReload(keep) {
+  if (!localStorage.getItem(TK)) return;
   try {
     STG = await stgApi('GET');
     $('#tab-stg-name').textContent = STG.active || '未设置';
     const names = Object.keys(STG.presets || {});
     if (!names.length) {
       stgCur = null;
-      $('#stg-list').innerHTML = '<div class="empty-sm">还没有方案。<br>点「新建」开始。</div>';
+      $('#stg-list').innerHTML = '<div class="empty-state">还没有方案，点「新建」开始。</div>';
       stgNew(); return;
     }
     stgDrawList();
     stgLoad(keep && STG.presets[keep] ? keep
       : (stgCur && STG.presets[stgCur] ? stgCur : (STG.active || names[0])));
-  } catch (ex) {
-    $('#stg-form').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
-  }
+  } catch (ex) { $('#stg-form').innerHTML = `<div class="empty-state">${esc(ex.message)}</div>`; }
 }
 
 function stgDrawList() {
@@ -1177,13 +931,11 @@ function stgDrawList() {
     const r = STG.results[n];
     const sub = r && r.stats ? `${pct(r.stats['年化收益'])} · 夏普 ${(r.stats['夏普'] || 0).toFixed(2)}`
       : r && r.error ? '回测失败' : '未回测';
-    return `<div class="stg-item p-2 mb-1 ${n === stgCur ? 'on' : ''}" data-n="${esc(n)}">
-      <div class="d-flex align-items-center">
-        <strong style="font-size:.85rem">${esc(n)}</strong>
-        ${n === STG.active ? '<span class="badge bg-green-lt ms-2">生效中</span>' : ''}</div>
-      <div class="text-secondary num" style="font-size:.7rem">${esc(sub)}</div></div>`;
+    return `<div class="preset ${n === stgCur ? 'on' : ''}" data-n="${esc(n)}">
+      <div class="nm">${esc(n)}${n === STG.active ? ' <span class="badge ok">生效中</span>' : ''}</div>
+      <div class="sb">${esc(sub)}</div></div>`;
   }).join('');
-  $$('.stg-item').forEach(el => { el.onclick = () => stgLoad(el.dataset.n); });
+  $$('.preset').forEach(el => { el.onclick = () => stgLoad(el.dataset.n); });
 }
 
 function stgNew() {
@@ -1196,8 +948,7 @@ $('#stg-new').onclick = stgNew;
 function stgLoad(name) {
   const p = STG.presets[name]; if (!p) return;
   stgCur = name;
-  $('#stg-name').value = p.name || name;
-  $('#stg-note').value = p.note || '';
+  $('#stg-name').value = p.name || name; $('#stg-note').value = p.note || '';
   stgForm(p.params || {}); stgDrawList(); stgResult(STG.results[name]);
 }
 
@@ -1205,33 +956,30 @@ function stgForm(vals) {
   const groups = {};
   for (const [k, sp] of Object.entries(STG.spec || {})) (groups[sp.group] ||= []).push([k, sp]);
   $('#stg-form').innerHTML = Object.entries(groups).map(([g, items]) => `
-    <div class="mb-3">
-      <div class="subheader mb-2" style="color:var(--kq-s1)">${esc(g)}</div>
-      <div class="row g-2">${items.map(([k, sp]) => {
+    <div style="margin-bottom:22px">
+      <div class="group-title">${esc(g)}</div>
+      <div class="field-grid">${items.map(([k, sp]) => {
         const v = vals[k] !== undefined ? vals[k] : sp.def;
         let input;
         if (sp.type === 'bool') {
-          input = `<label class="form-check form-switch mb-0 mt-1">
-            <input class="form-check-input stg-f" type="checkbox" data-k="${k}"${v ? ' checked' : ''}>
-            <span class="form-check-label text-secondary" style="font-size:.76rem">${v ? '开启' : '关闭'}</span></label>`;
+          input = `<label style="display:flex;align-items:center;gap:8px;font-size:13px">
+            <input type="checkbox" class="stg-f" data-k="${k}"${v ? ' checked' : ''}>
+            <span class="sec">${v ? '开启' : '关闭'}</span></label>`;
         } else if (sp.type === 'enum') {
-          input = `<select class="form-select form-select-sm stg-f" data-k="${k}">${
+          input = `<select class="inp stg-f" data-k="${k}">${
             sp.options.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
         } else {
-          input = `<div class="input-group input-group-sm">
-            <input class="form-control stg-f" type="number" data-k="${k}" value="${v}"
-              min="${sp.min}" max="${sp.max}" step="${sp.step || 1}">
-            ${sp.unit ? `<span class="input-group-text">${esc(sp.unit)}</span>` : ''}</div>`;
+          input = `<input class="inp inp-mono stg-f" type="number" data-k="${k}" value="${v}"
+            min="${sp.min}" max="${sp.max}" step="${sp.step || 1}">`;
         }
-        return `<div class="col-sm-6 col-xl-4">
-          <label class="form-label subheader mb-1">${esc(sp.label)}</label>${input}
-          <div class="text-secondary mt-1" style="font-size:.68rem;line-height:1.5">${esc(sp.hint)}</div>
-        </div>`;
+        return `<div class="field" style="margin:0">
+          <label>${esc(sp.label)}${sp.unit ? `<span class="sec"> · ${esc(sp.unit)}</span>` : ''}</label>
+          ${input}<div class="hint">${esc(sp.hint)}</div></div>`;
       }).join('')}</div></div>`).join('');
   $$('.stg-f[type="checkbox"]').forEach(cb => {
     cb.onchange = () => {
-      const l = cb.parentElement.querySelector('.form-check-label');
-      if (l) l.textContent = cb.checked ? '开启' : '关闭';
+      const s = cb.parentElement.querySelector('span');
+      if (s) s.textContent = cb.checked ? '开启' : '关闭';
     };
   });
 }
@@ -1249,43 +997,38 @@ function stgResult(r) {
   const box = $('#stg-result');
   if (!r) { box.innerHTML = ''; return; }
   if (r.error) {
-    box.innerHTML = `<div class="alert alert-danger py-2" style="font-size:.8rem">回测失败：${esc(r.error)}</div>`;
+    box.innerHTML = `<div class="card"><div class="card-body">
+      <span class="down">回测失败：${esc(r.error)}</span></div></div>`;
     return;
   }
   const s = r.stats || {}, bm = r.benchmark || {};
-  box.innerHTML = `<div class="card"><div class="card-header">
-      <h3 class="card-title mb-0">回测结果</h3>
-      <span class="card-subtitle ms-auto num">${new Date(r.ran_at).toLocaleString('zh-CN')} · ${r.universe_size} 只标的</span>
+  box.innerHTML = `<div class="card"><div class="card-head"><h2>回测结果</h2>
+      <span class="sub">${new Date(r.ran_at).toLocaleString('zh-CN')} · ${r.universe_size} 只标的</span>
     </div><div class="card-body">
-    <div class="table-responsive"><table class="table table-sm table-vcenter mb-3">
-      <thead><tr><th></th><th class="text-end">年化</th><th class="text-end">夏普</th>
-      <th class="text-end">最大回撤</th><th class="text-end">交易笔数</th><th class="text-end">胜率</th></tr></thead>
+    <div class="scroll-x"><table class="tbl" style="margin-bottom:18px">
+      <thead><tr><th>　</th><th>年化</th><th>夏普</th><th>最大回撤</th><th>交易笔数</th><th>胜率</th></tr></thead>
       <tbody>
-        <tr><td><strong>这套策略</strong></td>
-          <td class="text-end ${tone(s['年化收益'])}"><strong>${pct(s['年化收益'])}</strong></td>
-          <td class="text-end"><strong>${(s['夏普'] || 0).toFixed(2)}</strong></td>
-          <td class="text-end text-red">${pct(s['最大回撤'])}</td>
-          <td class="text-end">${s['交易笔数'] ?? '—'}</td>
-          <td class="text-end">${s['胜率'] != null ? (s['胜率'] * 100).toFixed(0) + '%' : '—'}</td></tr>
-        <tr class="text-secondary"><td>QQQ 买入持有</td>
-          <td class="text-end">${pct(bm['年化收益'])}</td>
-          <td class="text-end">${(bm['夏普'] || 0).toFixed(2)}</td>
-          <td class="text-end">${pct(bm['最大回撤'])}</td>
-          <td class="text-end">—</td><td class="text-end">—</td></tr>
+        <tr><td><b>这套策略</b></td>
+          <td class="${tone(s['年化收益'])}"><b>${pct(s['年化收益'])}</b></td>
+          <td><b>${(s['夏普'] || 0).toFixed(2)}</b></td>
+          <td class="down">${pct(s['最大回撤'])}</td>
+          <td>${s['交易笔数'] ?? '—'}</td>
+          <td>${s['胜率'] != null ? (s['胜率'] * 100).toFixed(0) + '%' : '—'}</td></tr>
+        <tr class="muted"><td>QQQ 买入持有</td><td>${pct(bm['年化收益'])}</td>
+          <td>${(bm['夏普'] || 0).toFixed(2)}</td><td>${pct(bm['最大回撤'])}</td>
+          <td>—</td><td>—</td></tr>
       </tbody></table></div>
-    <div class="table-responsive"><table class="table table-sm table-vcenter mb-2">
-      <thead><tr><th>分段夏普</th>${(r.segments || []).map(x =>
-        `<th class="text-end">${esc(x.period)}</th>`).join('')}</tr></thead>
-      <tbody><tr><td class="text-secondary" style="font-size:.76rem">越均匀越稳</td>${
-        (r.segments || []).map(x => `<td class="text-end">${x.sharpe == null ? '—' : x.sharpe.toFixed(2)}</td>`).join('')
-      }</tr></tbody></table></div>
-    <div class="text-secondary" style="font-size:.72rem;line-height:1.7">
+    <div class="scroll-x"><table class="tbl">
+      <thead><tr><th>分段夏普</th>${(r.segments || []).map(x => `<th>${esc(x.period)}</th>`).join('')}</tr></thead>
+      <tbody><tr><td class="muted">越均匀越稳</td>${(r.segments || []).map(x =>
+        `<td>${x.sharpe == null ? '—' : x.sharpe.toFixed(2)}</td>`).join('')}</tr></tbody></table></div>
+    <div class="hint" style="margin-top:14px">
       三段夏普差距大说明这组参数只在某段行情里好看，换个时期可能就不灵。
       判断一个改动值不值得采用，看它是不是每段都不比原来差，而不是看总收益。
     </div></div></div>`;
 }
 
-const stgMsg = (t, bad) => { $('#stg-msg').innerHTML = `<span class="${bad ? 'text-red' : 'text-green'}">${esc(t)}</span>`; };
+const stgMsg = (t, bad) => { $('#stg-msg').innerHTML = `<span class="${bad ? 'down' : 'up'}">${esc(t)}</span>`; };
 
 $('#stg-save').onclick = async () => {
   const name = $('#stg-name').value.trim();
@@ -1298,16 +1041,14 @@ $('#stg-save').onclick = async () => {
 $('#stg-activate').onclick = async () => {
   const name = $('#stg-name').value.trim();
   if (!STG.presets[name]) return stgMsg('先保存这套方案', true);
-  try {
-    await stgApi('POST', { op: 'activate', name });
+  try { await stgApi('POST', { op: 'activate', name });
     stgMsg(`「${name}」已设为生效，下次运行采用`); await stgReload(name);
   } catch (ex) { stgMsg(ex.message, true); }
 };
 $('#stg-del').onclick = async () => {
   const name = $('#stg-name').value.trim();
   if (!STG.presets[name]) return stgMsg('这套还没保存过', true);
-  try {
-    await stgApi('POST', { op: 'delete', name }); stgCur = null;
+  try { await stgApi('POST', { op: 'delete', name }); stgCur = null;
     stgMsg(`已删除「${name}」`); await stgReload();
   } catch (ex) { stgMsg(ex.message, true); }
 };
@@ -1336,12 +1077,17 @@ function stgWatch(name) {
         clearInterval(stgPoll); stgResult(d.results[name]); stgDrawList();
         stgMsg(d.results[name].error ? '回测失败' : '回测完成');
       }
-    } catch { /* 忽略单次轮询失败 */ }
+    } catch { /* 忽略 */ }
     if (n > 60) { clearInterval(stgPoll); stgMsg('等太久了，检查 bt_worker.py 是否在运行', true); }
   }, 5000);
 }
 
-boot();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (DATA) renderChart(DATA.equity || [], DATA.backtest);
+  if (WORDS) wordsChart();
+});
+
+start();
 </script>
 </body>
 </html>
