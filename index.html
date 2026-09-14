@@ -7,52 +7,81 @@
 <meta name="robots" content="noindex,nofollow">
 <title>KUCHA QUANT · 量化控制台</title>
 
-<!-- Tabler 1.5.0（MIT）—— 开源仪表盘 UI 套件，自带深色主题 -->
+<!-- Tabler 1.5.0（MIT）—— 开源仪表盘 UI 套件，深色主题 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/css/tabler.min.css">
-<!-- TradingView Lightweight Charts 5.2.1（Apache-2.0）—— 专业金融图表 -->
+<!-- TradingView Lightweight Charts 5.2.1（Apache-2.0）—— 金融图表 -->
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
-<!-- Tabler JS：只用到弹窗组件 -->
+<!-- Tabler JS：弹窗组件 -->
 <script defer src="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/js/tabler.min.js"></script>
-<!-- Fuse.js 7.1.0（Apache-2.0）—— 模糊搜索，拼错也能命中，按相关度排序 -->
+<!-- Fuse.js 7.1.0（Apache-2.0）—— 模糊搜索，拼错也能命中 -->
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.min.js"></script>
 
 <style>
 :root{
-  --kq-s1:#3987e5;        /* 策略序列 */
-  --kq-s2:#d95926;        /* 基准序列 */
-  --kq-grid:#1c2733;
+  --kq-s1:#3987e5; --kq-s2:#d95926;
   --kq-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --kq-bg:#0b0f14; --kq-card:#10161d; --kq-line:#1c2733; --kq-line2:#1a2430;
 }
-body{background:#0b0f14}
-.page-wrapper,.navbar{background:#0b0f14}
-.card{background:#10161d;border-color:#1c2733}
-.card-header{border-bottom-color:#1a2430}
-.table{--tblr-table-border-color:#1a2430}
-.navbar{border-bottom:1px solid #1c2733}
+body{background:var(--kq-bg)}
+.page-wrapper,.navbar{background:var(--kq-bg)}
+.card{background:var(--kq-card);border-color:var(--kq-line)}
+.card-header{border-bottom-color:var(--kq-line2)}
+.table{--tblr-table-border-color:var(--kq-line2)}
 
-/* 所有数字用等宽，列才对得齐 */
 .num,.table td,.table th,.datagrid-content{font-family:var(--kq-mono);font-variant-numeric:tabular-nums}
 .brand-mark{font-family:var(--kq-mono);letter-spacing:.18em;font-size:.95rem;font-weight:600}
 .brand-mark .dot{color:var(--kq-s1)}
 .subheader{font-family:var(--kq-mono);letter-spacing:.1em}
 
-#chart{height:340px;width:100%}
-.chart-legend{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-family:var(--kq-mono);font-size:.75rem}
-.chart-legend i{width:14px;height:2px;border-radius:1px;display:inline-block}
-.chart-note{font-family:var(--kq-mono);font-size:.75rem}
+.topbar{border-bottom:1px solid var(--kq-line);position:sticky;top:0;z-index:1020;
+        background:rgba(11,15,20,.94);backdrop-filter:blur(8px)}
+.tabbar{border-bottom:1px solid var(--kq-line);background:var(--kq-bg);
+        position:sticky;top:56px;z-index:1010}
+.tabbar .nav-link{font-family:var(--kq-mono);font-size:.82rem;letter-spacing:.06em;
+                  padding:.7rem 1.1rem;border:0;border-bottom:2px solid transparent;color:#8b9aa8}
+.tabbar .nav-link.active{color:#e6edf3;border-bottom-color:var(--kq-s1);background:transparent}
+.tabbar .nav-link:hover{color:#e6edf3}
+.tabbar .badge{font-family:var(--kq-mono)}
 
-.order{border-left:3px solid var(--tblr-border-color);padding:.75rem .9rem;border-radius:0 4px 4px 0;
-       background:#0d131a;margin-bottom:.6rem}
+#chart{height:330px;width:100%}
+.chart-legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;
+              font-family:var(--kq-mono);font-size:.75rem}
+.chart-legend i{width:14px;height:2px;border-radius:1px;display:inline-block}
+
+.order{border-left:3px solid var(--tblr-border-color);padding:.75rem .9rem;
+       border-radius:0 4px 4px 0;background:#0d131a;margin-bottom:.6rem}
 .order:last-child{margin-bottom:0}
 .order.buy{border-left-color:var(--tblr-green)}
 .order.sell{border-left-color:var(--tblr-red)}
 .order .sym{font-family:var(--kq-mono);font-weight:700;font-size:1.02rem}
 .order .meta{font-family:var(--kq-mono);font-size:.76rem;line-height:1.75}
 
-.empty-sm{padding:1.6rem .75rem;text-align:center;font-family:var(--kq-mono);font-size:.8rem;
-          color:var(--tblr-secondary);line-height:1.9}
+.empty-sm{padding:1.6rem .75rem;text-align:center;font-family:var(--kq-mono);
+          font-size:.8rem;color:var(--tblr-secondary);line-height:1.9}
 .stop-price{color:var(--tblr-orange)}
 .gate-mark{font-family:var(--kq-mono);letter-spacing:.22em;font-size:1.25rem}
+
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--kq-mono);
+      font-size:.78rem;background:#18212b;border:1px solid #263341;border-radius:4px;
+      padding:3px 6px 3px 9px;margin:0 5px 5px 0}
+.chip .x{cursor:pointer;color:#6b7d8f;font-size:.95rem;line-height:1;padding:0 2px}
+.chip .x:hover{color:var(--tblr-red)}
+.chip.custom{border-color:#3a4d2f}
+#pool-results{position:absolute;top:100%;left:0;right:0;z-index:30;margin-top:4px;
+              max-height:340px;overflow:auto;box-shadow:0 10px 34px rgba(0,0,0,.65)}
+.pool-row{border-bottom:1px solid var(--kq-line2)}
+.pool-row:last-child{border-bottom:0}
+.savebar{position:sticky;bottom:0;background:rgba(11,15,20,.95);backdrop-filter:blur(8px);
+         border-top:1px solid var(--kq-line);padding:.6rem 0;z-index:20}
+
+.stg-item{cursor:pointer;border:1px solid transparent;border-radius:4px}
+.stg-item:hover{background:#141c25}
+.stg-item.on{background:#18212b;border-color:#2b3a4a}
+
+@media(max-width:768px){
+  .tabbar{top:52px}
+  .tabbar .nav-link{padding:.6rem .7rem;font-size:.76rem}
+}
 </style>
 </head>
 <body class="antialiased">
@@ -68,8 +97,8 @@ body{background:#0b0f14}
       <div class="card-body">
         <div class="mb-3">
           <label class="form-label subheader" for="u">账号</label>
-          <input id="u" name="username" type="email" class="form-control" autocomplete="username"
-                 placeholder="haiyangkwong@gmail.com" required>
+          <input id="u" name="username" type="email" class="form-control"
+                 autocomplete="username" placeholder="haiyangkwong@gmail.com" required>
         </div>
         <div class="mb-3">
           <label class="form-label subheader" for="p">密码</label>
@@ -87,201 +116,204 @@ body{background:#0b0f14}
 </div>
 
 <!-- ══════════ 控制台 ══════════ -->
-<div class="page" id="console" hidden>
-  <header class="navbar navbar-expand-md sticky-top">
+<div id="app" hidden>
+  <header class="navbar navbar-expand-md topbar">
     <div class="container-xl">
       <span class="navbar-brand brand-mark mb-0">KUCHA<span class="dot">·</span>QUANT</span>
       <span class="badge bg-secondary-lt ms-2" id="status-badge">载入中</span>
       <div class="ms-auto d-flex gap-2">
-        <button class="btn btn-sm btn-outline-secondary" id="open-strategy">策略</button>
-        <button class="btn btn-sm btn-outline-secondary" id="open-universe">标的池</button>
         <button class="btn btn-sm btn-outline-secondary" id="refresh">刷新</button>
         <button class="btn btn-sm btn-outline-secondary" id="logout">登出</button>
       </div>
     </div>
   </header>
 
+  <div class="tabbar">
+    <div class="container-xl">
+      <ul class="nav" role="tablist">
+        <li class="nav-item"><a class="nav-link active" data-tab="overview" href="#overview">总览</a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="pool" href="#pool">标的池
+          <span class="badge bg-blue-lt ms-1" id="tab-pool-count">—</span></a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="strategy" href="#strategy">策略
+          <span class="badge bg-secondary-lt ms-1" id="tab-stg-name">—</span></a></li>
+        <li class="nav-item"><a class="nav-link" data-tab="records" href="#records">记录</a></li>
+      </ul>
+    </div>
+  </div>
+
   <div class="page-body">
     <div class="container-xl">
 
-      <div class="row row-cards mb-3" id="tiles"></div>
+      <!-- ─────── 总览 ─────── -->
+      <section id="tab-overview">
+        <div class="row row-cards mb-3" id="tiles"></div>
 
-      <div class="card mb-3">
-        <div class="card-body py-2">
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="subheader" style="white-space:nowrap">标的池</span>
-            <span class="badge bg-blue-lt num" id="pool-count">—</span>
-            <div class="flex-grow-1" style="min-width:240px;position:relative">
-              <input type="search" class="form-control form-control-sm" id="pool-search"
-                     placeholder="搜代码或英文公司名加入标的池，如 SPCX / Space Exploration / Honeywell"
-                     autocomplete="off">
-              <div id="pool-results" class="card" hidden
-                   style="position:absolute;top:100%;left:0;right:0;z-index:30;margin-top:4px;
-                          max-height:320px;overflow:auto;box-shadow:0 8px 28px rgba(0,0,0,.6)"></div>
+        <div class="card mb-3">
+          <div class="card-header d-flex align-items-center flex-wrap gap-2">
+            <h3 class="card-title mb-0">权益曲线</h3>
+            <div class="chart-legend ms-3" id="legend"></div>
+            <div class="ms-auto btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-secondary active" id="btn-live">实盘</button>
+              <button class="btn btn-outline-secondary" id="btn-bt">回测</button>
             </div>
-            <button class="btn btn-sm btn-outline-secondary" id="pool-manage"
-                    style="white-space:nowrap">批量管理</button>
           </div>
-          <div class="text-secondary mt-1" id="pool-msg" style="font-size:.72rem;min-height:1rem"></div>
-        </div>
-      </div>
-
-      <div class="card mb-3">
-        <div class="card-header d-flex align-items-center flex-wrap gap-2">
-          <h3 class="card-title mb-0">权益曲线</h3>
-          <div class="chart-legend ms-3" id="legend"></div>
-          <div class="ms-auto btn-group btn-group-sm" role="group">
-            <button class="btn btn-outline-secondary active" id="btn-live">实盘</button>
-            <button class="btn btn-outline-secondary" id="btn-bt">回测</button>
+          <div class="card-body">
+            <div id="chart"></div>
+            <div id="chart-empty" class="empty-sm" hidden></div>
           </div>
         </div>
-        <div class="card-body">
-          <div id="chart"></div>
-          <div id="chart-empty" class="empty-sm" hidden></div>
-        </div>
-      </div>
 
-      <div class="row row-cards mb-3">
-        <div class="col-lg-6">
-          <div class="card h-100">
-            <div class="card-header">
-              <h3 class="card-title mb-0">明日开盘指令</h3>
-              <span class="card-subtitle ms-auto num" id="ord-date"></span>
+        <div class="row row-cards mb-3">
+          <div class="col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h3 class="card-title mb-0">明日开盘指令</h3>
+                <span class="card-subtitle ms-auto num" id="ord-date"></span>
+              </div>
+              <div class="card-body" id="orders"></div>
             </div>
-            <div class="card-body" id="orders"></div>
           </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="card h-100">
-            <div class="card-header">
-              <h3 class="card-title mb-0">当前持仓</h3>
-              <span class="card-subtitle ms-auto num" id="pos-count"></span>
+          <div class="col-lg-6">
+            <div class="card h-100">
+              <div class="card-header">
+                <h3 class="card-title mb-0">当前持仓</h3>
+                <span class="card-subtitle ms-auto num" id="pos-count"></span>
+              </div>
+              <div id="positions"></div>
             </div>
-            <div id="positions"></div>
           </div>
         </div>
-      </div>
 
-      <div class="row row-cards mb-3">
-        <div class="col-lg-6">
-          <div class="card h-100">
-            <div class="card-header"><h3 class="card-title mb-0">汇丰 Trade25 月度额度</h3></div>
-            <div class="card-body" id="budget"></div>
+        <div class="row row-cards mb-3">
+          <div class="col-lg-6">
+            <div class="card h-100">
+              <div class="card-header"><h3 class="card-title mb-0">汇丰 Trade25 月度额度</h3></div>
+              <div class="card-body" id="budget"></div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card h-100">
+              <div class="card-header"><h3 class="card-title mb-0">止损调整</h3></div>
+              <div id="stops"></div>
+            </div>
           </div>
         </div>
-        <div class="col-lg-6">
-          <div class="card h-100">
-            <div class="card-header"><h3 class="card-title mb-0">止损调整</h3></div>
-            <div id="stops"></div>
+      </section>
+
+      <!-- ─────── 标的池 ─────── -->
+      <section id="tab-pool" hidden>
+        <div class="card mb-3">
+          <div class="card-body">
+            <label class="form-label subheader">添加标的</label>
+            <div style="position:relative">
+              <input type="search" class="form-control" id="pool-search" autocomplete="off"
+                     placeholder="输入代码或英文公司名，如 SPCX / Space Exploration / nvdia（拼错也能搜到）">
+              <div id="pool-results" class="card" hidden></div>
+            </div>
+            <div class="text-secondary mt-2" id="pool-msg" style="font-size:.76rem;min-height:1.1rem">
+              标普 500 的 503 只加上全市场搜索，搜到什么都能加。数据源只索引英文名，中文搜不到。
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card mb-3">
-        <div class="card-header">
-          <h3 class="card-title mb-0">成交记录</h3>
-          <span class="card-subtitle ms-auto num" id="trade-summary"></span>
+        <div class="card mb-3">
+          <div class="card-header">
+            <h3 class="card-title mb-0">当前标的池</h3>
+            <span class="card-subtitle ms-auto num" id="pool-count">—</span>
+          </div>
+          <div class="card-body" id="pool-chips">
+            <div class="empty-sm">载入中…</div>
+          </div>
         </div>
-        <div id="trades"></div>
-      </div>
 
-      <div class="card mb-3">
-        <div class="card-header"><h3 class="card-title mb-0">策略参数</h3></div>
-        <div class="card-body">
-          <div class="datagrid" id="params"></div>
+        <div class="card mb-3">
+          <div class="card-header d-flex flex-wrap gap-2 align-items-center">
+            <h3 class="card-title mb-0">浏览标普 500</h3>
+            <select class="form-select form-select-sm ms-auto" id="uni-sector" style="max-width:160px">
+              <option value="">全部行业</option>
+            </select>
+            <input type="search" class="form-control form-control-sm" id="uni-filter"
+                   placeholder="在名单内筛选" style="max-width:180px">
+            <button class="btn btn-sm btn-outline-secondary" id="uni-all">全选筛选结果</button>
+            <button class="btn btn-sm btn-outline-secondary" id="uni-none">清空筛选结果</button>
+          </div>
+          <div id="uni-list" style="max-height:52vh;overflow:auto"></div>
         </div>
-      </div>
 
-      <div class="text-secondary" style="font-size:.75rem;line-height:1.9">
+        <div class="savebar">
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <span class="num" id="pool-state">—</span>
+            <span class="text-secondary" style="font-size:.76rem">改动要点保存才会在下次运行生效</span>
+            <button class="btn btn-primary btn-sm ms-auto" id="pool-save" disabled>保存标的池</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────── 策略 ─────── -->
+      <section id="tab-strategy" hidden>
+        <div class="row">
+          <div class="col-lg-3 mb-3">
+            <div class="card h-100">
+              <div class="card-header">
+                <h3 class="card-title mb-0">方案</h3>
+                <button class="btn btn-sm btn-outline-secondary ms-auto" id="stg-new">新建</button>
+              </div>
+              <div class="card-body" id="stg-list"></div>
+              <div class="card-footer text-secondary" style="font-size:.72rem;line-height:1.7">
+                标「生效中」的那套决定每日实盘信号。其余只是存档，改了不影响实盘，
+                直到点「设为生效」。
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-9">
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="row g-2 mb-3">
+                  <div class="col-sm-5">
+                    <label class="form-label subheader">方案名</label>
+                    <input class="form-control form-control-sm" id="stg-name" maxlength="24">
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="form-label subheader">备注</label>
+                    <input class="form-control form-control-sm" id="stg-note" maxlength="80"
+                           placeholder="这套想验证什么">
+                  </div>
+                </div>
+                <div id="stg-form"></div>
+              </div>
+              <div class="card-footer d-flex flex-wrap gap-2 align-items-center">
+                <span id="stg-msg" style="font-size:.78rem"></span>
+                <div class="ms-auto d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-danger" id="stg-del">删除</button>
+                  <button class="btn btn-sm btn-outline-secondary" id="stg-bt">回测这套</button>
+                  <button class="btn btn-sm btn-outline-primary" id="stg-activate">设为生效</button>
+                  <button class="btn btn-sm btn-primary" id="stg-save">保存</button>
+                </div>
+              </div>
+            </div>
+            <div id="stg-result"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────── 记录 ─────── -->
+      <section id="tab-records" hidden>
+        <div class="card mb-3">
+          <div class="card-header">
+            <h3 class="card-title mb-0">成交记录</h3>
+            <span class="card-subtitle ms-auto num" id="trade-summary"></span>
+          </div>
+          <div id="trades"></div>
+        </div>
+        <div class="card mb-3">
+          <div class="card-header"><h3 class="card-title mb-0">生效策略参数</h3></div>
+          <div class="card-body"><div class="datagrid" id="params"></div></div>
+        </div>
+      </section>
+
+      <div class="text-secondary mb-4" style="font-size:.75rem;line-height:1.9">
         信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
         数据经 api.kucha.org 读取，仅管理员可见。
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ 策略方案 ══════════ -->
-<div class="modal modal-blur fade" id="stg-modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">策略方案</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-3 border-end">
-            <div class="d-flex align-items-center mb-2">
-              <span class="subheader">已存方案</span>
-              <button class="btn btn-sm btn-outline-secondary ms-auto" id="stg-new">新建</button>
-            </div>
-            <div id="stg-list"></div>
-            <div class="text-secondary mt-3" style="font-size:.72rem;line-height:1.7">
-              标「生效中」的那套决定每日实盘信号。其余只是存档，改了不影响实盘，
-              直到你点「设为生效」。
-            </div>
-          </div>
-          <div class="col-md-9">
-            <div class="row g-2 mb-3">
-              <div class="col-sm-5">
-                <label class="form-label subheader">方案名</label>
-                <input class="form-control form-control-sm" id="stg-name" maxlength="24">
-              </div>
-              <div class="col-sm-7">
-                <label class="form-label subheader">备注</label>
-                <input class="form-control form-control-sm" id="stg-note" maxlength="80"
-                       placeholder="这套想验证什么">
-              </div>
-            </div>
-            <div id="stg-form"></div>
-            <div id="stg-result" class="mt-3"></div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <span class="me-auto" id="stg-msg" style="font-size:.78rem"></span>
-        <button class="btn btn-outline-danger" id="stg-del">删除</button>
-        <button class="btn btn-outline-secondary" id="stg-bt">回测这套</button>
-        <button class="btn btn-outline-primary" id="stg-activate">设为生效</button>
-        <button class="btn btn-primary" id="stg-save">保存</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ 标的池选择 ══════════ -->
-<div class="modal modal-blur fade" id="uni-modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">标的池 <span class="text-secondary" id="uni-count"></span></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-2 d-flex gap-2 flex-wrap align-items-center">
-          <input type="search" class="form-control form-control-sm" id="uni-search"
-                 placeholder="搜代码或英文公司名，如 SPCX / Space Exploration"
-                 style="max-width:290px">
-          <select class="form-select form-select-sm" id="uni-sector" style="max-width:140px">
-            <option value="">全部行业</option>
-          </select>
-          <button class="btn btn-sm btn-outline-secondary" id="uni-all">全选当前筛选</button>
-          <button class="btn btn-sm btn-outline-secondary" id="uni-none">清空当前筛选</button>
-        </div>
-        <div id="uni-remote" class="mb-2"></div>
-        <span class="text-secondary" id="uni-add-msg" style="font-size:.74rem"></span>
-        <div class="text-secondary mb-2" style="font-size:.74rem;line-height:1.7">
-          选中的标的会成为每日选股的候选池，下次运行生效。系统仍会按流动性和价格再筛一道，
-          最终只从符合条件的标的里挑。池子太小会选不出仓位，建议至少 30 只。<br>
-          改动会让「策略参数」里的回测数字失效，因为那是在旧池子上跑的。
-          想让数字跟上，在本机重跑一次 <code>bin/export_backtest.py --upload</code>。
-        </div>
-        <div id="uni-list" style="max-height:46vh;overflow:auto"></div>
-      </div>
-      <div class="modal-footer">
-        <span class="text-secondary me-auto" id="uni-msg" style="font-size:.78rem"></span>
-        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
-        <button class="btn btn-primary" id="uni-save">保存</button>
       </div>
     </div>
   </div>
@@ -308,12 +340,27 @@ body{background:#0b0f14}
 const WORKER = 'https://api.kucha.org';
 const TK = 'kq_token';
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 
 const money = (n, d = 2) => (n == null || isNaN(n)) ? '—'
   : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = n => (n == null || isNaN(n)) ? '—' : (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%';
 const tone = n => n == null || isNaN(n) ? 'text-secondary' : n > 0 ? 'text-green' : n < 0 ? 'text-red' : 'text-secondary';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const auth = () => ({ Authorization: 'Bearer ' + localStorage.getItem(TK) });
+
+/* ───── 标签页 ───── */
+const TABS = ['overview', 'pool', 'strategy', 'records'];
+function showTab(name) {
+  if (!TABS.includes(name)) name = 'overview';
+  TABS.forEach(t => { $('#tab-' + t).hidden = t !== name; });
+  $$('.tabbar .nav-link').forEach(a => a.classList.toggle('active', a.dataset.tab === name));
+  if (name === 'overview' && DATA) renderChart(DATA.equity || [], DATA.backtest);
+}
+$$('.tabbar .nav-link').forEach(a => {
+  a.onclick = e => { e.preventDefault(); location.hash = a.dataset.tab; showTab(a.dataset.tab); };
+});
+window.addEventListener('hashchange', () => showTab((location.hash || '#overview').slice(1)));
 
 /* ───── 登录 ───── */
 $('#login-form').addEventListener('submit', async e => {
@@ -335,29 +382,30 @@ $('#login-form').addEventListener('submit', async e => {
 $('#logout').onclick = () => { localStorage.removeItem(TK); location.reload(); };
 $('#refresh').onclick = () => boot();
 
-/* ───── 取数 ───── */
+/* ───── 载入 ───── */
 let DATA = null, MODE = 'live', chart = null, series = [];
 
 async function boot() {
   const token = localStorage.getItem(TK);
-  if (!token) { $('#gate').hidden = false; $('#console').hidden = true; return; }
-  $('#gate').hidden = true; $('#console').hidden = false;
+  if (!token) { $('#gate').hidden = false; $('#app').hidden = true; return; }
+  $('#gate').hidden = true; $('#app').hidden = false;
+  showTab((location.hash || '#overview').slice(1));
   setStatus('secondary', '载入中');
   try {
-    const r = await fetch(WORKER + '/quant/dashboard', { headers: { Authorization: 'Bearer ' + token } });
+    const r = await fetch(WORKER + '/quant/dashboard', { headers: auth() });
     if (r.status === 401) { localStorage.removeItem(TK); location.reload(); return; }
     if (!r.ok) throw new Error('HTTP ' + r.status);
     DATA = await r.json();
     render();
-    poolInit();
   } catch (ex) { setStatus('orange', '读取失败 · ' + ex.message); }
+  poolLoad();
+  stgReload();
 }
 function setStatus(color, txt) {
   $('#status-badge').className = 'badge bg-' + color + '-lt ms-2';
   $('#status-badge').textContent = txt;
 }
 
-/* ───── 渲染 ───── */
 function render() {
   const L = DATA.latest, EQ = DATA.equity || [], BT = DATA.backtest;
   if (L) {
@@ -365,15 +413,9 @@ function render() {
     setStatus(age < 4 ? 'green' : 'orange',
       `${L.date} · ${age < 1 ? '今日已更新' : Math.floor(age) + ' 天前'}`);
   } else setStatus('orange', '尚未收到信号');
-
-  renderTiles(L, EQ);
-  renderChart(EQ, BT);
-  renderOrders(L);
-  renderPositions(L);
-  renderBudget(L);
-  renderStops(L);
-  renderTrades(DATA.trades || []);
-  renderParams(BT);
+  renderTiles(L, EQ); renderChart(EQ, BT); renderOrders(L);
+  renderPositions(L); renderBudget(L); renderStops(L);
+  renderTrades(DATA.trades || []); renderParams(BT);
 }
 
 function tile(label, value, sub, cls) {
@@ -384,10 +426,22 @@ function tile(label, value, sub, cls) {
   </div></div></div>`;
 }
 
+function quoteOf(sym) {
+  const p = DATA && DATA.quotes && DATA.quotes.prices && DATA.quotes.prices[sym];
+  return typeof p === 'number' ? p : null;
+}
+function quoteAge() {
+  const q = DATA && DATA.quotes;
+  if (!q || !q.t) return null;
+  const m = (Date.now() - q.t) / 60000;
+  if (m < 90) return '报价 ' + new Date(q.t).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  if (m < 60 * 30) return `报价 ${Math.round(m / 60)} 小时前`;
+  return null;
+}
+
 function renderTiles(L, EQ) {
   let eq = L && L.equity;
-  // 有盘中报价时，用实时价重算持仓市值与权益
-  if (eq && L && L.holdings && DATA.quotes && DATA.quotes.prices) {
+  if (eq && L.holdings && DATA.quotes && DATA.quotes.prices) {
     let mv = 0, any = false;
     for (const h of L.holdings) {
       const live = quoteOf(h.symbol);
@@ -404,8 +458,8 @@ function renderTiles(L, EQ) {
   const bp = b ? Math.round((b.used_pct || 0) * 100) : null;
   $('#tiles').innerHTML =
     tile('账户权益', eq ? money(eq.total) : '—',
-         eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}`
-              + (eq.live ? ' · 实时' : '') : '等待首次信号') +
+         eq ? `现金 ${money(eq.cash, 0)} · 持仓 ${money(eq.market_value, 0)}${eq.live ? ' · 实时' : ''}`
+            : '等待首次信号') +
     tile('较上次', chg == null ? '—' : pct(chg),
          EQ.length ? `已记录 ${EQ.length} 个交易日` : '暂无历史', tone(chg)) +
     tile('持仓', holds + ' / ' + maxPos,
@@ -415,16 +469,16 @@ function renderTiles(L, EQ) {
          bp == null ? '' : bp >= 85 ? 'text-red' : bp >= 60 ? 'text-orange' : '');
 }
 
-/* ───── 权益曲线（TradingView Lightweight Charts）───── */
+/* ───── 权益曲线 ───── */
 function renderChart(EQ, BT) {
   const box = $('#chart'), empty = $('#chart-empty'), legend = $('#legend');
+  if (!box || $('#tab-overview').hidden) return;
   const live = (EQ || []).map(p => ({ time: p.d, value: p.v }));
   const btc = (BT && BT.curve) || [];
-
   let defs, note = '';
   const wantBt = MODE === 'bt' && btc.length >= 2;
   if (!wantBt && live.length >= 2) {
-    defs = [{ name: '实盘权益', color: 'var(--kq-s1)', hex: '#3987e5', data: live }];
+    defs = [{ name: '实盘权益', hex: '#3987e5', data: live }];
   } else if (btc.length >= 2) {
     defs = [
       { name: '策略（回测）', hex: '#3987e5', data: btc.map(p => ({ time: p.d, value: p.v })) },
@@ -435,59 +489,45 @@ function renderChart(EQ, BT) {
   } else {
     box.hidden = true; empty.hidden = false; legend.innerHTML = '';
     empty.innerHTML = '还没有权益数据。<br>系统每天美股收盘后运行一次，跑完第一次就会出现在这里。';
-    syncButtons(live.length, btc.length);
-    return;
+    syncChartBtns(live.length, btc.length); return;
   }
   box.hidden = false; empty.hidden = true;
-
   legend.innerHTML = defs.map(d =>
-    `<span><i style="background:${d.hex}"></i> <span class="text-secondary">${esc(d.name)}</span>
-     <b class="ms-1" id="lg-${d.hex.slice(1)}"></b></span>`).join('')
-    + (note ? `<span class="text-secondary chart-note">${esc(note)}</span>` : '');
+    `<span><i style="background:${d.hex}"></i>
+      <span class="text-secondary">${esc(d.name)}</span>
+      <b class="ms-1" id="lg-${d.hex.slice(1)}"></b></span>`).join('')
+    + (note ? `<span class="text-secondary">${esc(note)}</span>` : '');
 
   if (chart) { chart.remove(); chart = null; series = []; }
   chart = LightweightCharts.createChart(box, {
     layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
               fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
     grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
-    rightPriceScale: { borderColor: '#1c2733', scaleMargins: { top: 0.12, bottom: 0.08 } },
+    rightPriceScale: { borderColor: '#1c2733', scaleMargins: { top: .12, bottom: .08 } },
     timeScale: { borderColor: '#1c2733', fixLeftEdge: true, fixRightEdge: true },
-    crosshair: {
-      mode: LightweightCharts.CrosshairMode.Magnet,
+    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet,
       vertLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' },
-      horzLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' },
-    },
+      horzLine: { color: '#3d4d5c', width: 1, style: 2, labelBackgroundColor: '#1c2733' } },
     localization: { priceFormatter: v => '$' + Math.round(v).toLocaleString('en-US') },
     autoSize: true,
   });
-
   series = defs.map(d => {
-    const s = chart.addSeries(LightweightCharts.LineSeries, {
-      color: d.hex, lineWidth: 2, priceLineVisible: false, lastValueVisible: true,
-    });
+    const s = chart.addSeries(LightweightCharts.LineSeries,
+      { color: d.hex, lineWidth: 2, priceLineVisible: false });
     s.setData(d.data);
     return { def: d, api: s };
   });
   chart.timeScale().fitContent();
-
-  chart.subscribeCrosshairMove(param => {
-    series.forEach(({ def, api }) => {
-      const el = document.getElementById('lg-' + def.hex.slice(1));
-      if (!el) return;
-      const pt = param.seriesData && param.seriesData.get(api);
-      const last = def.data[def.data.length - 1];
-      el.textContent = money(pt ? pt.value : last.value, 0);
-    });
-  });
-  series.forEach(({ def }) => {
+  const paint = param => series.forEach(({ def, api }) => {
     const el = document.getElementById('lg-' + def.hex.slice(1));
-    if (el) el.textContent = money(def.data[def.data.length - 1].value, 0);
+    if (!el) return;
+    const pt = param && param.seriesData && param.seriesData.get(api);
+    el.textContent = money(pt ? pt.value : def.data[def.data.length - 1].value, 0);
   });
-
-  syncButtons(live.length, btc.length, defs.length > 1 || wantBt);
+  chart.subscribeCrosshairMove(paint); paint(null);
+  syncChartBtns(live.length, btc.length, defs.length > 1 || wantBt);
 }
-
-function syncButtons(nLive, nBt, showingBt) {
+function syncChartBtns(nLive, nBt, showingBt) {
   $('#btn-live').disabled = nLive < 2;
   $('#btn-bt').disabled = nBt < 2;
   $('#btn-live').classList.toggle('active', !showingBt);
@@ -497,14 +537,13 @@ $('#btn-live').onclick = () => { MODE = 'live'; if (DATA) renderChart(DATA.equit
 $('#btn-bt').onclick = () => { MODE = 'bt'; if (DATA) renderChart(DATA.equity || [], DATA.backtest); };
 
 function renderOrders(L) {
-  const box = $('#orders');
   $('#ord-date').textContent = L ? L.date : '';
   const acts = (L && L.actions) || [];
   if (!acts.length) {
-    box.innerHTML = `<div class="empty-sm">${L ? '无买卖指令，持仓照旧。' : '尚未收到信号。'}</div>`;
+    $('#orders').innerHTML = `<div class="empty-sm">${L ? '无买卖指令，持仓照旧。' : '尚未收到信号。'}</div>`;
     return;
   }
-  box.innerHTML = acts.map(a => `
+  $('#orders').innerHTML = acts.map(a => `
     <div class="order ${a.side === 'buy' ? 'buy' : 'sell'}">
       <div class="d-flex align-items-baseline gap-2">
         <span class="badge ${a.side === 'buy' ? 'bg-green-lt' : 'bg-red-lt'}">${a.side === 'buy' ? '买入' : '卖出'}</span>
@@ -515,21 +554,6 @@ function renderOrders(L) {
         ${a.notional ? '约 ' + money(a.notional, 0) : ''}${a.stop ? ' · 挂止损 <b class="stop-price">' + money(a.stop) + '</b>（GTC）' : ''}
         ${a.reason ? '<br>' + esc(a.reason) : ''}</div>
     </div>`).join('');
-}
-
-/* 盘中报价：Worker 每小时刷新一次，有就用它覆盖收盘价 */
-function quoteOf(sym) {
-  const q = DATA && DATA.quotes;
-  const p = q && q.prices && q.prices[sym];
-  return typeof p === 'number' ? p : null;
-}
-function quoteAge() {
-  const q = DATA && DATA.quotes;
-  if (!q || !q.t) return null;
-  const mins = (Date.now() - q.t) / 60000;
-  if (mins < 90) return `报价 ${new Date(q.t).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`;
-  if (mins < 60 * 30) return `报价 ${Math.round(mins / 60)} 小时前`;
-  return null;
 }
 
 function renderPositions(L) {
@@ -544,8 +568,7 @@ function renderPositions(L) {
     <th class="text-end">现价</th><th class="text-end">盈亏</th><th class="text-end">止损</th>
     <th class="text-end">持有</th></tr></thead><tbody>` +
     hs.map(h => {
-      const live = quoteOf(h.symbol);
-      const px = live != null ? live : h.last_price;
+      const live = quoteOf(h.symbol), px = live != null ? live : h.last_price;
       const pl = h.entry_price ? px / h.entry_price - 1 : h.pnl_pct;
       const lv = alerts.get(h.symbol);
       const badge = lv === 'hit' ? ' <span class="badge bg-red-lt">已破止损</span>'
@@ -557,8 +580,7 @@ function renderPositions(L) {
         <td class="text-end">${money(px)}${live != null ? '<span class="text-secondary" style="font-size:.68rem">·实时</span>' : ''}</td>
         <td class="text-end ${tone(pl)}"><strong>${pct(pl)}</strong></td>
         <td class="text-end stop-price">${money(h.stop)}</td>
-        <td class="text-end text-secondary">${h.days}d</td>
-      </tr>`;
+        <td class="text-end text-secondary">${h.days}d</td></tr>`;
     }).join('') + '</tbody></table></div>';
   wireSymbolRows();
 }
@@ -576,8 +598,7 @@ function renderBudget(L) {
       role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"></div></div>
     <div class="text-secondary mt-3" style="font-size:.76rem;line-height:1.8">
       上限 HK$250,000（约 $32,051）。超出后美股按首 1000 股 $18 + 每股 $0.015 收佣。
-      ${p >= 85 ? '<div class="text-red mt-1">额度将尽，本月请克制交易。</div>' : ''}
-    </div>`;
+      ${p >= 85 ? '<div class="text-red mt-1">额度将尽，本月请克制交易。</div>' : ''}</div>`;
 }
 
 function renderStops(L) {
@@ -593,595 +614,6 @@ function renderStops(L) {
     '</tbody></table></div>';
 }
 
-/* ───── 主页面上的标的池搜索（不用开弹窗就能加股票）───── */
-let POOL_FUSE = null, poolTimer = null, poolRemoteQ = '';
-
-async function poolInit() {
-  try {
-    const r = await fetch(WORKER + '/quant/universe',
-      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-    const d = await r.json();
-    if (!d.success) return;
-    SP500 = d.sp500 || [];
-    SELECTED = new Set(d.selected || []);
-    $('#pool-count').textContent = SELECTED.size + ' 只';
-    // Fuse 做模糊匹配：代码权重高于公司名，拼错一两个字母也能命中
-    if (window.Fuse && SP500.length) {
-      POOL_FUSE = new Fuse(SP500, {
-        keys: [{ name: 's', weight: 0.7 }, { name: 'n', weight: 0.3 }],
-        threshold: 0.35, ignoreLocation: true, minMatchCharLength: 2,
-      });
-    }
-  } catch { /* 取不到就留空，不影响主面板 */ }
-}
-
-function poolRow(x, inPool) {
-  return `<div class="d-flex align-items-center gap-2 px-3 py-2 pool-row"
-      style="border-bottom:1px solid #1a2430">
-    <strong class="num" style="width:72px">${esc(x.s)}</strong>
-    <span class="text-secondary flex-grow-1" style="font-size:.78rem">${esc(x.n || '')}</span>
-    <span class="text-secondary" style="font-size:.7rem;white-space:nowrap">${esc(x.tag || '')}</span>
-    ${inPool
-      ? `<button class="btn btn-sm btn-ghost-danger pool-del" data-s="${esc(x.s)}">移出</button>`
-      : `<button class="btn btn-sm btn-outline-primary pool-add"
-           data-s="${esc(x.s)}" data-n="${esc(x.n || '')}">加入</button>`}
-  </div>`;
-}
-
-function poolRender(local, remote, q) {
-  const box = $('#pool-results');
-  const rows = [];
-  for (const x of local.slice(0, 6)) {
-    rows.push(poolRow({ ...x, tag: x.sec || '' }, SELECTED.has(x.s)));
-  }
-  if (remote === 'loading') {
-    rows.push(`<div class="px-3 py-2 text-secondary" style="font-size:.74rem">全市场搜索中…</div>`);
-  } else if (Array.isArray(remote) && remote.length) {
-    rows.push(`<div class="px-3 pt-2 pb-1 text-secondary" style="font-size:.7rem">
-      标普 500 之外</div>`);
-    for (const x of remote.slice(0, 6)) {
-      rows.push(poolRow({ ...x, tag: `${x.t} ${x.ex || ''}` }, SELECTED.has(x.s)));
-    }
-  } else if (remote === 'empty' && !local.length) {
-    rows.push(`<div class="px-3 py-3 text-secondary" style="font-size:.76rem">
-      没找到。${/[一-龥]/.test(q) ? '数据源只索引英文名，请用代码或英文名搜。' : ''}</div>`);
-  }
-  if (!rows.length) { box.hidden = true; return; }
-  box.innerHTML = rows.join('');
-  box.hidden = false;
-  box.querySelectorAll('.pool-add').forEach(b => { b.onclick = () => poolAdd(b.dataset.s, b.dataset.n); });
-  box.querySelectorAll('.pool-del').forEach(b => { b.onclick = () => poolRemove(b.dataset.s); });
-}
-
-function poolSearch() {
-  const q = $('#pool-search').value.trim();
-  if (q.length < 1) { $('#pool-results').hidden = true; return; }
-  const local = POOL_FUSE ? POOL_FUSE.search(q).map(r => r.item)
-    : SP500.filter(x => x.s.includes(q.toUpperCase()));
-  poolRender(local, 'loading', q);
-  clearTimeout(poolTimer);
-  poolTimer = setTimeout(async () => {
-    if (q === poolRemoteQ) return;
-    poolRemoteQ = q;
-    try {
-      const r = await fetch(`${WORKER}/quant/search?q=${encodeURIComponent(q)}`,
-        { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-      const d = await r.json();
-      const known = new Set(SP500.map(x => x.s));
-      const rem = (d.results || []).filter(x => !known.has(x.s));
-      if ($('#pool-search').value.trim() === q) poolRender(local, rem.length ? rem : 'empty', q);
-    } catch {
-      if ($('#pool-search').value.trim() === q) poolRender(local, 'empty', q);
-    }
-  }, 450);
-}
-
-async function poolSave(msgText) {
-  const r = await fetch(WORKER + '/quant/universe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json',
-               Authorization: 'Bearer ' + localStorage.getItem(TK) },
-    body: JSON.stringify({ symbols: [...SELECTED] }),
-  });
-  const d = await r.json();
-  if (!d.success) throw new Error(d.error || '保存失败');
-  $('#pool-count').textContent = SELECTED.size + ' 只';
-  $('#pool-msg').innerHTML = `<span class="text-green">${esc(msgText)}，下次运行生效</span>`;
-}
-
-async function poolAdd(sym, name) {
-  const msg = $('#pool-msg');
-  msg.textContent = `核对 ${sym} 的行情…`;
-  try {
-    const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
-      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || '查不到行情');
-    const n = (d.bars || []).length;
-    if (n < 2) throw new Error('这个代码没有可用的日线数据');
-    SELECTED.add(sym);
-    CUSTOM_NAMES[sym] = name || '自选';
-    await poolSave(`已加入 ${sym}`);
-    if (n < 120) {
-      msg.innerHTML = `<span class="text-orange">已加入 ${sym}，但只有 ${n} 根日线，
-        不够算 100 日均线，暂时不会产生信号</span>`;
-    }
-    poolSearch();
-  } catch (ex) {
-    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
-  }
-}
-
-async function poolRemove(sym) {
-  if (SELECTED.size <= 5) {
-    $('#pool-msg').innerHTML = '<span class="text-red">标的池至少要留 5 只</span>'; return;
-  }
-  SELECTED.delete(sym);
-  try { await poolSave(`已移出 ${sym}`); poolSearch(); }
-  catch (ex) { SELECTED.add(sym); $('#pool-msg').innerHTML = `<span class="text-red">${esc(ex.message)}</span>`; }
-}
-
-$('#pool-search').oninput = poolSearch;
-$('#pool-search').onfocus = poolSearch;
-$('#pool-manage').onclick = () => $('#open-universe').click();
-document.addEventListener('click', e => {
-  if (!e.target.closest('#pool-search') && !e.target.closest('#pool-results')) {
-    $('#pool-results').hidden = true;
-  }
-});
-
-/* ───── 策略方案 ───── */
-let STG = { presets: {}, active: null, results: {}, spec: {}, queue: null };
-let stgModal = null, stgCur = null, stgPoll = null;
-
-async function stgApi(method, body) {
-  const r = await fetch(WORKER + '/quant/strategies', {
-    method,
-    headers: { 'Content-Type': 'application/json',
-               Authorization: 'Bearer ' + localStorage.getItem(TK) },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const d = await r.json();
-  if (!d.success) throw new Error(d.error || '请求失败');
-  return d;
-}
-
-$('#open-strategy').onclick = async () => {
-  if (!stgModal) stgModal = new bootstrap.Modal($('#stg-modal'));
-  $('#stg-msg').textContent = '';
-  $('#stg-form').innerHTML = '<div class="empty-sm">载入中…</div>';
-  $('#stg-list').innerHTML = '';
-  $('#stg-result').innerHTML = '';
-  stgModal.show();
-  await stgReload();
-};
-
-async function stgReload(keepName) {
-  try {
-    STG = await stgApi('GET');
-    const names = Object.keys(STG.presets || {});
-    if (!names.length) {
-      // 第一次打开：用控制台上显示的参数种一套「默认」
-      stgCur = null;
-      $('#stg-list').innerHTML = `<div class="empty-sm">还没有方案。<br>点「新建」开始。</div>`;
-      stgNew();
-      return;
-    }
-    stgDrawList();
-    const pick = keepName && STG.presets[keepName] ? keepName
-               : (stgCur && STG.presets[stgCur] ? stgCur : (STG.active || names[0]));
-    stgLoad(pick);
-  } catch (ex) {
-    $('#stg-form').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
-  }
-}
-
-function stgDrawList() {
-  const names = Object.keys(STG.presets).sort();
-  $('#stg-list').innerHTML = names.map(n => {
-    const on = n === STG.active;
-    const r = STG.results[n];
-    const sub = r && r.stats ? `${pct(r.stats['年化收益'])} · 夏普 ${(r.stats['夏普'] || 0).toFixed(2)}`
-              : r && r.error ? '回测失败' : '未回测';
-    return `<div class="stg-item p-2 mb-1 rounded" data-n="${esc(n)}"
-      style="cursor:pointer;background:${n === stgCur ? '#18212b' : 'transparent'};
-      border:1px solid ${n === stgCur ? '#2b3a4a' : 'transparent'}">
-      <div class="d-flex align-items-center">
-        <strong style="font-size:.85rem">${esc(n)}</strong>
-        ${on ? '<span class="badge bg-green-lt ms-2">生效中</span>' : ''}
-      </div>
-      <div class="text-secondary num" style="font-size:.7rem">${esc(sub)}</div>
-    </div>`;
-  }).join('');
-  document.querySelectorAll('.stg-item').forEach(el => {
-    el.onclick = () => stgLoad(el.dataset.n);
-  });
-}
-
-function stgNew() {
-  stgCur = null;
-  $('#stg-name').value = '';
-  $('#stg-note').value = '';
-  const vals = {};
-  for (const [k, sp] of Object.entries(STG.spec || {})) vals[k] = sp.def;
-  stgDrawForm(vals);
-  $('#stg-result').innerHTML = '';
-  stgDrawList();
-}
-$('#stg-new').onclick = stgNew;
-
-function stgLoad(name) {
-  const p = STG.presets[name];
-  if (!p) return;
-  stgCur = name;
-  $('#stg-name').value = p.name || name;
-  $('#stg-note').value = p.note || '';
-  stgDrawForm(p.params || {});
-  stgDrawList();
-  stgDrawResult(STG.results[name]);
-}
-
-function stgDrawForm(vals) {
-  const spec = STG.spec || {};
-  const groups = {};
-  for (const [k, sp] of Object.entries(spec)) (groups[sp.group] ||= []).push([k, sp]);
-  $('#stg-form').innerHTML = Object.entries(groups).map(([g, items]) => `
-    <div class="mb-3">
-      <div class="subheader mb-2" style="color:var(--kq-s1)">${esc(g)}</div>
-      <div class="row g-2">
-        ${items.map(([k, sp]) => {
-          const v = vals[k] !== undefined ? vals[k] : sp.def;
-          let input;
-          if (sp.type === 'bool') {
-            input = `<label class="form-check form-switch mb-0 mt-1">
-              <input class="form-check-input stg-f" type="checkbox" data-k="${k}"${v ? ' checked' : ''}>
-              <span class="form-check-label text-secondary" style="font-size:.76rem">
-                ${v ? '开启' : '关闭'}</span></label>`;
-          } else if (sp.type === 'enum') {
-            input = `<select class="form-select form-select-sm stg-f" data-k="${k}">
-              ${sp.options.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}
-              </select>`;
-          } else {
-            input = `<div class="input-group input-group-sm">
-              <input class="form-control stg-f" type="number" data-k="${k}" value="${v}"
-                min="${sp.min}" max="${sp.max}" step="${sp.step || 1}">
-              ${sp.unit ? `<span class="input-group-text">${esc(sp.unit)}</span>` : ''}
-            </div>`;
-          }
-          return `<div class="col-sm-6 col-lg-4">
-            <label class="form-label subheader mb-1" title="${esc(sp.hint)}">${esc(sp.label)}</label>
-            ${input}
-            <div class="text-secondary mt-1" style="font-size:.68rem;line-height:1.5">
-              ${esc(sp.hint)}</div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`).join('');
-  document.querySelectorAll('.stg-f[type="checkbox"]').forEach(cb => {
-    cb.onchange = () => {
-      const lbl = cb.parentElement.querySelector('.form-check-label');
-      if (lbl) lbl.textContent = cb.checked ? '开启' : '关闭';
-    };
-  });
-}
-
-function stgCollect() {
-  const p = {};
-  document.querySelectorAll('.stg-f').forEach(el => {
-    const k = el.dataset.k, sp = STG.spec[k];
-    if (!sp) return;
-    if (sp.type === 'bool') p[k] = el.checked;
-    else if (sp.type === 'enum') p[k] = el.value;
-    else p[k] = Number(el.value);
-  });
-  return p;
-}
-
-function stgDrawResult(r) {
-  const box = $('#stg-result');
-  if (!r) { box.innerHTML = ''; return; }
-  if (r.error) {
-    box.innerHTML = `<div class="alert alert-danger py-2" style="font-size:.8rem">
-      回测失败：${esc(r.error)}</div>`;
-    return;
-  }
-  const s = r.stats || {}, bm = r.benchmark || {};
-  const segs = (r.segments || []).map(x =>
-    `<td class="text-end">${x.sharpe == null ? '—' : x.sharpe.toFixed(2)}</td>`).join('');
-  const segHead = (r.segments || []).map(x =>
-    `<th class="text-end">${esc(x.period)}</th>`).join('');
-  box.innerHTML = `
-    <div class="subheader mb-2" style="color:var(--kq-s1)">回测结果
-      <span class="text-secondary ms-2">${new Date(r.ran_at).toLocaleString('zh-CN')}
-      · ${r.universe_size} 只标的</span></div>
-    <div class="table-responsive"><table class="table table-sm table-vcenter mb-2">
-      <thead><tr><th></th><th class="text-end">年化</th><th class="text-end">夏普</th>
-      <th class="text-end">最大回撤</th><th class="text-end">交易笔数</th>
-      <th class="text-end">胜率</th></tr></thead>
-      <tbody>
-        <tr><td><strong>这套策略</strong></td>
-          <td class="text-end ${tone(s['年化收益'])}"><strong>${pct(s['年化收益'])}</strong></td>
-          <td class="text-end"><strong>${(s['夏普'] || 0).toFixed(2)}</strong></td>
-          <td class="text-end text-red">${pct(s['最大回撤'])}</td>
-          <td class="text-end">${s['交易笔数'] ?? '—'}</td>
-          <td class="text-end">${s['胜率'] != null ? (s['胜率'] * 100).toFixed(0) + '%' : '—'}</td></tr>
-        <tr class="text-secondary"><td>QQQ 买入持有</td>
-          <td class="text-end">${pct(bm['年化收益'])}</td>
-          <td class="text-end">${(bm['夏普'] || 0).toFixed(2)}</td>
-          <td class="text-end">${pct(bm['最大回撤'])}</td>
-          <td class="text-end">—</td><td class="text-end">—</td></tr>
-      </tbody></table></div>
-    <div class="table-responsive"><table class="table table-sm table-vcenter mb-2">
-      <thead><tr><th>分段夏普</th>${segHead}</tr></thead>
-      <tbody><tr><td class="text-secondary" style="font-size:.76rem">越均匀越稳</td>${segs}</tr></tbody>
-    </table></div>
-    <div class="text-secondary" style="font-size:.72rem;line-height:1.7">
-      三段夏普差距大说明这组参数只在某段行情里好看，换个时期可能就不灵。
-      判断一个改动值不值得采用，看它是不是每段都不比原来差，而不是看总收益。
-    </div>`;
-}
-
-$('#stg-save').onclick = async () => {
-  const name = $('#stg-name').value.trim();
-  if (!name) { stgMsg('方案名不能为空', true); return; }
-  try {
-    await stgApi('POST', { name, note: $('#stg-note').value.trim(), params: stgCollect() });
-    stgMsg(`已保存「${name}」`);
-    await stgReload(name);
-  } catch (ex) { stgMsg(ex.message, true); }
-};
-
-$('#stg-activate').onclick = async () => {
-  const name = $('#stg-name').value.trim();
-  if (!STG.presets[name]) { stgMsg('先保存这套方案', true); return; }
-  try {
-    await stgApi('POST', { op: 'activate', name });
-    stgMsg(`「${name}」已设为生效，下次运行采用`);
-    await stgReload(name);
-  } catch (ex) { stgMsg(ex.message, true); }
-};
-
-$('#stg-del').onclick = async () => {
-  const name = $('#stg-name').value.trim();
-  if (!STG.presets[name]) { stgMsg('这套还没保存过', true); return; }
-  try {
-    await stgApi('POST', { op: 'delete', name });
-    stgCur = null;
-    stgMsg(`已删除「${name}」`);
-    await stgReload();
-  } catch (ex) { stgMsg(ex.message, true); }
-};
-
-$('#stg-bt').onclick = async () => {
-  const name = $('#stg-name').value.trim();
-  if (!STG.presets[name]) { stgMsg('先保存再回测', true); return; }
-  try {
-    await fetch(WORKER + '/quant/backtest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json',
-                 Authorization: 'Bearer ' + localStorage.getItem(TK) },
-      body: JSON.stringify({ name }),
-    }).then(async r => { const d = await r.json(); if (!d.success) throw new Error(d.error); });
-    stgMsg('已排队。回测在你本机执行，需要 bin/bt_worker.py --watch 守着。');
-    stgWatch(name);
-  } catch (ex) { stgMsg(ex.message, true); }
-};
-
-function stgWatch(name) {
-  clearInterval(stgPoll);
-  let n = 0;
-  stgPoll = setInterval(async () => {
-    n++;
-    try {
-      const d = await stgApi('GET');
-      STG = d;
-      const q = d.queue;
-      if (q && q.status === 'running') stgMsg('正在计算…');
-      if (d.results[name] && (!q || q.status === 'done' || q.status === 'error')) {
-        clearInterval(stgPoll);
-        stgDrawResult(d.results[name]);
-        stgDrawList();
-        stgMsg(d.results[name].error ? '回测失败' : '回测完成');
-      }
-    } catch { /* 轮询失败忽略 */ }
-    if (n > 60) { clearInterval(stgPoll); stgMsg('等太久了，检查 bt_worker.py 是否在运行', true); }
-  }, 5000);
-}
-
-function stgMsg(t, bad) {
-  $('#stg-msg').innerHTML = `<span class="${bad ? 'text-red' : 'text-green'}">${esc(t)}</span>`;
-}
-
-/* ───── 标的池自选 ───── */
-let SP500 = [], SELECTED = new Set(), uniModal = null;
-
-$('#open-universe').onclick = async () => {
-  if (!uniModal) uniModal = new bootstrap.Modal($('#uni-modal'));
-  $('#uni-msg').textContent = '';
-  $('#uni-add-msg').textContent = '';
-  $('#uni-remote').innerHTML = '';
-  uniLastQuery = '';
-  $('#uni-list').innerHTML = '<div class="empty-sm">载入中…</div>';
-  uniModal.show();
-  try {
-    const r = await fetch(WORKER + '/quant/universe',
-      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || '读取失败');
-    SP500 = d.sp500 || [];
-    SELECTED = new Set(d.selected || []);
-    if (!SP500.length) {
-      $('#uni-list').innerHTML = `<div class="empty-sm">名单还没上传。<br>
-        在本机跑一次 bin/upload_sp500.py 即可。</div>`;
-      return;
-    }
-    CUSTOM_NAMES = {};
-    const secs = ['自选', ...new Set(SP500.map(x => x.sec))].sort();
-    $('#uni-sector').innerHTML = '<option value="">全部行业</option>'
-      + secs.map(s => {
-          const n = s === '自选' ? [...SELECTED].filter(x => !SP500.some(y => y.s === x)).length
-                                 : SP500.filter(x => x.sec === s).length;
-          return n ? `<option value="${esc(s)}">${esc(s)}（${n}）</option>` : '';
-        }).join('');
-    if (d.updated) {
-      $('#uni-msg').textContent = '上次修改 ' + new Date(d.updated).toLocaleString('zh-CN');
-    }
-    drawUniverse();
-  } catch (ex) {
-    $('#uni-list').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
-  }
-};
-
-/* 标普 500 之外手工加进来的代码，和成分股一起参与勾选 */
-function uniAll() {
-  const known = new Set(SP500.map(x => x.s));
-  const extra = [...SELECTED].filter(s => !known.has(s))
-    .map(s => ({ s, n: CUSTOM_NAMES[s] || '自选（非标普 500）', sec: '自选' }));
-  return [...extra.sort((a, b) => a.s < b.s ? -1 : 1), ...SP500];
-}
-
-function uniFiltered() {
-  const q = ($('#uni-search').value || '').trim();
-  const sec = $('#uni-sector').value;
-  let pool = uniAll();
-  if (sec) pool = pool.filter(x => x.sec === sec);
-  if (!q) return pool;
-  // 用 Fuse 做模糊匹配，拼错一两个字母也能命中，并按相关度排序
-  if (window.Fuse) {
-    const f = new Fuse(pool, {
-      keys: [{ name: 's', weight: 0.7 }, { name: 'n', weight: 0.3 }],
-      threshold: 0.35, ignoreLocation: true, minMatchCharLength: 2,
-    });
-    return f.search(q).map(r => r.item);
-  }
-  const u = q.toUpperCase();
-  return pool.filter(x => x.s.includes(u) || (x.n || '').toUpperCase().includes(u));
-}
-
-let CUSTOM_NAMES = {}, uniSearchTimer = null, uniLastQuery = '';
-
-/* 全市场搜索：标普 500 名单只有 503 只，新上市的、中小盘的、ETF 都不在里面。
-   本地列表先即时过滤，同时向行情商的搜索接口要结果，找到的可以直接加进池子。 */
-async function uniRemoteSearch(q) {
-  const box = $('#uni-remote');
-  if (q.length < 2) { box.innerHTML = ''; uniLastQuery = ''; return; }
-  if (q === uniLastQuery) return;
-  uniLastQuery = q;
-  box.innerHTML = `<div class="text-secondary" style="font-size:.74rem">全市场搜索「${esc(q)}」…</div>`;
-  try {
-    const r = await fetch(`${WORKER}/quant/search?q=${encodeURIComponent(q)}`,
-      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || '搜索失败');
-    const known = new Set(SP500.map(x => x.s));
-    const rows = (d.results || []).filter(x => !known.has(x.s));
-    if (!rows.length) {
-      box.innerHTML = `<div class="text-secondary" style="font-size:.74rem">
-        全市场没有标普 500 之外的匹配${/[一-龥]/.test(q)
-          ? '（数据源只索引英文名，中文搜不到，请用代码或英文名）' : ''}</div>`;
-      return;
-    }
-    box.innerHTML = `<div class="text-secondary mb-1" style="font-size:.72rem">
-        标普 500 之外的匹配（点「加入」即可纳入标的池）</div>` +
-      `<table class="table table-sm table-vcenter mb-0"><tbody>` + rows.map(x => `<tr>
-        <td style="width:80px"><strong class="num">${esc(x.s)}</strong></td>
-        <td class="text-secondary" style="font-size:.78rem">${esc(x.n)}</td>
-        <td class="text-secondary text-end" style="font-size:.72rem;width:96px">
-          ${esc(x.t)} ${esc(x.ex || '')}</td>
-        <td style="width:64px" class="text-end">
-          ${SELECTED.has(x.s)
-            ? '<span class="badge bg-green-lt">已在池</span>'
-            : `<button class="btn btn-sm btn-outline-primary uni-add-btn"
-                 data-s="${esc(x.s)}" data-n="${esc(x.n)}">加入</button>`}</td>
-      </tr>`).join('') + '</tbody></table>';
-    document.querySelectorAll('.uni-add-btn').forEach(b => {
-      b.onclick = () => uniAdd(b.dataset.s, b.dataset.n);
-    });
-  } catch (ex) {
-    box.innerHTML = `<div class="text-red" style="font-size:.74rem">${esc(ex.message)}</div>`;
-  }
-}
-
-async function uniAdd(sym, name) {
-  const msg = $('#uni-add-msg');
-  if (SELECTED.has(sym)) return;
-  msg.textContent = `核对 ${sym} 的行情…`;
-  try {
-    // 搜索命中不代表有可用历史，这里再用行情接口确认一次
-    const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
-      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || '查不到行情');
-    const n = (d.bars || []).length;
-    if (n < 2) throw new Error('这个代码没有可用的日线数据');
-    SELECTED.add(sym);
-    CUSTOM_NAMES[sym] = name || '自选（非标普 500）';
-    const warn = n < 120
-      ? `，但只有 ${n} 根日线，不够算 100 日均线，暂时不会产生信号`
-      : `，${n} 根日线可用`;
-    msg.innerHTML = `<span class="${n < 120 ? 'text-orange' : 'text-green'}">已加入 ${sym}${warn}</span>`;
-    uniLastQuery = '';
-    uniRemoteSearch($('#uni-search').value.trim());
-    drawUniverse();
-  } catch (ex) {
-    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
-  }
-}
-
-function drawUniverse() {
-  const rows = uniFiltered();
-  const known = new Set(SP500.map(x => x.s));
-  const nExtra = [...SELECTED].filter(s => !known.has(s)).length;
-  $('#uni-count').textContent =
-    `已选 ${SELECTED.size} / ${SP500.length}` + (nExtra ? ` （含 ${nExtra} 只自选）` : '');
-  if (!rows.length) { $('#uni-list').innerHTML = '<div class="empty-sm">没有匹配的标的。</div>'; return; }
-  $('#uni-list').innerHTML = `<table class="table table-sm table-vcenter"><tbody>` +
-    rows.map(x => `<tr>
-      <td style="width:34px"><input class="form-check-input m-0 uni-cb" type="checkbox"
-        data-s="${esc(x.s)}"${SELECTED.has(x.s) ? ' checked' : ''}></td>
-      <td style="width:80px"><strong class="num">${esc(x.s)}</strong></td>
-      <td class="text-secondary" style="font-size:.8rem">${esc(x.n)}</td>
-      <td class="text-secondary text-end" style="font-size:.74rem;width:80px">${esc(x.sec)}</td>
-    </tr>`).join('') + '</tbody></table>';
-  document.querySelectorAll('.uni-cb').forEach(cb => {
-    cb.onchange = () => {
-      cb.checked ? SELECTED.add(cb.dataset.s) : SELECTED.delete(cb.dataset.s);
-      drawUniverse();
-    };
-  });
-}
-
-$('#uni-search').oninput = () => {
-  drawUniverse();
-  clearTimeout(uniSearchTimer);
-  const q = $('#uni-search').value.trim();
-  uniSearchTimer = setTimeout(() => uniRemoteSearch(q), 500);
-};
-$('#uni-sector').onchange = drawUniverse;
-$('#uni-all').onclick = () => { uniFiltered().forEach(x => SELECTED.add(x.s)); drawUniverse(); };
-$('#uni-none').onclick = () => { uniFiltered().forEach(x => SELECTED.delete(x.s)); drawUniverse(); };
-
-$('#uni-save').onclick = async () => {
-  const btn = $('#uni-save'), msg = $('#uni-msg');
-  if (SELECTED.size < 5) { msg.innerHTML = '<span class="text-red">至少选 5 只</span>'; return; }
-  btn.disabled = true; msg.textContent = '保存中…';
-  try {
-    const r = await fetch(WORKER + '/quant/universe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json',
-                 Authorization: 'Bearer ' + localStorage.getItem(TK) },
-      body: JSON.stringify({ symbols: [...SELECTED] }),
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || '保存失败');
-    msg.innerHTML = `<span class="text-green">已保存 ${d.count} 只，下次运行生效</span>`;
-    setTimeout(() => uniModal.hide(), 900);
-  } catch (ex) {
-    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
-  } finally { btn.disabled = false; }
-};
-
-/* ───── 成交记录 ───── */
 function renderTrades(ts) {
   const box = $('#trades'), sum = $('#trade-summary');
   if (!ts.length) {
@@ -1198,7 +630,7 @@ function renderTrades(ts) {
     <thead><tr><th>标的</th><th>入场</th><th>离场</th><th class="text-end">股数</th>
     <th class="text-end">成本</th><th class="text-end">卖出</th><th class="text-end">盈亏</th>
     <th class="text-end">持有</th><th>原因</th></tr></thead><tbody>` +
-    ts.slice(0, 40).map(t => `<tr class="sym-row" data-sym="${esc(t.symbol)}" style="cursor:pointer">
+    ts.slice(0, 60).map(t => `<tr class="sym-row" data-sym="${esc(t.symbol)}" style="cursor:pointer">
       <td><strong>${esc(t.symbol)}</strong></td>
       <td class="text-secondary">${esc(t.entry_date || '—')}</td>
       <td class="text-secondary">${esc(t.date)}</td>
@@ -1209,94 +641,15 @@ function renderTrades(ts) {
         <span class="text-secondary ms-1" style="font-size:.72rem">${pct(t.pnl_pct)}</span></td>
       <td class="text-end text-secondary">${t.hold_days}d</td>
       <td class="text-secondary" style="font-size:.72rem;white-space:normal;max-width:230px">
-        ${esc(t.reason || '')}</td>
-    </tr>`).join('') + '</tbody></table></div>';
+        ${esc(t.reason || '')}</td></tr>`).join('') + '</tbody></table></div>';
   wireSymbolRows();
-}
-
-/* ───── 点标的看个股走势 ───── */
-let symChart = null;
-function wireSymbolRows() {
-  document.querySelectorAll('.sym-row').forEach(tr => {
-    tr.onclick = () => openSymbol(tr.dataset.sym);
-  });
-}
-
-async function openSymbol(sym) {
-  const holding = ((DATA.latest && DATA.latest.holdings) || []).find(h => h.symbol === sym);
-  const lastTrade = (DATA.trades || []).find(t => t.symbol === sym);
-  $('#sym-title').textContent = sym;
-  $('#sym-legend').innerHTML = '<span class="text-secondary">载入中…</span>';
-  $('#sym-note').textContent = '';
-  new bootstrap.Modal($('#sym-modal')).show();
-
-  let bars = [];
-  try {
-    const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
-      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || '读取失败');
-    bars = d.bars || [];
-  } catch (ex) {
-    $('#sym-legend').innerHTML = `<span class="text-red">行情读取失败：${esc(ex.message)}</span>`;
-    return;
-  }
-  if (bars.length < 2) {
-    $('#sym-legend').innerHTML = '<span class="text-secondary">没有足够的行情数据</span>';
-    return;
-  }
-
-  if (symChart) { symChart.remove(); symChart = null; }
-  symChart = LightweightCharts.createChart($('#sym-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
-              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
-    grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
-    rightPriceScale: { borderColor: '#1c2733' },
-    timeScale: { borderColor: '#1c2733' },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
-    localization: { priceFormatter: v => '$' + v.toFixed(2) },
-    autoSize: true,
-  });
-  const s = symChart.addSeries(LightweightCharts.CandlestickSeries, {
-    upColor: '#2ea043', downColor: '#e5484d',
-    borderUpColor: '#2ea043', borderDownColor: '#e5484d',
-    wickUpColor: '#2ea043', wickDownColor: '#e5484d',
-  });
-  s.setData(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
-
-  const legend = [`<span><i style="background:#7d8b99"></i>
-    <span class="text-secondary">收盘</span> <b>${money(bars[bars.length - 1].c)}</b></span>`];
-  const notes = [];
-
-  if (holding) {
-    s.createPriceLine({ price: holding.entry_price, color: '#4c9aff', lineWidth: 1,
-      lineStyle: 2, axisLabelVisible: true, title: '成本' });
-    s.createPriceLine({ price: holding.stop, color: '#bb8009', lineWidth: 1,
-      lineStyle: 2, axisLabelVisible: true, title: '止损' });
-    legend.push(`<span><i style="background:#4c9aff"></i>
-      <span class="text-secondary">成本</span> <b>${money(holding.entry_price)}</b></span>`);
-    legend.push(`<span><i style="background:#bb8009"></i>
-      <span class="text-secondary">止损</span> <b>${money(holding.stop)}</b></span>`);
-    const room = (holding.last_price - holding.stop) / holding.last_price;
-    notes.push(`持有 ${holding.days} 天，浮动盈亏 ${pct(holding.pnl_pct)}，`
-      + `现价距止损还有 ${pct(room)} 的空间。`);
-  } else if (lastTrade) {
-    notes.push(`已于 ${lastTrade.date} 离场，${lastTrade.pnl >= 0 ? '盈利' : '亏损'} `
-      + `${money(Math.abs(lastTrade.pnl))}（${pct(lastTrade.pnl_pct)}），`
-      + `持有 ${lastTrade.hold_days} 天。离场原因：${lastTrade.reason || '—'}`);
-  } else {
-    notes.push('当前未持有该标的。');
-  }
-  $('#sym-legend').innerHTML = legend.join('');
-  $('#sym-note').textContent = notes.join(' ');
-  symChart.timeScale().fitContent();
 }
 
 function renderParams(BT) {
   const p = (BT && BT.params) || {}, st = (BT && BT.stats) || {};
   const rows = [
     ['策略', p.name || '科技股日线波段'],
-    ['标的池', (p.universe_size || '—') + ' 只科技股'],
+    ['标的池', (p.universe_size || '—') + ' 只'],
     ['最大持仓', (p.max_positions ?? '—') + ' 只'],
     ['每笔风险', p.risk_per_trade_pct != null ? (p.risk_per_trade_pct * 100).toFixed(1) + '%' : '—'],
     ['入场', p.breakout_lookback ? `突破 ${p.breakout_lookback} 日新高` : '—'],
@@ -1311,6 +664,441 @@ function renderParams(BT) {
   $('#params').innerHTML = rows.map(([k, v]) =>
     `<div class="datagrid-item"><div class="datagrid-title">${k}</div>
      <div class="datagrid-content">${esc(v)}</div></div>`).join('');
+}
+
+/* ───── 个股详情 ───── */
+let symChart = null;
+function wireSymbolRows() {
+  $$('.sym-row').forEach(tr => { tr.onclick = () => openSymbol(tr.dataset.sym); });
+}
+async function openSymbol(sym) {
+  const holding = ((DATA.latest && DATA.latest.holdings) || []).find(h => h.symbol === sym);
+  const last = (DATA.trades || []).find(t => t.symbol === sym);
+  $('#sym-title').textContent = sym;
+  $('#sym-legend').innerHTML = '<span class="text-secondary">载入中…</span>';
+  $('#sym-note').textContent = '';
+  new bootstrap.Modal($('#sym-modal')).show();
+  let bars = [];
+  try {
+    const d = await (await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
+      { headers: auth() })).json();
+    if (!d.success) throw new Error(d.error || '读取失败');
+    bars = d.bars || [];
+  } catch (ex) {
+    $('#sym-legend').innerHTML = `<span class="text-red">行情读取失败：${esc(ex.message)}</span>`; return;
+  }
+  if (bars.length < 2) { $('#sym-legend').innerHTML = '<span class="text-secondary">没有足够的行情数据</span>'; return; }
+  if (symChart) { symChart.remove(); symChart = null; }
+  symChart = LightweightCharts.createChart($('#sym-chart'), {
+    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+    grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
+    rightPriceScale: { borderColor: '#1c2733' }, timeScale: { borderColor: '#1c2733' },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
+    localization: { priceFormatter: v => '$' + v.toFixed(2) }, autoSize: true,
+  });
+  const s = symChart.addSeries(LightweightCharts.CandlestickSeries, {
+    upColor: '#2ea043', downColor: '#e5484d', borderUpColor: '#2ea043',
+    borderDownColor: '#e5484d', wickUpColor: '#2ea043', wickDownColor: '#e5484d' });
+  s.setData(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
+  const lg = [`<span><i style="background:#7d8b99"></i>
+    <span class="text-secondary">收盘</span> <b>${money(bars[bars.length - 1].c)}</b></span>`];
+  let note;
+  if (holding) {
+    s.createPriceLine({ price: holding.entry_price, color: '#4c9aff', lineWidth: 1,
+      lineStyle: 2, axisLabelVisible: true, title: '成本' });
+    s.createPriceLine({ price: holding.stop, color: '#bb8009', lineWidth: 1,
+      lineStyle: 2, axisLabelVisible: true, title: '止损' });
+    lg.push(`<span><i style="background:#4c9aff"></i><span class="text-secondary">成本</span>
+      <b>${money(holding.entry_price)}</b></span>`);
+    lg.push(`<span><i style="background:#bb8009"></i><span class="text-secondary">止损</span>
+      <b>${money(holding.stop)}</b></span>`);
+    note = `持有 ${holding.days} 天，浮动盈亏 ${pct(holding.pnl_pct)}，`
+         + `现价距止损还有 ${pct((holding.last_price - holding.stop) / holding.last_price)} 的空间。`;
+  } else if (last) {
+    note = `已于 ${last.date} 离场，${last.pnl >= 0 ? '盈利' : '亏损'} `
+         + `${money(Math.abs(last.pnl))}（${pct(last.pnl_pct)}），持有 ${last.hold_days} 天。`
+         + `离场原因：${last.reason || '—'}`;
+  } else note = '当前未持有该标的。';
+  $('#sym-legend').innerHTML = lg.join('');
+  $('#sym-note').textContent = note;
+  symChart.timeScale().fitContent();
+}
+
+/* ══════════ 标的池 ══════════ */
+let SP500 = [], SELECTED = new Set(), SAVED = new Set(),
+    CUSTOM = {}, FUSE = null, poolTimer = null, poolRemoteQ = '';
+
+async function poolLoad() {
+  try {
+    const d = await (await fetch(WORKER + '/quant/universe', { headers: auth() })).json();
+    if (!d.success) throw new Error(d.error || '读取失败');
+    SP500 = d.sp500 || [];
+    SELECTED = new Set(d.selected || []);
+    SAVED = new Set(d.selected || []);
+    if (window.Fuse && SP500.length) {
+      FUSE = new Fuse(SP500, { keys: [{ name: 's', weight: .7 }, { name: 'n', weight: .3 }],
+        threshold: .35, ignoreLocation: true, minMatchCharLength: 2 });
+    }
+    const secs = [...new Set(SP500.map(x => x.sec))].sort();
+    $('#uni-sector').innerHTML = '<option value="">全部行业</option>'
+      + secs.map(s => `<option value="${esc(s)}">${esc(s)}（${SP500.filter(x => x.sec === s).length}）</option>`).join('');
+    poolPaint();
+  } catch (ex) {
+    $('#pool-chips').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
+  }
+}
+
+function poolDirty() {
+  if (SELECTED.size !== SAVED.size) return true;
+  for (const s of SELECTED) if (!SAVED.has(s)) return true;
+  return false;
+}
+
+function poolPaint() {
+  const n = SELECTED.size;
+  $('#pool-count').textContent = n + ' 只';
+  $('#tab-pool-count').textContent = n;
+  const dirty = poolDirty();
+  $('#pool-save').disabled = !dirty;
+  $('#pool-state').innerHTML = dirty
+    ? `已选 ${n} 只 <span class="text-orange">· 有未保存改动</span>`
+    : `已选 ${n} 只 <span class="text-green">· 已保存</span>`;
+
+  const known = new Map(SP500.map(x => [x.s, x]));
+  const list = [...SELECTED].sort();
+  $('#pool-chips').innerHTML = list.length
+    ? list.map(s => {
+        const x = known.get(s);
+        return `<span class="chip${x ? '' : ' custom'}" title="${esc(x ? x.n : (CUSTOM[s] || '自选'))}">
+          ${esc(s)}<span class="x" data-s="${esc(s)}">×</span></span>`;
+      }).join('')
+    : '<div class="empty-sm">标的池是空的。用上面的搜索框加几只。</div>';
+  $$('#pool-chips .x').forEach(el => { el.onclick = () => { SELECTED.delete(el.dataset.s); poolPaint(); }; });
+  uniPaint();
+}
+
+function uniRows() {
+  const q = ($('#uni-filter').value || '').trim();
+  const sec = $('#uni-sector').value;
+  let pool = SP500;
+  if (sec) pool = pool.filter(x => x.sec === sec);
+  if (!q) return pool;
+  if (window.Fuse) {
+    return new Fuse(pool, { keys: [{ name: 's', weight: .7 }, { name: 'n', weight: .3 }],
+      threshold: .35, ignoreLocation: true, minMatchCharLength: 2 }).search(q).map(r => r.item);
+  }
+  const u = q.toUpperCase();
+  return pool.filter(x => x.s.includes(u) || (x.n || '').toUpperCase().includes(u));
+}
+
+function uniPaint() {
+  const rows = uniRows();
+  if (!rows.length) { $('#uni-list').innerHTML = '<div class="empty-sm">没有匹配的标的。</div>'; return; }
+  $('#uni-list').innerHTML = `<table class="table table-sm table-vcenter mb-0"><tbody>` +
+    rows.map(x => `<tr>
+      <td style="width:38px"><input class="form-check-input m-0 uni-cb" type="checkbox"
+        data-s="${esc(x.s)}"${SELECTED.has(x.s) ? ' checked' : ''}></td>
+      <td style="width:84px"><strong class="num">${esc(x.s)}</strong></td>
+      <td class="text-secondary" style="font-size:.8rem">${esc(x.n)}</td>
+      <td class="text-secondary text-end" style="font-size:.74rem;width:86px">${esc(x.sec)}</td>
+    </tr>`).join('') + '</tbody></table>';
+  $$('.uni-cb').forEach(cb => {
+    cb.onchange = () => { cb.checked ? SELECTED.add(cb.dataset.s) : SELECTED.delete(cb.dataset.s); poolPaint(); };
+  });
+}
+$('#uni-filter').oninput = uniPaint;
+$('#uni-sector').onchange = uniPaint;
+$('#uni-all').onclick = () => { uniRows().forEach(x => SELECTED.add(x.s)); poolPaint(); };
+$('#uni-none').onclick = () => { uniRows().forEach(x => SELECTED.delete(x.s)); poolPaint(); };
+
+$('#pool-save').onclick = async () => {
+  const btn = $('#pool-save'), msg = $('#pool-msg');
+  if (SELECTED.size < 5) { msg.innerHTML = '<span class="text-red">标的池至少要有 5 只</span>'; return; }
+  btn.disabled = true; msg.textContent = '保存中…';
+  try {
+    const d = await (await fetch(WORKER + '/quant/universe', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...auth() },
+      body: JSON.stringify({ symbols: [...SELECTED] }) })).json();
+    if (!d.success) throw new Error(d.error || '保存失败');
+    SAVED = new Set(SELECTED);
+    msg.innerHTML = `<span class="text-green">已保存 ${d.count} 只，下次运行生效</span>`;
+  } catch (ex) {
+    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
+  } finally { poolPaint(); }
+};
+
+function poolRow(x, inPool, tag) {
+  return `<div class="d-flex align-items-center gap-2 px-3 py-2 pool-row">
+    <strong class="num" style="width:76px">${esc(x.s)}</strong>
+    <span class="text-secondary flex-grow-1" style="font-size:.8rem">${esc(x.n || '')}</span>
+    <span class="text-secondary" style="font-size:.7rem;white-space:nowrap">${esc(tag || '')}</span>
+    ${inPool ? '<span class="badge bg-green-lt">已在池</span>'
+      : `<button class="btn btn-sm btn-outline-primary pool-add"
+           data-s="${esc(x.s)}" data-n="${esc(x.n || '')}">加入</button>`}</div>`;
+}
+
+function poolShow(local, remote, q) {
+  const box = $('#pool-results');
+  const out = local.slice(0, 7).map(x => poolRow(x, SELECTED.has(x.s), x.sec));
+  if (remote === 'loading') {
+    out.push('<div class="px-3 py-2 text-secondary" style="font-size:.74rem">全市场搜索中…</div>');
+  } else if (Array.isArray(remote) && remote.length) {
+    out.push('<div class="px-3 pt-2 pb-1 text-secondary" style="font-size:.7rem">标普 500 之外</div>');
+    out.push(...remote.slice(0, 7).map(x => poolRow(x, SELECTED.has(x.s), `${x.t} ${x.ex || ''}`)));
+  } else if (remote === 'empty' && !local.length) {
+    out.push(`<div class="px-3 py-3 text-secondary" style="font-size:.78rem">没找到。${
+      /[一-龥]/.test(q) ? '数据源只索引英文名，请用代码或英文名搜。' : ''}</div>`);
+  }
+  if (!out.length) { box.hidden = true; return; }
+  box.innerHTML = out.join(''); box.hidden = false;
+  $$('#pool-results .pool-add').forEach(b => { b.onclick = () => poolAdd(b.dataset.s, b.dataset.n); });
+}
+
+function poolSearch() {
+  const q = $('#pool-search').value.trim();
+  if (!q) { $('#pool-results').hidden = true; return; }
+  const local = FUSE ? FUSE.search(q).map(r => r.item)
+    : SP500.filter(x => x.s.includes(q.toUpperCase()));
+  poolShow(local, 'loading', q);
+  clearTimeout(poolTimer);
+  poolTimer = setTimeout(async () => {
+    if (q === poolRemoteQ) return;
+    poolRemoteQ = q;
+    try {
+      const d = await (await fetch(`${WORKER}/quant/search?q=${encodeURIComponent(q)}`,
+        { headers: auth() })).json();
+      const known = new Set(SP500.map(x => x.s));
+      const rem = (d.results || []).filter(x => !known.has(x.s));
+      if ($('#pool-search').value.trim() === q) poolShow(local, rem.length ? rem : 'empty', q);
+    } catch {
+      if ($('#pool-search').value.trim() === q) poolShow(local, 'empty', q);
+    }
+  }, 450);
+}
+
+async function poolAdd(sym, name) {
+  const msg = $('#pool-msg');
+  msg.textContent = `核对 ${sym} 的行情…`;
+  try {
+    const d = await (await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
+      { headers: auth() })).json();
+    if (!d.success) throw new Error(d.error || '查不到行情');
+    const n = (d.bars || []).length;
+    if (n < 2) throw new Error('这个代码没有可用的日线数据');
+    SELECTED.add(sym); CUSTOM[sym] = name || '自选';
+    msg.innerHTML = n < 120
+      ? `<span class="text-orange">已加入 ${sym}，但只有 ${n} 根日线，不够算 100 日均线，暂时不会产生信号。记得点下方保存。</span>`
+      : `<span class="text-green">已加入 ${sym}（${n} 根日线可用）。记得点下方保存。</span>`;
+    poolPaint(); poolSearch();
+  } catch (ex) { msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`; }
+}
+
+$('#pool-search').oninput = poolSearch;
+$('#pool-search').onfocus = poolSearch;
+document.addEventListener('click', e => {
+  if (!e.target.closest('#pool-search') && !e.target.closest('#pool-results')) {
+    $('#pool-results').hidden = true;
+  }
+});
+
+/* ══════════ 策略 ══════════ */
+let STG = { presets: {}, active: null, results: {}, spec: {} }, stgCur = null, stgPoll = null;
+
+async function stgApi(method, body) {
+  const r = await fetch(WORKER + '/quant/strategies', {
+    method, headers: { 'Content-Type': 'application/json', ...auth() },
+    body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json();
+  if (!d.success) throw new Error(d.error || '请求失败');
+  return d;
+}
+
+async function stgReload(keep) {
+  try {
+    STG = await stgApi('GET');
+    $('#tab-stg-name').textContent = STG.active || '未设置';
+    const names = Object.keys(STG.presets || {});
+    if (!names.length) {
+      stgCur = null;
+      $('#stg-list').innerHTML = '<div class="empty-sm">还没有方案。<br>点「新建」开始。</div>';
+      stgNew(); return;
+    }
+    stgDrawList();
+    stgLoad(keep && STG.presets[keep] ? keep
+      : (stgCur && STG.presets[stgCur] ? stgCur : (STG.active || names[0])));
+  } catch (ex) {
+    $('#stg-form').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
+  }
+}
+
+function stgDrawList() {
+  $('#stg-list').innerHTML = Object.keys(STG.presets).sort().map(n => {
+    const r = STG.results[n];
+    const sub = r && r.stats ? `${pct(r.stats['年化收益'])} · 夏普 ${(r.stats['夏普'] || 0).toFixed(2)}`
+      : r && r.error ? '回测失败' : '未回测';
+    return `<div class="stg-item p-2 mb-1 ${n === stgCur ? 'on' : ''}" data-n="${esc(n)}">
+      <div class="d-flex align-items-center">
+        <strong style="font-size:.85rem">${esc(n)}</strong>
+        ${n === STG.active ? '<span class="badge bg-green-lt ms-2">生效中</span>' : ''}</div>
+      <div class="text-secondary num" style="font-size:.7rem">${esc(sub)}</div></div>`;
+  }).join('');
+  $$('.stg-item').forEach(el => { el.onclick = () => stgLoad(el.dataset.n); });
+}
+
+function stgNew() {
+  stgCur = null; $('#stg-name').value = ''; $('#stg-note').value = '';
+  const v = {}; for (const [k, sp] of Object.entries(STG.spec || {})) v[k] = sp.def;
+  stgForm(v); $('#stg-result').innerHTML = ''; stgDrawList();
+}
+$('#stg-new').onclick = stgNew;
+
+function stgLoad(name) {
+  const p = STG.presets[name]; if (!p) return;
+  stgCur = name;
+  $('#stg-name').value = p.name || name;
+  $('#stg-note').value = p.note || '';
+  stgForm(p.params || {}); stgDrawList(); stgResult(STG.results[name]);
+}
+
+function stgForm(vals) {
+  const groups = {};
+  for (const [k, sp] of Object.entries(STG.spec || {})) (groups[sp.group] ||= []).push([k, sp]);
+  $('#stg-form').innerHTML = Object.entries(groups).map(([g, items]) => `
+    <div class="mb-3">
+      <div class="subheader mb-2" style="color:var(--kq-s1)">${esc(g)}</div>
+      <div class="row g-2">${items.map(([k, sp]) => {
+        const v = vals[k] !== undefined ? vals[k] : sp.def;
+        let input;
+        if (sp.type === 'bool') {
+          input = `<label class="form-check form-switch mb-0 mt-1">
+            <input class="form-check-input stg-f" type="checkbox" data-k="${k}"${v ? ' checked' : ''}>
+            <span class="form-check-label text-secondary" style="font-size:.76rem">${v ? '开启' : '关闭'}</span></label>`;
+        } else if (sp.type === 'enum') {
+          input = `<select class="form-select form-select-sm stg-f" data-k="${k}">${
+            sp.options.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+        } else {
+          input = `<div class="input-group input-group-sm">
+            <input class="form-control stg-f" type="number" data-k="${k}" value="${v}"
+              min="${sp.min}" max="${sp.max}" step="${sp.step || 1}">
+            ${sp.unit ? `<span class="input-group-text">${esc(sp.unit)}</span>` : ''}</div>`;
+        }
+        return `<div class="col-sm-6 col-xl-4">
+          <label class="form-label subheader mb-1">${esc(sp.label)}</label>${input}
+          <div class="text-secondary mt-1" style="font-size:.68rem;line-height:1.5">${esc(sp.hint)}</div>
+        </div>`;
+      }).join('')}</div></div>`).join('');
+  $$('.stg-f[type="checkbox"]').forEach(cb => {
+    cb.onchange = () => {
+      const l = cb.parentElement.querySelector('.form-check-label');
+      if (l) l.textContent = cb.checked ? '开启' : '关闭';
+    };
+  });
+}
+
+function stgCollect() {
+  const p = {};
+  $$('.stg-f').forEach(el => {
+    const k = el.dataset.k, sp = STG.spec[k]; if (!sp) return;
+    p[k] = sp.type === 'bool' ? el.checked : sp.type === 'enum' ? el.value : Number(el.value);
+  });
+  return p;
+}
+
+function stgResult(r) {
+  const box = $('#stg-result');
+  if (!r) { box.innerHTML = ''; return; }
+  if (r.error) {
+    box.innerHTML = `<div class="alert alert-danger py-2" style="font-size:.8rem">回测失败：${esc(r.error)}</div>`;
+    return;
+  }
+  const s = r.stats || {}, bm = r.benchmark || {};
+  box.innerHTML = `<div class="card"><div class="card-header">
+      <h3 class="card-title mb-0">回测结果</h3>
+      <span class="card-subtitle ms-auto num">${new Date(r.ran_at).toLocaleString('zh-CN')} · ${r.universe_size} 只标的</span>
+    </div><div class="card-body">
+    <div class="table-responsive"><table class="table table-sm table-vcenter mb-3">
+      <thead><tr><th></th><th class="text-end">年化</th><th class="text-end">夏普</th>
+      <th class="text-end">最大回撤</th><th class="text-end">交易笔数</th><th class="text-end">胜率</th></tr></thead>
+      <tbody>
+        <tr><td><strong>这套策略</strong></td>
+          <td class="text-end ${tone(s['年化收益'])}"><strong>${pct(s['年化收益'])}</strong></td>
+          <td class="text-end"><strong>${(s['夏普'] || 0).toFixed(2)}</strong></td>
+          <td class="text-end text-red">${pct(s['最大回撤'])}</td>
+          <td class="text-end">${s['交易笔数'] ?? '—'}</td>
+          <td class="text-end">${s['胜率'] != null ? (s['胜率'] * 100).toFixed(0) + '%' : '—'}</td></tr>
+        <tr class="text-secondary"><td>QQQ 买入持有</td>
+          <td class="text-end">${pct(bm['年化收益'])}</td>
+          <td class="text-end">${(bm['夏普'] || 0).toFixed(2)}</td>
+          <td class="text-end">${pct(bm['最大回撤'])}</td>
+          <td class="text-end">—</td><td class="text-end">—</td></tr>
+      </tbody></table></div>
+    <div class="table-responsive"><table class="table table-sm table-vcenter mb-2">
+      <thead><tr><th>分段夏普</th>${(r.segments || []).map(x =>
+        `<th class="text-end">${esc(x.period)}</th>`).join('')}</tr></thead>
+      <tbody><tr><td class="text-secondary" style="font-size:.76rem">越均匀越稳</td>${
+        (r.segments || []).map(x => `<td class="text-end">${x.sharpe == null ? '—' : x.sharpe.toFixed(2)}</td>`).join('')
+      }</tr></tbody></table></div>
+    <div class="text-secondary" style="font-size:.72rem;line-height:1.7">
+      三段夏普差距大说明这组参数只在某段行情里好看，换个时期可能就不灵。
+      判断一个改动值不值得采用，看它是不是每段都不比原来差，而不是看总收益。
+    </div></div></div>`;
+}
+
+const stgMsg = (t, bad) => { $('#stg-msg').innerHTML = `<span class="${bad ? 'text-red' : 'text-green'}">${esc(t)}</span>`; };
+
+$('#stg-save').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!name) return stgMsg('方案名不能为空', true);
+  try {
+    await stgApi('POST', { name, note: $('#stg-note').value.trim(), params: stgCollect() });
+    stgMsg(`已保存「${name}」`); await stgReload(name);
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+$('#stg-activate').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!STG.presets[name]) return stgMsg('先保存这套方案', true);
+  try {
+    await stgApi('POST', { op: 'activate', name });
+    stgMsg(`「${name}」已设为生效，下次运行采用`); await stgReload(name);
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+$('#stg-del').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!STG.presets[name]) return stgMsg('这套还没保存过', true);
+  try {
+    await stgApi('POST', { op: 'delete', name }); stgCur = null;
+    stgMsg(`已删除「${name}」`); await stgReload();
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+$('#stg-bt').onclick = async () => {
+  const name = $('#stg-name').value.trim();
+  if (!STG.presets[name]) return stgMsg('先保存再回测', true);
+  try {
+    const d = await (await fetch(WORKER + '/quant/backtest', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...auth() },
+      body: JSON.stringify({ name }) })).json();
+    if (!d.success) throw new Error(d.error);
+    stgMsg('已排队。回测在本机执行，需要 bin/bt_worker.py --watch 守着。');
+    stgWatch(name);
+  } catch (ex) { stgMsg(ex.message, true); }
+};
+
+function stgWatch(name) {
+  clearInterval(stgPoll);
+  let n = 0;
+  stgPoll = setInterval(async () => {
+    n++;
+    try {
+      const d = await stgApi('GET'); STG = d;
+      if (d.queue && d.queue.status === 'running') stgMsg('正在计算…');
+      if (d.results[name] && (!d.queue || d.queue.status !== 'pending')) {
+        clearInterval(stgPoll); stgResult(d.results[name]); stgDrawList();
+        stgMsg(d.results[name].error ? '回测失败' : '回测完成');
+      }
+    } catch { /* 忽略单次轮询失败 */ }
+    if (n > 60) { clearInterval(stgPoll); stgMsg('等太久了，检查 bt_worker.py 是否在运行', true); }
+  }, 5000);
 }
 
 boot();
