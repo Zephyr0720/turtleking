@@ -91,6 +91,7 @@ body{background:#0b0f14}
       <span class="navbar-brand brand-mark mb-0">KUCHA<span class="dot">·</span>QUANT</span>
       <span class="badge bg-secondary-lt ms-2" id="status-badge">载入中</span>
       <div class="ms-auto d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" id="open-universe">标的池</button>
         <button class="btn btn-sm btn-outline-secondary" id="refresh">刷新</button>
         <button class="btn btn-sm btn-outline-secondary" id="logout">登出</button>
       </div>
@@ -171,6 +172,41 @@ body{background:#0b0f14}
       <div class="text-secondary" style="font-size:.75rem;line-height:1.9">
         信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
         数据经 api.kucha.org 读取，仅管理员可见。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 标的池选择 ══════════ -->
+<div class="modal modal-blur fade" id="uni-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">标的池 <span class="text-secondary" id="uni-count"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2 d-flex gap-2 flex-wrap align-items-center">
+          <input type="search" class="form-control form-control-sm" id="uni-search"
+                 placeholder="搜代码或公司名" style="max-width:220px">
+          <select class="form-select form-select-sm" id="uni-sector" style="max-width:150px">
+            <option value="">全部行业</option>
+          </select>
+          <button class="btn btn-sm btn-outline-secondary" id="uni-all">全选当前筛选</button>
+          <button class="btn btn-sm btn-outline-secondary" id="uni-none">清空当前筛选</button>
+        </div>
+        <div class="text-secondary mb-2" style="font-size:.74rem;line-height:1.7">
+          选中的标的会成为每日选股的候选池，下次运行生效。系统仍会按流动性和价格再筛一道，
+          最终只从符合条件的标的里挑。池子太小会选不出仓位，建议至少 30 只。<br>
+          改动会让「策略参数」里的回测数字失效，因为那是在旧池子上跑的。
+          想让数字跟上，在本机重跑一次 <code>bin/export_backtest.py --upload</code>。
+        </div>
+        <div id="uni-list" style="max-height:46vh;overflow:auto"></div>
+      </div>
+      <div class="modal-footer">
+        <span class="text-secondary me-auto" id="uni-msg" style="font-size:.78rem"></span>
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+        <button class="btn btn-primary" id="uni-save">保存</button>
       </div>
     </div>
   </div>
@@ -480,6 +516,91 @@ function renderStops(L) {
       <td class="text-end text-green">${pct(s.to / s.from - 1)}</td></tr>`).join('') +
     '</tbody></table></div>';
 }
+
+/* ───── 标的池自选 ───── */
+let SP500 = [], SELECTED = new Set(), uniModal = null;
+
+$('#open-universe').onclick = async () => {
+  if (!uniModal) uniModal = new bootstrap.Modal($('#uni-modal'));
+  $('#uni-msg').textContent = '';
+  $('#uni-list').innerHTML = '<div class="empty-sm">载入中…</div>';
+  uniModal.show();
+  try {
+    const r = await fetch(WORKER + '/quant/universe',
+      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || '读取失败');
+    SP500 = d.sp500 || [];
+    SELECTED = new Set(d.selected || []);
+    if (!SP500.length) {
+      $('#uni-list').innerHTML = `<div class="empty-sm">名单还没上传。<br>
+        在本机跑一次 bin/upload_sp500.py 即可。</div>`;
+      return;
+    }
+    const secs = [...new Set(SP500.map(x => x.sec))].sort();
+    $('#uni-sector').innerHTML = '<option value="">全部行业</option>'
+      + secs.map(s => `<option value="${esc(s)}">${esc(s)}（${SP500.filter(x => x.sec === s).length}）</option>`).join('');
+    if (d.updated) {
+      $('#uni-msg').textContent = '上次修改 ' + new Date(d.updated).toLocaleString('zh-CN');
+    }
+    drawUniverse();
+  } catch (ex) {
+    $('#uni-list').innerHTML = `<div class="empty-sm text-red">${esc(ex.message)}</div>`;
+  }
+};
+
+function uniFiltered() {
+  const q = ($('#uni-search').value || '').trim().toUpperCase();
+  const sec = $('#uni-sector').value;
+  return SP500.filter(x =>
+    (!sec || x.sec === sec) &&
+    (!q || x.s.includes(q) || (x.n || '').toUpperCase().includes(q)));
+}
+
+function drawUniverse() {
+  const rows = uniFiltered();
+  $('#uni-count').textContent = `已选 ${SELECTED.size} / ${SP500.length}`;
+  if (!rows.length) { $('#uni-list').innerHTML = '<div class="empty-sm">没有匹配的标的。</div>'; return; }
+  $('#uni-list').innerHTML = `<table class="table table-sm table-vcenter"><tbody>` +
+    rows.map(x => `<tr>
+      <td style="width:34px"><input class="form-check-input m-0 uni-cb" type="checkbox"
+        data-s="${esc(x.s)}"${SELECTED.has(x.s) ? ' checked' : ''}></td>
+      <td style="width:80px"><strong class="num">${esc(x.s)}</strong></td>
+      <td class="text-secondary" style="font-size:.8rem">${esc(x.n)}</td>
+      <td class="text-secondary text-end" style="font-size:.74rem;width:80px">${esc(x.sec)}</td>
+    </tr>`).join('') + '</tbody></table>';
+  document.querySelectorAll('.uni-cb').forEach(cb => {
+    cb.onchange = () => {
+      cb.checked ? SELECTED.add(cb.dataset.s) : SELECTED.delete(cb.dataset.s);
+      $('#uni-count').textContent = `已选 ${SELECTED.size} / ${SP500.length}`;
+    };
+  });
+}
+
+$('#uni-search').oninput = drawUniverse;
+$('#uni-sector').onchange = drawUniverse;
+$('#uni-all').onclick = () => { uniFiltered().forEach(x => SELECTED.add(x.s)); drawUniverse(); };
+$('#uni-none').onclick = () => { uniFiltered().forEach(x => SELECTED.delete(x.s)); drawUniverse(); };
+
+$('#uni-save').onclick = async () => {
+  const btn = $('#uni-save'), msg = $('#uni-msg');
+  if (SELECTED.size < 5) { msg.innerHTML = '<span class="text-red">至少选 5 只</span>'; return; }
+  btn.disabled = true; msg.textContent = '保存中…';
+  try {
+    const r = await fetch(WORKER + '/quant/universe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json',
+                 Authorization: 'Bearer ' + localStorage.getItem(TK) },
+      body: JSON.stringify({ symbols: [...SELECTED] }),
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || '保存失败');
+    msg.innerHTML = `<span class="text-green">已保存 ${d.count} 只，下次运行生效</span>`;
+    setTimeout(() => uniModal.hide(), 900);
+  } catch (ex) {
+    msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
+  } finally { btn.disabled = false; }
+};
 
 /* ───── 成交记录 ───── */
 function renderTrades(ts) {
