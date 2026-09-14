@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/css/tabler.min.css">
 <!-- TradingView Lightweight Charts 5.2.1（Apache-2.0）—— 专业金融图表 -->
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
+<!-- Tabler JS：只用到弹窗组件 -->
+<script defer src="https://cdn.jsdelivr.net/npm/@tabler/core@1.5.0/dist/js/tabler.min.js"></script>
 
 <style>
 :root{
@@ -152,6 +154,14 @@ body{background:#0b0f14}
       </div>
 
       <div class="card mb-3">
+        <div class="card-header">
+          <h3 class="card-title mb-0">成交记录</h3>
+          <span class="card-subtitle ms-auto num" id="trade-summary"></span>
+        </div>
+        <div id="trades"></div>
+      </div>
+
+      <div class="card mb-3">
         <div class="card-header"><h3 class="card-title mb-0">策略参数</h3></div>
         <div class="card-body">
           <div class="datagrid" id="params"></div>
@@ -161,6 +171,23 @@ body{background:#0b0f14}
       <div class="text-secondary" style="font-size:.75rem;line-height:1.9">
         信号由 kucha-quant 按既定规则生成，不构成投资建议。回测收益不代表未来收益。<br>
         数据经 api.kucha.org 读取，仅管理员可见。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 个股详情 ══════════ -->
+<div class="modal modal-blur fade" id="sym-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title num" id="sym-title">—</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+      </div>
+      <div class="modal-body">
+        <div class="chart-legend mb-2" id="sym-legend"></div>
+        <div id="sym-chart" style="height:320px"></div>
+        <div id="sym-note" class="text-secondary mt-2" style="font-size:.76rem"></div>
       </div>
     </div>
   </div>
@@ -233,6 +260,7 @@ function render() {
   renderPositions(L);
   renderBudget(L);
   renderStops(L);
+  renderTrades(DATA.trades || []);
   renderParams(BT);
 }
 
@@ -374,7 +402,7 @@ function renderPositions(L) {
     <thead><tr><th>标的</th><th class="text-end">股数</th><th class="text-end">成本</th>
     <th class="text-end">现价</th><th class="text-end">盈亏</th><th class="text-end">止损</th>
     <th class="text-end">持有</th></tr></thead><tbody>` +
-    hs.map(h => `<tr>
+    hs.map(h => `<tr class="sym-row" data-sym="${esc(h.symbol)}" style="cursor:pointer">
       <td><strong>${esc(h.symbol)}</strong></td>
       <td class="text-end">${h.shares}</td>
       <td class="text-end">${money(h.entry_price)}</td>
@@ -383,6 +411,7 @@ function renderPositions(L) {
       <td class="text-end stop-price">${money(h.stop)}</td>
       <td class="text-end text-secondary">${h.days}d</td>
     </tr>`).join('') + '</tbody></table></div>';
+  wireSymbolRows();
 }
 
 function renderBudget(L) {
@@ -413,6 +442,117 @@ function renderStops(L) {
       <td class="text-end stop-price"><strong>${money(s.to)}</strong></td>
       <td class="text-end text-green">${pct(s.to / s.from - 1)}</td></tr>`).join('') +
     '</tbody></table></div>';
+}
+
+/* ───── 成交记录 ───── */
+function renderTrades(ts) {
+  const box = $('#trades'), sum = $('#trade-summary');
+  if (!ts.length) {
+    sum.textContent = '';
+    box.innerHTML = `<div class="empty-sm">还没有已了结的交易。<br>
+      系统每完成一次卖出，就会在这里留下一条流水。</div>`;
+    return;
+  }
+  const wins = ts.filter(t => t.pnl > 0).length;
+  const net = ts.reduce((a, t) => a + (t.pnl || 0), 0);
+  sum.innerHTML = `${ts.length} 笔 · 胜率 ${(wins / ts.length * 100).toFixed(0)}% ·
+    净盈亏 <span class="${tone(net)}">${money(net)}</span>`;
+  box.innerHTML = `<div class="table-responsive"><table class="table table-vcenter card-table">
+    <thead><tr><th>标的</th><th>入场</th><th>离场</th><th class="text-end">股数</th>
+    <th class="text-end">成本</th><th class="text-end">卖出</th><th class="text-end">盈亏</th>
+    <th class="text-end">持有</th><th>原因</th></tr></thead><tbody>` +
+    ts.slice(0, 40).map(t => `<tr class="sym-row" data-sym="${esc(t.symbol)}" style="cursor:pointer">
+      <td><strong>${esc(t.symbol)}</strong></td>
+      <td class="text-secondary">${esc(t.entry_date || '—')}</td>
+      <td class="text-secondary">${esc(t.date)}</td>
+      <td class="text-end">${t.shares}</td>
+      <td class="text-end">${money(t.entry_price)}</td>
+      <td class="text-end">${money(t.exit_price)}</td>
+      <td class="text-end ${tone(t.pnl)}"><strong>${money(t.pnl)}</strong>
+        <span class="text-secondary ms-1" style="font-size:.72rem">${pct(t.pnl_pct)}</span></td>
+      <td class="text-end text-secondary">${t.hold_days}d</td>
+      <td class="text-secondary" style="font-size:.72rem;white-space:normal;max-width:230px">
+        ${esc(t.reason || '')}</td>
+    </tr>`).join('') + '</tbody></table></div>';
+  wireSymbolRows();
+}
+
+/* ───── 点标的看个股走势 ───── */
+let symChart = null;
+function wireSymbolRows() {
+  document.querySelectorAll('.sym-row').forEach(tr => {
+    tr.onclick = () => openSymbol(tr.dataset.sym);
+  });
+}
+
+async function openSymbol(sym) {
+  const holding = ((DATA.latest && DATA.latest.holdings) || []).find(h => h.symbol === sym);
+  const lastTrade = (DATA.trades || []).find(t => t.symbol === sym);
+  $('#sym-title').textContent = sym;
+  $('#sym-legend').innerHTML = '<span class="text-secondary">载入中…</span>';
+  $('#sym-note').textContent = '';
+  new bootstrap.Modal($('#sym-modal')).show();
+
+  let bars = [];
+  try {
+    const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
+      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || '读取失败');
+    bars = d.bars || [];
+  } catch (ex) {
+    $('#sym-legend').innerHTML = `<span class="text-red">行情读取失败：${esc(ex.message)}</span>`;
+    return;
+  }
+  if (bars.length < 2) {
+    $('#sym-legend').innerHTML = '<span class="text-secondary">没有足够的行情数据</span>';
+    return;
+  }
+
+  if (symChart) { symChart.remove(); symChart = null; }
+  symChart = LightweightCharts.createChart($('#sym-chart'), {
+    layout: { background: { color: 'transparent' }, textColor: '#7d8b99',
+              fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace', fontSize: 11 },
+    grid: { vertLines: { color: '#161f28' }, horzLines: { color: '#161f28' } },
+    rightPriceScale: { borderColor: '#1c2733' },
+    timeScale: { borderColor: '#1c2733' },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Magnet },
+    localization: { priceFormatter: v => '$' + v.toFixed(2) },
+    autoSize: true,
+  });
+  const s = symChart.addSeries(LightweightCharts.CandlestickSeries, {
+    upColor: '#2ea043', downColor: '#e5484d',
+    borderUpColor: '#2ea043', borderDownColor: '#e5484d',
+    wickUpColor: '#2ea043', wickDownColor: '#e5484d',
+  });
+  s.setData(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
+
+  const legend = [`<span><i style="background:#7d8b99"></i>
+    <span class="text-secondary">收盘</span> <b>${money(bars[bars.length - 1].c)}</b></span>`];
+  const notes = [];
+
+  if (holding) {
+    s.createPriceLine({ price: holding.entry_price, color: '#4c9aff', lineWidth: 1,
+      lineStyle: 2, axisLabelVisible: true, title: '成本' });
+    s.createPriceLine({ price: holding.stop, color: '#bb8009', lineWidth: 1,
+      lineStyle: 2, axisLabelVisible: true, title: '止损' });
+    legend.push(`<span><i style="background:#4c9aff"></i>
+      <span class="text-secondary">成本</span> <b>${money(holding.entry_price)}</b></span>`);
+    legend.push(`<span><i style="background:#bb8009"></i>
+      <span class="text-secondary">止损</span> <b>${money(holding.stop)}</b></span>`);
+    const room = (holding.last_price - holding.stop) / holding.last_price;
+    notes.push(`持有 ${holding.days} 天，浮动盈亏 ${pct(holding.pnl_pct)}，`
+      + `现价距止损还有 ${pct(room)} 的空间。`);
+  } else if (lastTrade) {
+    notes.push(`已于 ${lastTrade.date} 离场，${lastTrade.pnl >= 0 ? '盈利' : '亏损'} `
+      + `${money(Math.abs(lastTrade.pnl))}（${pct(lastTrade.pnl_pct)}），`
+      + `持有 ${lastTrade.hold_days} 天。离场原因：${lastTrade.reason || '—'}`);
+  } else {
+    notes.push('当前未持有该标的。');
+  }
+  $('#sym-legend').innerHTML = legend.join('');
+  $('#sym-note').textContent = notes.join(' ');
+  symChart.timeScale().fitContent();
 }
 
 function renderParams(BT) {
