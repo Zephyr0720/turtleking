@@ -238,20 +238,16 @@ body{background:#0b0f14}
       <div class="modal-body">
         <div class="mb-2 d-flex gap-2 flex-wrap align-items-center">
           <input type="search" class="form-control form-control-sm" id="uni-search"
-                 placeholder="搜代码或公司名" style="max-width:200px">
+                 placeholder="搜代码或英文公司名，如 SPCX / Space Exploration"
+                 style="max-width:290px">
           <select class="form-select form-select-sm" id="uni-sector" style="max-width:140px">
             <option value="">全部行业</option>
           </select>
           <button class="btn btn-sm btn-outline-secondary" id="uni-all">全选当前筛选</button>
           <button class="btn btn-sm btn-outline-secondary" id="uni-none">清空当前筛选</button>
         </div>
-        <div class="mb-2 d-flex gap-2 align-items-center">
-          <input class="form-control form-control-sm" id="uni-custom" maxlength="10"
-                 placeholder="标普 500 之外的代码，如 SPCX" style="max-width:200px"
-                 autocapitalize="characters">
-          <button class="btn btn-sm btn-outline-primary" id="uni-add">添加</button>
-          <span class="text-secondary" id="uni-add-msg" style="font-size:.74rem"></span>
-        </div>
+        <div id="uni-remote" class="mb-2"></div>
+        <span class="text-secondary" id="uni-add-msg" style="font-size:.74rem"></span>
         <div class="text-secondary mb-2" style="font-size:.74rem;line-height:1.7">
           选中的标的会成为每日选股的候选池，下次运行生效。系统仍会按流动性和价格再筛一道，
           最终只从符合条件的标的里挑。池子太小会选不出仓位，建议至少 30 只。<br>
@@ -842,6 +838,9 @@ let SP500 = [], SELECTED = new Set(), uniModal = null;
 $('#open-universe').onclick = async () => {
   if (!uniModal) uniModal = new bootstrap.Modal($('#uni-modal'));
   $('#uni-msg').textContent = '';
+  $('#uni-add-msg').textContent = '';
+  $('#uni-remote').innerHTML = '';
+  uniLastQuery = '';
   $('#uni-list').innerHTML = '<div class="empty-sm">载入中…</div>';
   uniModal.show();
   try {
@@ -889,39 +888,75 @@ function uniFiltered() {
     (!q || x.s.includes(q) || (x.n || '').toUpperCase().includes(q)));
 }
 
-let CUSTOM_NAMES = {};
+let CUSTOM_NAMES = {}, uniSearchTimer = null, uniLastQuery = '';
 
-$('#uni-add').onclick = async () => {
-  const inp = $('#uni-custom'), msg = $('#uni-add-msg');
-  const sym = (inp.value || '').trim().toUpperCase();
-  if (!/^[A-Z][A-Z0-9.\-]{0,9}$/.test(sym)) {
-    msg.innerHTML = '<span class="text-red">代码格式不对</span>'; return;
-  }
-  if (SELECTED.has(sym)) { msg.innerHTML = '<span class="text-secondary">已经在池子里了</span>'; return; }
-  msg.textContent = '核对中…';
+/* 全市场搜索：标普 500 名单只有 503 只，新上市的、中小盘的、ETF 都不在里面。
+   本地列表先即时过滤，同时向行情商的搜索接口要结果，找到的可以直接加进池子。 */
+async function uniRemoteSearch(q) {
+  const box = $('#uni-remote');
+  if (q.length < 2) { box.innerHTML = ''; uniLastQuery = ''; return; }
+  if (q === uniLastQuery) return;
+  uniLastQuery = q;
+  box.innerHTML = `<div class="text-secondary" style="font-size:.74rem">全市场搜索「${esc(q)}」…</div>`;
   try {
-    // 用行情接口验一下这个代码真的存在，免得把拼错的代码存进去
+    const r = await fetch(`${WORKER}/quant/search?q=${encodeURIComponent(q)}`,
+      { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || '搜索失败');
+    const known = new Set(SP500.map(x => x.s));
+    const rows = (d.results || []).filter(x => !known.has(x.s));
+    if (!rows.length) {
+      box.innerHTML = `<div class="text-secondary" style="font-size:.74rem">
+        全市场没有标普 500 之外的匹配${/[一-龥]/.test(q)
+          ? '（数据源只索引英文名，中文搜不到，请用代码或英文名）' : ''}</div>`;
+      return;
+    }
+    box.innerHTML = `<div class="text-secondary mb-1" style="font-size:.72rem">
+        标普 500 之外的匹配（点「加入」即可纳入标的池）</div>` +
+      `<table class="table table-sm table-vcenter mb-0"><tbody>` + rows.map(x => `<tr>
+        <td style="width:80px"><strong class="num">${esc(x.s)}</strong></td>
+        <td class="text-secondary" style="font-size:.78rem">${esc(x.n)}</td>
+        <td class="text-secondary text-end" style="font-size:.72rem;width:96px">
+          ${esc(x.t)} ${esc(x.ex || '')}</td>
+        <td style="width:64px" class="text-end">
+          ${SELECTED.has(x.s)
+            ? '<span class="badge bg-green-lt">已在池</span>'
+            : `<button class="btn btn-sm btn-outline-primary uni-add-btn"
+                 data-s="${esc(x.s)}" data-n="${esc(x.n)}">加入</button>`}</td>
+      </tr>`).join('') + '</tbody></table>';
+    document.querySelectorAll('.uni-add-btn').forEach(b => {
+      b.onclick = () => uniAdd(b.dataset.s, b.dataset.n);
+    });
+  } catch (ex) {
+    box.innerHTML = `<div class="text-red" style="font-size:.74rem">${esc(ex.message)}</div>`;
+  }
+}
+
+async function uniAdd(sym, name) {
+  const msg = $('#uni-add-msg');
+  if (SELECTED.has(sym)) return;
+  msg.textContent = `核对 ${sym} 的行情…`;
+  try {
+    // 搜索命中不代表有可用历史，这里再用行情接口确认一次
     const r = await fetch(`${WORKER}/quant/bars?symbol=${encodeURIComponent(sym)}`,
       { headers: { Authorization: 'Bearer ' + localStorage.getItem(TK) } });
     const d = await r.json();
-    if (!d.success) throw new Error(d.error || '查不到这个代码');
-    const bars = d.bars || [];
-    if (bars.length < 2) throw new Error('查不到行情数据');
+    if (!d.success) throw new Error(d.error || '查不到行情');
+    const n = (d.bars || []).length;
+    if (n < 2) throw new Error('这个代码没有可用的日线数据');
     SELECTED.add(sym);
-    CUSTOM_NAMES[sym] = `自选 · ${bars.length} 根日线`;
-    inp.value = '';
-    const warn = bars.length < 120
-      ? `，但只有 ${bars.length} 根日线，不够算 100 日均线，暂时不会产生信号`
-      : '';
-    msg.innerHTML = `<span class="${warn ? 'text-orange' : 'text-green'}">已加入 ${sym}${warn}</span>`;
-    $('#uni-sector').value = '';
-    $('#uni-search').value = '';
+    CUSTOM_NAMES[sym] = name || '自选（非标普 500）';
+    const warn = n < 120
+      ? `，但只有 ${n} 根日线，不够算 100 日均线，暂时不会产生信号`
+      : `，${n} 根日线可用`;
+    msg.innerHTML = `<span class="${n < 120 ? 'text-orange' : 'text-green'}">已加入 ${sym}${warn}</span>`;
+    uniLastQuery = '';
+    uniRemoteSearch($('#uni-search').value.trim());
     drawUniverse();
   } catch (ex) {
     msg.innerHTML = `<span class="text-red">${esc(ex.message)}</span>`;
   }
-};
-$('#uni-custom').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('#uni-add').click(); } };
+}
 
 function drawUniverse() {
   const rows = uniFiltered();
@@ -946,7 +981,12 @@ function drawUniverse() {
   });
 }
 
-$('#uni-search').oninput = drawUniverse;
+$('#uni-search').oninput = () => {
+  drawUniverse();
+  clearTimeout(uniSearchTimer);
+  const q = $('#uni-search').value.trim();
+  uniSearchTimer = setTimeout(() => uniRemoteSearch(q), 500);
+};
 $('#uni-sector').onchange = drawUniverse;
 $('#uni-all').onclick = () => { uniFiltered().forEach(x => SELECTED.add(x.s)); drawUniverse(); };
 $('#uni-none').onclick = () => { uniFiltered().forEach(x => SELECTED.delete(x.s)); drawUniverse(); };
